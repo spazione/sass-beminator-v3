@@ -1,0 +1,6 @@
+@include bem.block('probe') {
+  @include bem.element('item') {
+    content: 'independent element';
+    @include bem.modifier('active') { content: 'independent element modifier'; }
+  }
+}

@@ -1,0 +1,6 @@
+.standard-object--modifier {
+  content: "single modifier applied to block";
+}
+.standard-object--modifier .standard-object__nested-element {
+  content: "single modifier applied to elements change a nested-element";
+}

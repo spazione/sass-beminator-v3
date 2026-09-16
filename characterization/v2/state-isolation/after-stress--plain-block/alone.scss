@@ -1,0 +1,6 @@
+
+
+@at-root { /* characterization-probe-begin */ }
+@include bem.block('probe') { content: 'independent block'; }
+
+@at-root { /* characterization-probe-end */ }

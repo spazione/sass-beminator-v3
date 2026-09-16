@@ -1,0 +1,10 @@
+// Historical source: objects.standard-object.scss:108-111
+@include bem.block('standard-object') {
+  @include bem.element('gigi') {
+    @include bem.modifier('fatherdMod') {
+      @include bem.block('icon') {
+        content: 'BLOCK INSIDE BLOCK';
+      }
+    }
+  }
+}

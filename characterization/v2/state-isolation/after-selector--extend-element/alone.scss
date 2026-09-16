@@ -1,0 +1,9 @@
+
+
+@at-root { /* characterization-probe-begin */ }
+@include bem.extend('probe', 'one', 'two') {
+  content: 'independent extend';
+  @include bem.element('item') { content: 'independent extended element'; }
+}
+
+@at-root { /* characterization-probe-end */ }

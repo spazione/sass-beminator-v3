@@ -1,0 +1,8 @@
+// Historical source: objects.standard-object.scss:152-156
+@include bem.block('standard-object') {
+  @include bem.extend ( $name: 'icon', $mod1: 'mod1') {
+  	@include bem.element ( $name: 'nested-element' ) {
+  		content: 'EXTEND WITH SINGLE MODIFIER APPLIED to AN ELEMENT';
+  	}
+  }
+}

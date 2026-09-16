@@ -1,0 +1,9 @@
+// Historical source: objects.standard-object.scss:14-19
+@include bem.block('standard-object') {
+  @include bem.modifier ( $mod1: 'modifier' ) {
+  	content: 'single modifier applied to block';
+  	@include bem.element ( $name: 'nested-element' ) {
+  		content: 'single modifier applied to elements change a nested-element';
+  	}
+  }
+}

@@ -1,0 +1,6 @@
+// Historical source: objects.standard-object.scss:158-160
+@include bem.block('standard-object') {
+  @include bem.extend ( $name: 'icon', $mod1: 'mod1', $mod2: 'mod2') {
+  	content: 'EXTENDED PATTERN WITH DOUBLE MODIFIER';
+  }
+}

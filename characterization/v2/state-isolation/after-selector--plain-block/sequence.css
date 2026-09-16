@@ -1,0 +1,10 @@
+.standard-object__element + .standard-object__element-2 {
+  content: "element-2";
+}
+
+/* characterization-probe-begin */
+.probe {
+  content: "independent block";
+}
+
+/* characterization-probe-end */

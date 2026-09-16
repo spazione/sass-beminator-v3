@@ -1,0 +1,7 @@
+@include bem.block('icon') {
+  content: 'BLOCK INSIDE BLOCK';
+  @include bem.modifier('mod') { content: 'BLOCK INSIDE BLOCK WITH SINGLE MODIFIER'; }
+  @include bem.element('nested-element') {
+    @include bem.modifier('nestedMod') { content: 'nestedMod'; }
+  }
+}

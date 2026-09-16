@@ -1,0 +1,32 @@
+@include bem.block('standard-object') {
+
+@at-root { /* characterization-probe-begin */ }
+@include bem.element ( $name: 'gigi' ) {
+  	@include bem.modifier('fatherdMod') {
+  		@include bem.block ( $name: 'icon' ) {
+  			content: 'BLOCK INSIDE BLOCK';
+  			@include bem.modifier('mod' ) {
+  			content: 'BLOCK INSIDE BLOCK WITH SINGLE MODIFIER';
+  			}
+  			@include bem.element ( $name: 'nested-element' ) {
+  				@include bem.modifier('nestedMod') {
+  					content: 'nestedMod';
+  				}
+  			}
+  		}
+  		@include bem.element('pippo') {
+  			content: 'pippo';
+  			@include bem.modifier('mod') {
+  				content: 'mod';
+
+  			}
+  		}
+  		@include bem.element('test-ele') {
+  			content: 'test-ele';
+  		}
+  	}
+
+  }
+
+@at-root { /* characterization-probe-end */ }
+}

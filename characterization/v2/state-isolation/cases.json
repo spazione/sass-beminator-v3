@@ -1,0 +1,155 @@
+[
+  {
+    "id": "after-regression--plain-block",
+    "before": "regression/complete.scss",
+    "probe": "state-isolation/probes/plain-block.scss",
+    "scope": "independent top-level scenarios",
+    "sourceLines": "5-212;216-230 (derived probes)"
+  },
+  {
+    "id": "after-regression--element-modifier",
+    "before": "regression/complete.scss",
+    "probe": "state-isolation/probes/element-modifier.scss",
+    "scope": "independent top-level scenarios",
+    "sourceLines": "5-212;216-230 (derived probes)"
+  },
+  {
+    "id": "after-regression--extend-element",
+    "before": "regression/complete.scss",
+    "probe": "state-isolation/probes/extend-element.scss",
+    "scope": "independent top-level scenarios",
+    "sourceLines": "5-212;216-230 (derived probes)"
+  },
+  {
+    "id": "after-history--plain-block",
+    "before": "regression/historical-active-sequence.scss",
+    "probe": "state-isolation/probes/plain-block.scss",
+    "scope": "independent top-level scenarios",
+    "sourceLines": "5-212;216-230 (derived probes)"
+  },
+  {
+    "id": "after-history--element-modifier",
+    "before": "regression/historical-active-sequence.scss",
+    "probe": "state-isolation/probes/element-modifier.scss",
+    "scope": "independent top-level scenarios",
+    "sourceLines": "5-212;216-230 (derived probes)"
+  },
+  {
+    "id": "after-history--extend-element",
+    "before": "regression/historical-active-sequence.scss",
+    "probe": "state-isolation/probes/extend-element.scss",
+    "scope": "independent top-level scenarios",
+    "sourceLines": "5-212;216-230 (derived probes)"
+  },
+  {
+    "id": "after-selector--plain-block",
+    "before": "core/selector/adjacent-element.scss",
+    "probe": "state-isolation/probes/plain-block.scss",
+    "scope": "independent top-level scenarios",
+    "sourceLines": "5-212;216-230 (derived probes)"
+  },
+  {
+    "id": "after-selector--element-modifier",
+    "before": "core/selector/adjacent-element.scss",
+    "probe": "state-isolation/probes/element-modifier.scss",
+    "scope": "independent top-level scenarios",
+    "sourceLines": "5-212;216-230 (derived probes)"
+  },
+  {
+    "id": "after-selector--extend-element",
+    "before": "core/selector/adjacent-element.scss",
+    "probe": "state-isolation/probes/extend-element.scss",
+    "scope": "independent top-level scenarios",
+    "sourceLines": "5-212;216-230 (derived probes)"
+  },
+  {
+    "id": "after-extend--plain-block",
+    "before": "core/extend/double-element.scss",
+    "probe": "state-isolation/probes/plain-block.scss",
+    "scope": "independent top-level scenarios",
+    "sourceLines": "5-212;216-230 (derived probes)"
+  },
+  {
+    "id": "after-extend--element-modifier",
+    "before": "core/extend/double-element.scss",
+    "probe": "state-isolation/probes/element-modifier.scss",
+    "scope": "independent top-level scenarios",
+    "sourceLines": "5-212;216-230 (derived probes)"
+  },
+  {
+    "id": "after-extend--extend-element",
+    "before": "core/extend/double-element.scss",
+    "probe": "state-isolation/probes/extend-element.scss",
+    "scope": "independent top-level scenarios",
+    "sourceLines": "5-212;216-230 (derived probes)"
+  },
+  {
+    "id": "after-stress--plain-block",
+    "before": "exploratory/complete-stress-tree.scss",
+    "probe": "state-isolation/probes/plain-block.scss",
+    "scope": "independent top-level scenarios",
+    "sourceLines": "5-212;216-230 (derived probes)"
+  },
+  {
+    "id": "after-stress--element-modifier",
+    "before": "exploratory/complete-stress-tree.scss",
+    "probe": "state-isolation/probes/element-modifier.scss",
+    "scope": "independent top-level scenarios",
+    "sourceLines": "5-212;216-230 (derived probes)"
+  },
+  {
+    "id": "after-stress--extend-element",
+    "before": "exploratory/complete-stress-tree.scss",
+    "probe": "state-isolation/probes/extend-element.scss",
+    "scope": "independent top-level scenarios",
+    "sourceLines": "5-212;216-230 (derived probes)"
+  },
+  {
+    "id": "after-triple-block--plain-block",
+    "before": "exploratory/block-block-block.scss",
+    "probe": "state-isolation/probes/plain-block.scss",
+    "scope": "independent top-level scenarios",
+    "sourceLines": "5-212;216-230 (derived probes)"
+  },
+  {
+    "id": "after-triple-block--element-modifier",
+    "before": "exploratory/block-block-block.scss",
+    "probe": "state-isolation/probes/element-modifier.scss",
+    "scope": "independent top-level scenarios",
+    "sourceLines": "5-212;216-230 (derived probes)"
+  },
+  {
+    "id": "after-triple-block--extend-element",
+    "before": "exploratory/block-block-block.scss",
+    "probe": "state-isolation/probes/extend-element.scss",
+    "scope": "independent top-level scenarios",
+    "sourceLines": "5-212;216-230 (derived probes)"
+  },
+  {
+    "id": "sibling-element-after-block",
+    "before": "state-isolation/before-icon.scss",
+    "probe": "state-isolation/probes/sibling-element.scss",
+    "prefix": "@include bem.block('standard-object') {",
+    "suffix": "}",
+    "scope": "independent siblings under identical public ancestors",
+    "sourceLines": "98-110 (derived sibling)"
+  },
+  {
+    "id": "regression-after-sibling-block",
+    "before": "state-isolation/before-icon.scss",
+    "probe": "state-isolation/probes/sibling-regression.scss",
+    "prefix": "@include bem.block('standard-object') {",
+    "suffix": "}",
+    "scope": "independent siblings under identical public ancestors",
+    "sourceLines": "98-138"
+  },
+  {
+    "id": "pippo-after-nested-icon",
+    "before": "state-isolation/before-icon-complex.scss",
+    "probe": "state-isolation/probes/sibling-pippo.scss",
+    "prefix": "@include bem.block('standard-object') { @include bem.element('gigi') { @include bem.modifier('fatherdMod') {",
+    "suffix": "}}}",
+    "scope": "independent siblings under identical public ancestors",
+    "sourceLines": "108-135"
+  }
+]

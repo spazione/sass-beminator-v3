@@ -1,0 +1,8 @@
+// Historical source: objects.standard-object.scss:75-77
+@include bem.block('standard-object') {
+  @include bem.element('element') {
+    @include bem.selector ( $name: ':before' ) {
+    	content: 'before';
+    }
+  }
+}

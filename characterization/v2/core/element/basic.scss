@@ -1,0 +1,6 @@
+// Historical source: objects.standard-object.scss:40-41
+@include bem.block('standard-object') {
+  @include bem.element('element') {
+    content: 'element';
+  }
+}

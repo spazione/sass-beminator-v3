@@ -1,0 +1,13 @@
+.standard-object__element + .standard-object__element-2 {
+  content: "element-2";
+}
+
+/* characterization-probe-begin */
+.probe--one.probe--two {
+  content: "independent extend";
+}
+.probe--one.probe--two .probe__item {
+  content: "independent extended element";
+}
+
+/* characterization-probe-end */

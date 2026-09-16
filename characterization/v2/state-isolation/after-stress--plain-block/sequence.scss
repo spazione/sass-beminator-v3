@@ -1,0 +1,22 @@
+
+// Historical source: objects.standard-object.scss:216-230
+@include bem.extend ( $name: 'extend', $mod1: 'mod1', $mod2: 'mod2') {
+	content: 'extend';
+	@include bem.extend ( $name: 'icon', $mod1: 'mod1', $mod2: 'mod2') {
+		content: 'EXTENDED PATTERN WITH DOUBLE MODIFIER';
+		@include bem.block ( $name: 'icon' ) {
+			content: 'BLOCK INSIDE BLOCK';
+		}
+	}
+	@include bem.block ( $name: 'icon' ) {
+		content: 'BLOCK INSIDE BLOCK';
+		@include bem.block ( $name: 'icon' ) {
+			content: 'BLOCK INSIDE BLOCK';
+		}
+	}
+}
+
+@at-root { /* characterization-probe-begin */ }
+@include bem.block('probe') { content: 'independent block'; }
+
+@at-root { /* characterization-probe-end */ }

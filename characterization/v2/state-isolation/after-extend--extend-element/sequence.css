@@ -1,0 +1,13 @@
+.standard-object .icon--mod1.icon--mod2 .icon__nested-element {
+  content: "EXTEND WITH DOUBLE MODIFIER APPLIED to AN ELEMENT";
+}
+
+/* characterization-probe-begin */
+.probe--one.probe--two {
+  content: "independent extend";
+}
+.probe--one.probe--two .probe__item {
+  content: "independent extended element";
+}
+
+/* characterization-probe-end */

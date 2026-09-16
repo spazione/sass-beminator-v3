@@ -1,0 +1,16 @@
+node_modules/
+coverage/
+.nyc_output/
+tmp/
+temp/
+.tmp/
+*.tmp.scss
+*.css.map
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~

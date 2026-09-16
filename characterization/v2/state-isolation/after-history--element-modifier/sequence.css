@@ -1,0 +1,85 @@
+@layer atoms {
+  .standard-object {
+    content: "content";
+  }
+  .standard-object--modifier {
+    content: "single modifier applied to block";
+  }
+  .standard-object--modifier .standard-object__nested-element {
+    content: "single modifier applied to elements change a nested-element";
+  }
+  .standard-object--modifier-1.standard-object--modifier-2 {
+    content: "double modifier applied to block";
+  }
+  .standard-object--modifier-1.standard-object--modifier-2 .standard-object__nested-element {
+    content: "double modifier applied to block change a nested-element";
+  }
+  .standard-object__element {
+    content: "element";
+  }
+  .standard-object__element--modifier {
+    content: "single modifier applied to elements";
+  }
+  .standard-object__element--modifier .standard-object__nested-element {
+    content: "single modifier applied to elements change a nested-element";
+  }
+  .standard-object__element--modifier-1.standard-object__element--modifier-2 {
+    content: "double modifier applied to elements";
+  }
+  .standard-object__element--modifier-1.standard-object__element--modifier-2 .standard-object__nested-element {
+    content: "double modifier applied to elements change a nested-element";
+  }
+  .standard-object__element:before {
+    content: "before";
+  }
+  .standard-object__element + .standard-object__element-2 {
+    content: "element-2";
+  }
+  .standard-object .icon {
+    content: "BLOCK INSIDE BLOCK";
+  }
+  .standard-object .standard-object__gigi--fatherdMod .icon {
+    content: "BLOCK INSIDE BLOCK";
+  }
+  .standard-object .standard-object__gigi--fatherdMod .icon--mod {
+    content: "BLOCK INSIDE BLOCK WITH SINGLE MODIFIER";
+  }
+  .standard-object .standard-object__gigi--fatherdMod .icon__nested-element--nestedMod {
+    content: "nestedMod";
+  }
+  .standard-object .standard-object__gigi--fatherdMod .standard-object__pippo {
+    content: "pippo";
+  }
+  .standard-object .standard-object__gigi--fatherdMod .standard-object__pippo--mod {
+    content: "mod";
+  }
+  .standard-object .standard-object__gigi--fatherdMod .standard-object__test-ele {
+    content: "test-ele";
+  }
+  .standard-object .icon--mod1 {
+    content: "EXTENDED PATTERN WITH SINGLE MODIFIER";
+  }
+  .standard-object .icon--mod1 .icon__nested-element {
+    content: "EXTEND WITH SINGLE MODIFIER APPLIED to AN ELEMENT";
+  }
+  .standard-object .icon--mod1.icon--mod2 {
+    content: "EXTENDED PATTERN WITH DOUBLE MODIFIER";
+  }
+  .standard-object .icon--mod1.icon--mod2 .icon__nested-element {
+    content: "EXTEND WITH DOUBLE MODIFIER APPLIED to AN ELEMENT";
+  }
+}
+@layer atoms {
+  .standard-object__ciao {
+    content: "ciao";
+  }
+}
+/* characterization-probe-begin */
+.probe__item {
+  content: "independent element";
+}
+.probe__item--active {
+  content: "independent element modifier";
+}
+
+/* characterization-probe-end */

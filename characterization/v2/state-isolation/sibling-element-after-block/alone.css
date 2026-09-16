@@ -1,0 +1,6 @@
+/* characterization-probe-begin */
+.standard-object__after {
+  content: "independent sibling element";
+}
+
+/* characterization-probe-end */

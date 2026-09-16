@@ -1,0 +1,17 @@
+// Historical source: objects.standard-object.scss:126-135
+@include bem.block('standard-object') {
+  @include bem.element('gigi') {
+    @include bem.modifier('fatherdMod') {
+      @include bem.element('pippo') {
+      	content: 'pippo';
+      	@include bem.modifier('mod') {
+      		content: 'mod';
+
+      	}
+      }
+      @include bem.element('test-ele') {
+      	content: 'test-ele';
+      }
+    }
+  }
+}

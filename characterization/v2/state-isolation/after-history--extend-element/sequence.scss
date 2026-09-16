@@ -1,0 +1,130 @@
+
+// Historical source: objects.standard-object.scss:5-212
+@include bem.block( $name: 'standard-object', $theme: false, $layer: 'atoms') {
+	content: 'content';
+
+
+	@include bem.modifier ( $mod1: 'modifier' ) {
+		content: 'single modifier applied to block';
+		@include bem.element ( $name: 'nested-element' ) {
+			content: 'single modifier applied to elements change a nested-element';
+		}
+	}
+
+
+	@include bem.modifier ( $mod1: 'modifier-1', $mod2: 'modifier-2' ) {
+		content: 'double modifier applied to block';
+		@include bem.element ( $name: 'nested-element' ) {
+			content: 'double modifier applied to block change a nested-element';
+		}
+	}
+
+
+	@include bem.element ( $name: 'element' ) {
+		content: 'element';
+
+
+		@include bem.modifier ( $mod1: 'modifier' ) {
+			content: 'single modifier applied to elements';
+			@include bem.element ( $name: 'nested-element' ) {
+				content: 'single modifier applied to elements change a nested-element';
+			}
+		}
+
+
+		@include bem.modifier ( $mod1: 'modifier-1', $mod2: 'modifier-2' ) {
+			content: 'double modifier applied to elements';
+			@include bem.element ( $name: 'nested-element' ) {
+				content: 'double modifier applied to elements change a nested-element';
+			}
+		}
+
+
+		@include bem.selector ( $name: ':before' ) {
+			content: 'before';
+		}
+
+
+		@include bem.selector ( $name: '+' ) {
+			@include bem.element ( $name: 'element-2' ) {
+				content: 'element-2';
+			}
+		}
+	}
+
+
+	@include bem.block ( $name: 'icon' ) {
+		content: 'BLOCK INSIDE BLOCK';
+	}
+
+
+	@include bem.element ( $name: 'gigi' ) {
+		@include bem.modifier('fatherdMod') {
+			@include bem.block ( $name: 'icon' ) {
+				content: 'BLOCK INSIDE BLOCK';
+				@include bem.modifier('mod' ) {
+				content: 'BLOCK INSIDE BLOCK WITH SINGLE MODIFIER';
+				}
+				@include bem.element ( $name: 'nested-element' ) {
+					@include bem.modifier('nestedMod') {
+						content: 'nestedMod';
+					}
+				}
+			}
+			@include bem.element('pippo') {
+				content: 'pippo';
+				@include bem.modifier('mod') {
+					content: 'mod';
+
+				}
+			}
+			@include bem.element('test-ele') {
+				content: 'test-ele';
+			}
+		}
+
+	}
+
+
+
+
+	@include bem.extend ( $name: 'icon', $mod1: 'mod1') {
+		content: 'EXTENDED PATTERN WITH SINGLE MODIFIER';
+	}
+
+	@include bem.extend ( $name: 'icon', $mod1: 'mod1') {
+		@include bem.element ( $name: 'nested-element' ) {
+			content: 'EXTEND WITH SINGLE MODIFIER APPLIED to AN ELEMENT';
+		}
+	}
+
+	@include bem.extend ( $name: 'icon', $mod1: 'mod1', $mod2: 'mod2') {
+		content: 'EXTENDED PATTERN WITH DOUBLE MODIFIER';
+	}
+
+	@include bem.extend ( $name: 'icon', $mod1: 'mod1', $mod2: 'mod2') {
+		@include bem.element ( $name: 'nested-element' ) {
+			content: 'EXTEND WITH DOUBLE MODIFIER APPLIED to AN ELEMENT';
+		}
+	}
+
+
+
+
+
+
+}
+
+@include bem.block( $name: 'standard-object', $theme: false, $layer: 'atoms') {
+	@include bem.element('ciao')  {
+		content: 'ciao';
+	}
+}
+
+@at-root { /* characterization-probe-begin */ }
+@include bem.extend('probe', 'one', 'two') {
+  content: 'independent extend';
+  @include bem.element('item') { content: 'independent extended element'; }
+}
+
+@at-root { /* characterization-probe-end */ }

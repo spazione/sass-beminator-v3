@@ -1,0 +1,19 @@
+{
+  "name": "sass-beminator-v3",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Infrastructure for the Sass BEMinator rewrite",
+  "type": "module",
+  "engines": {
+    "node": "^22.19.0 || ^24.0.0"
+  },
+  "scripts": {
+    "test": "node --test \"tests/unit/**/*.test.js\"",
+    "test:watch": "node --test --watch \"tests/unit/**/*.test.js\"",
+    "test:legacy": "node --test \"tests/legacy/**/*.test.js\" \"tests/characterization/**/*.test.js\"",
+    "test:characterization": "node --test \"tests/characterization/**/*.test.js\""
+  },
+  "devDependencies": {
+    "sass": "1.104.1"
+  }
+}

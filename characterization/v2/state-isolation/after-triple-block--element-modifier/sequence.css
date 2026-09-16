@@ -1,0 +1,12 @@
+.standard-object .icon .icon {
+  content: "BLOCK INSIDE BLOCK";
+}
+/* characterization-probe-begin */
+.probe__item {
+  content: "independent element";
+}
+.probe__item--active {
+  content: "independent element modifier";
+}
+
+/* characterization-probe-end */

@@ -1,0 +1,16 @@
+
+// Historical source: objects.standard-object.scss:85-89
+@include bem.block('standard-object') {
+  @include bem.element('element') {
+    @include bem.selector ( $name: '+' ) {
+    	@include bem.element ( $name: 'element-2' ) {
+    		content: 'element-2';
+    	}
+    }
+  }
+}
+
+@at-root { /* characterization-probe-begin */ }
+@include bem.block('probe') { content: 'independent block'; }
+
+@at-root { /* characterization-probe-end */ }

@@ -1,0 +1,10 @@
+// Historical source: objects.standard-object.scss:216-217;224-229
+@include bem.extend('extend', 'mod1', 'mod2') {
+  content: 'extend';
+  @include bem.block ( $name: 'icon' ) {
+  	content: 'BLOCK INSIDE BLOCK';
+  	@include bem.block ( $name: 'icon' ) {
+  		content: 'BLOCK INSIDE BLOCK';
+  	}
+  }
+}

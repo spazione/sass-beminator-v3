@@ -1,0 +1,24 @@
+/* characterization-probe-begin */
+.standard-object__gigi--fatherdMod .icon {
+  content: "BLOCK INSIDE BLOCK";
+}
+.standard-object__gigi--fatherdMod .icon--mod {
+  content: "BLOCK INSIDE BLOCK WITH SINGLE MODIFIER";
+}
+
+.standard-object__gigi--fatherdMod .icon__nested-element--nestedMod {
+  content: "nestedMod";
+}
+
+.standard-object__gigi--fatherdMod .standard-object__pippo {
+  content: "pippo";
+}
+.standard-object__gigi--fatherdMod .standard-object__pippo--mod {
+  content: "mod";
+}
+
+.standard-object__gigi--fatherdMod .standard-object__test-ele {
+  content: "test-ele";
+}
+
+/* characterization-probe-end */

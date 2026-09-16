@@ -1,0 +1,17 @@
+
+// Historical source: objects.standard-object.scss:224-228 (derived)
+@include bem.block('standard-object') {
+  @include bem.block('icon') {
+    @include bem.block('icon') {
+      content: 'BLOCK INSIDE BLOCK';
+    }
+  }
+}
+
+@at-root { /* characterization-probe-begin */ }
+@include bem.extend('probe', 'one', 'two') {
+  content: 'independent extend';
+  @include bem.element('item') { content: 'independent extended element'; }
+}
+
+@at-root { /* characterization-probe-end */ }

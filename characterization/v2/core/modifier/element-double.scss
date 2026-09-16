@@ -1,0 +1,8 @@
+// Historical source: objects.standard-object.scss:62-63
+@include bem.block('standard-object') {
+  @include bem.element('element') {
+    @include bem.modifier('modifier-1', 'modifier-2') {
+      content: 'double modifier applied to elements';
+    }
+  }
+}

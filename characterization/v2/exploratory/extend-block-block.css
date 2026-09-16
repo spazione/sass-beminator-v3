@@ -1,0 +1,9 @@
+.extend--mod1.extend--mod2 {
+  content: "extend";
+}
+.extend--mod1.extend--mod2 .icon {
+  content: "BLOCK INSIDE BLOCK";
+}
+.extend--mod1.extend--mod2 .icon .icon {
+  content: "BLOCK INSIDE BLOCK";
+}

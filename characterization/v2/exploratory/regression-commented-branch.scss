@@ -1,0 +1,16 @@
+// Historical source: objects.standard-object.scss:108-118
+@include bem.block('standard-object') {
+  @include bem.element('gigi') {
+    @include bem.modifier('fatherdMod') {
+      @include bem.block('icon') {
+        @include bem.modifier('mod') {
+          @include bem.element ( $name: 'nested-element' ) {
+          	@include bem.modifier('nestedMod') {
+          		content: 'nestedMod';
+          	}
+          }
+        }
+      }
+    }
+  }
+}

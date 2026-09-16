@@ -1,0 +1,9 @@
+.standard-object .icon {
+  content: "BLOCK INSIDE BLOCK";
+}
+/* characterization-probe-begin */
+.standard-object .standard-object__after {
+  content: "independent sibling element";
+}
+
+/* characterization-probe-end */

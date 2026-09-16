@@ -1,0 +1,10 @@
+.standard-object__gigi--fatherdMod .standard-object__pippo {
+  content: "pippo";
+}
+.standard-object__gigi--fatherdMod .standard-object__pippo--mod {
+  content: "mod";
+}
+
+.standard-object__gigi--fatherdMod .standard-object__test-ele {
+  content: "test-ele";
+}

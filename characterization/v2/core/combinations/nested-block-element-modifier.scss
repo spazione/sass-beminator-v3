@@ -1,0 +1,10 @@
+// Historical source: objects.standard-object.scss:110,120-124
+@include bem.block('standard-object') {
+  @include bem.block('icon') {
+    @include bem.element ( $name: 'nested-element' ) {
+    	@include bem.modifier('nestedMod') {
+    		content: 'nestedMod';
+    	}
+    }
+  }
+}

@@ -1,0 +1,7 @@
+@include bem.block('standard-object') {
+
+@at-root { /* characterization-probe-begin */ }
+@include bem.element('after') { content: 'independent sibling element'; }
+
+@at-root { /* characterization-probe-end */ }
+}

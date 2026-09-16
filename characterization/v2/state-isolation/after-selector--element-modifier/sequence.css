@@ -1,0 +1,13 @@
+.standard-object__element + .standard-object__element-2 {
+  content: "element-2";
+}
+
+/* characterization-probe-begin */
+.probe__item {
+  content: "independent element";
+}
+.probe__item--active {
+  content: "independent element modifier";
+}
+
+/* characterization-probe-end */

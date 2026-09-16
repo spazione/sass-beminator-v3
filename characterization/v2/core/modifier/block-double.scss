@@ -1,0 +1,6 @@
+// Historical source: objects.standard-object.scss:27-28
+@include bem.block('standard-object') {
+  @include bem.modifier('modifier-1', 'modifier-2') {
+    content: 'double modifier applied to block';
+  }
+}

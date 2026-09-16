@@ -1,0 +1,10 @@
+.before-failure {
+  content: "compilation reached input before candidate error";
+}
+
+.standard-object--test-element {
+  content: "test-element";
+}
+.standard-object--test-element--test-element {
+  content: "test-element";
+}

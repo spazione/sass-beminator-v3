@@ -1,0 +1,8 @@
+@include bem.block('standard-object') {
+@include bem.block('icon') { content: 'BLOCK INSIDE BLOCK'; }
+
+@at-root { /* characterization-probe-begin */ }
+@include bem.element('after') { content: 'independent sibling element'; }
+
+@at-root { /* characterization-probe-end */ }
+}

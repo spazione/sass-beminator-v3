@@ -1,0 +1,10 @@
+// Historical source: objects.standard-object.scss:174-179
+.before-failure { content: "compilation reached input before candidate error"; }
+@include bem.block('standard-object') {
+  @include bem.extend ( $name: 'icon', $mod1: 'mod1') {
+  	content: 'test';
+  	@include bem.block('test') {
+  		content: 'test';
+  	}
+  }
+}

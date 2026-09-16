@@ -1,0 +1,21 @@
+.extend--mod1.extend--mod2 {
+  content: "extend";
+}
+.extend--mod1.extend--mod2 .icon--mod1.icon--mod2 {
+  content: "EXTENDED PATTERN WITH DOUBLE MODIFIER";
+}
+.extend--mod1.extend--mod2 .icon--mod1.icon--mod2 .icon {
+  content: "BLOCK INSIDE BLOCK";
+}
+.extend--mod1.extend--mod2 .icon {
+  content: "BLOCK INSIDE BLOCK";
+}
+.extend--mod1.extend--mod2 .icon .icon {
+  content: "BLOCK INSIDE BLOCK";
+}
+/* characterization-probe-begin */
+.probe {
+  content: "independent block";
+}
+
+/* characterization-probe-end */

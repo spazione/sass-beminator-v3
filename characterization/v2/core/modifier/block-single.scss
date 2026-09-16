@@ -1,0 +1,6 @@
+// Historical source: objects.standard-object.scss:14-15
+@include bem.block('standard-object') {
+  @include bem.modifier('modifier') {
+    content: 'single modifier applied to block';
+  }
+}

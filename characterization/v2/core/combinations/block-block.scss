@@ -1,0 +1,6 @@
+// Historical source: objects.standard-object.scss:98-100
+@include bem.block('standard-object') {
+  @include bem.block ( $name: 'icon' ) {
+  	content: 'BLOCK INSIDE BLOCK';
+  }
+}

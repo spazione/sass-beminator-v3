@@ -1,0 +1,11 @@
+@include bem.block('standard-object') { @include bem.element('gigi') { @include bem.modifier('fatherdMod') {
+
+@at-root { /* characterization-probe-begin */ }
+@include bem.element('pippo') {
+  content: 'pippo';
+  @include bem.modifier('mod') { content: 'mod'; }
+}
+@include bem.element('test-ele') { content: 'test-ele'; }
+
+@at-root { /* characterization-probe-end */ }
+}}}
