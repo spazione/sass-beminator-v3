@@ -1,0 +1,38 @@
+@use 'proof' as p;
+@use 'sass:map';
+
+// Test-controlled local input, configured per fresh compilation.
+$preceding: false !default;
+$large: false !default;
+
+@mixin regression($outer) {
+  $owner: map.get($outer, owner);
+  $modified: p.suffix($owner, '__gigi--fatherdMod');
+  @include p.at(p.frame($owner, $modified, (), modifier)) using ($contextual) {
+    $icon: p.atom('icon');
+    $nested: p.frame($icon, $icon, (p.current($contextual),));
+    @include p.at($nested) using ($inner) {
+      content: 'BLOCK INSIDE BLOCK';
+      @include p.emit(p.frame($icon, p.suffix($icon, '--mod'), map.get($inner, scope), modifier), 'BLOCK INSIDE BLOCK WITH SINGLE MODIFIER');
+      @include p.emit(p.frame($icon, p.suffix($icon, '__nested-element--nestedMod'), map.get($inner, scope), modifier), 'nestedMod');
+    }
+    // The original enclosing value remains available unchanged after inner calls.
+    $scope: (p.current($contextual),);
+    @include p.emit(p.frame($owner, p.suffix($owner, '__pippo'), $scope, element), 'pippo');
+    @include p.emit(p.frame($owner, p.suffix($owner, '__pippo--mod'), $scope, modifier), 'mod');
+    @include p.emit(p.frame($owner, p.suffix($owner, '__test-ele'), $scope, element), 'test-ele');
+  }
+}
+
+$base: p.atom('standard-object');
+@include p.at(p.frame($base, $base)) using ($outer) {
+  @if $preceding {
+    $icon: p.atom('icon');
+    @include p.emit(p.frame($icon, $icon, (p.current($outer),)), 'prior sibling');
+  }
+  @if $large {
+    @include regression($outer);
+  } @else {
+    @include p.emit(p.frame(map.get($outer, owner), p.suffix(map.get($outer, owner), '__after'), map.get($outer, scope), element), 'after');
+  }
+}

@@ -1,0 +1,10 @@
+// Expected error: content arguments do not inject locals into separately defined mixins.
+@mixin consume {
+  .probe { content: $lexical-context; }
+}
+@mixin deliver {
+  @content('lexical value');
+}
+@include deliver using ($lexical-context) {
+  @include consume;
+}

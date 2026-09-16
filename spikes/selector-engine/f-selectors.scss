@@ -1,0 +1,11 @@
+@use 'proof' as p;
+@use 'sass:map';
+$owner: p.atom('block');
+$item: p.suffix($owner, '__item');
+$context: p.frame($owner, $item, (), element);
+@include p.at($context) using ($left) {
+  @include p.emit(p.frame($owner, p.suffix($item, ':before'), (), before), 'pseudo');
+  // Pending adjacent operation is data, not an emitted trailing-combinator rule.
+  $pending: map.set($left, kind, adjacent);
+  @include p.emit(p.frame($owner, p.suffix($owner, '__other'), (p.current($pending), '+'), element), 'adjacent');
+}

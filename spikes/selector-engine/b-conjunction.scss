@@ -1,0 +1,5 @@
+@use 'proof' as p;
+$base: p.atom('block');
+@include p.emit(p.frame($base, p.both($base, 'a', 'b')), 'block conjunction');
+@include p.emit(p.frame($base, p.both(p.suffix($base, '__element'), 'a', 'b')), 'element conjunction');
+@include p.emit(p.frame($base, p.both($base, 'a', 'b'), (p.atom('outer'),)), 'scoped conjunction');

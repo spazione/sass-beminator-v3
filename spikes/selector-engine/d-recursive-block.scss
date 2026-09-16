@@ -1,0 +1,27 @@
+@use 'proof' as p;
+
+// A tiny recursive construction proof, not block(). Equal names take this path.
+@mixin descend($parent, $name, $remaining) {
+  $owner: p.atom($name);
+  $child: p.frame($owner, $owner, (p.current($parent),));
+  @include p.at($child) using ($inside) {
+    content: 'depth #{$remaining}';
+    @if $remaining > 1 {
+      @include descend($inside, $name, $remaining - 1);
+    }
+  }
+}
+
+$a: p.atom('a');
+$b: p.atom('b');
+$c: p.atom('c');
+@include p.at(p.frame($a, $a)) using ($outer) {
+  @include p.at(p.frame($b, $b, (p.current($outer),))) using ($middle) {
+    content: 'two blocks';
+    @include p.emit(p.frame($c, $c, (p.current($middle),)), 'three blocks');
+  }
+}
+$icon: p.atom('icon');
+@include p.at(p.frame($icon, $icon)) using ($outer) {
+  @include descend($outer, 'icon', 3);
+}

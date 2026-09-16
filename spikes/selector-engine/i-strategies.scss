@@ -1,0 +1,37 @@
+@use 'sass:selector';
+
+// Strategy 1: natural nesting handles simple suffixes but does not know BEM owner.
+.natural {
+  &__item {
+    &--active {
+      &__child { content: 'wrong target from parent suffix'; }
+    }
+  }
+}
+
+// Strategies 2/3: a fully constructed selector must not be implicitly nested again.
+.ambient {
+  $calculated: selector.nest(&, '.target');
+  #{$calculated} { content: 'accidental double nesting'; }
+  @at-root #{$calculated} { content: 'explicit emission'; }
+}
+
+// Same emitted selector, different permitted children: & cannot recover provenance.
+@mixin observe-parent {
+  content: '#{&}';
+}
+.outer {
+  .icon--m { @include observe-parent; }
+  .icon--m { @include observe-parent; }
+}
+
+@mixin deliver {
+  $context: 'callee';
+  @content($context);
+}
+.lexical {
+  $context: 'caller';
+  @include deliver using ($received) {
+    content: '#{$context}/#{$received}';
+  }
+}

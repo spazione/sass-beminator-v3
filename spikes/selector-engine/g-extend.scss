@@ -1,0 +1,16 @@
+@use 'proof' as p;
+@use 'sass:map';
+$a: p.atom('a');
+$b: p.atom('b');
+@include p.at(p.frame($a, $a)) using ($outer) {
+  $single: p.frame($b, p.suffix($b, '--m'), (p.current($outer),), extend, true);
+  @include p.at($single) using ($target) {
+    content: 'single extend';
+    @include p.emit(p.frame($b, p.suffix($b, '__item'), (p.current($target),), element, map.get($target, under-extend)), 'single extend element');
+  }
+  $double: p.frame($b, p.both($b, 'x', 'y'), (p.current($outer),), extend, true);
+  @include p.at($double) using ($target) {
+    content: 'double extend';
+    @include p.emit(p.frame($b, p.suffix($b, '__item'), (p.current($target),), element, map.get($target, under-extend)), 'double extend element');
+  }
+}

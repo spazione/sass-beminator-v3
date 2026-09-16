@@ -1,0 +1,7 @@
+@use 'proof' as p;
+$base: p.atom('block');
+$part: p.suffix($base, '__element');
+@include p.emit(p.frame($base, $base), 'block');
+@include p.emit(p.frame($base, $part), 'element');
+@include p.emit(p.frame($base, p.suffix($base, '--modifier')), 'block modifier');
+@include p.emit(p.frame($base, p.suffix($part, '--modifier')), 'element modifier');

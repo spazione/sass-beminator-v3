@@ -1,0 +1,8 @@
+@use 'proof' as p;
+$owner: p.atom('block');
+$child: p.suffix($owner, '__child');
+$item: p.suffix($owner, '__item');
+@include p.emit(p.frame($owner, $child, (p.suffix($owner, '--active'),), element), 'block context');
+@include p.emit(p.frame($owner, $child, (p.suffix($item, '--active'),), element), 'element context');
+@include p.emit(p.frame($owner, $child, (p.both($owner, 'a', 'b'),), element), 'double block context');
+@include p.emit(p.frame($owner, $child, (p.both($item, 'a', 'b'),), element), 'double element context');

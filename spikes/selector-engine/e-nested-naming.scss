@@ -1,0 +1,13 @@
+@use 'proof' as p;
+@use 'sass:map';
+$outer: p.atom('standard-object');
+$icon: p.atom('icon');
+@include p.at(p.frame($outer, $outer)) using ($parent) {
+  @include p.at(p.frame($icon, $icon, (p.current($parent),))) using ($nested) {
+    $owner: map.get($nested, owner);
+    $scope: map.get($nested, scope);
+    @include p.emit(p.frame($owner, p.suffix($owner, '__label'), $scope, element), 'inner element');
+    @include p.emit(p.frame($owner, p.suffix($owner, '--active'), $scope, modifier), 'inner modifier');
+    @include p.emit(p.frame($owner, p.suffix($owner, '__label--active'), $scope, modifier), 'inner element modifier');
+  }
+}

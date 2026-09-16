@@ -1,0 +1,71 @@
+// Disposable selector/value proofs. Not a public BEMinator API.
+@use 'sass:selector';
+@use 'sass:map';
+@use 'sass:list';
+
+// Fixture names are known literal identifiers. No public input policy is implied.
+@function atom($name) {
+  @return selector.parse('.#{$name}');
+}
+
+@function suffix($subject, $text) {
+  @return selector.append($subject, $text);
+}
+
+@function both($subject, $first, $second) {
+  @return selector.append(
+    suffix($subject, '--#{$first}'),
+    suffix($subject, '--#{$second}')
+  );
+}
+
+// scope is a list of nest() operands: (), (outer-selector,), or
+// (left-selector, '+'). Its combinator is never emitted without a right subject.
+@function frame($owner, $subject, $scope: (), $kind: block, $under-extend: false) {
+  @return (owner: $owner, subject: $subject, scope: $scope,
+    kind: $kind, under-extend: $under-extend);
+}
+
+@function current($context) {
+  @return selector.nest(list.append(
+    map.get($context, scope), map.get($context, subject), comma
+  )...);
+}
+
+@mixin at($context) {
+  @at-root #{current($context)} {
+    @content($context);
+  }
+}
+
+@mixin emit($context, $label) {
+  @include at($context) using ($lexical) {
+    content: $label;
+  }
+}
+
+// Three-valued classification only: deferred is not implemented as supported.
+// These are proof labels, not finalized diagnostics or a production validator.
+@function relation($parent, $child) {
+  $kind: map.get($parent, kind);
+  @if $child == block and map.get($parent, under-extend) {
+    @return invalid;
+  }
+  @if ($kind == element and $child == element) or
+      ($kind == modifier and $child == modifier) {
+    @return invalid;
+  }
+  $allowed: (
+    root: (block,),
+    block: (block, element, modifier, extend),
+    element: (modifier, before, adjacent),
+    modifier: (block, element),
+    adjacent: (element,),
+    before: (),
+    extend: (element,)
+  );
+  @if map.has-key($allowed, $kind) and list.index(map.get($allowed, $kind), $child) {
+    @return valid;
+  }
+  @return deferred;
+}
