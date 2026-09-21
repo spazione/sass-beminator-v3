@@ -1,0 +1,84 @@
+@use 'stack' as s;
+
+@include s.assert-depth(0);
+@include s.proof-block('block') {
+  @include s.assert-depth(1);
+  content: 'block';
+  @include s.proof-element('element') { content: 'element'; }
+  @include s.proof-modifier('modifier') { content: 'block modifier'; }
+  @include s.proof-element('element') {
+    @include s.proof-modifier('modifier') { content: 'element modifier'; }
+  }
+  @include s.proof-modifier('a', 'b') { content: 'block conjunction'; }
+  @include s.proof-element('element') {
+    @include s.proof-modifier('a', 'b') { content: 'element conjunction'; }
+  }
+}
+@include s.proof-block('outer') {
+  @include s.proof-block('block') {
+    @include s.proof-modifier('a', 'b') { content: 'scoped conjunction'; }
+  }
+}
+@include s.proof-block('block') {
+  @include s.proof-modifier('active') {
+    @include s.proof-element('child') { content: 'block context'; }
+  }
+  @include s.proof-element('item') {
+    @include s.proof-modifier('active') {
+      @include s.proof-element('child') { content: 'element context'; }
+    }
+  }
+  @include s.proof-modifier('a', 'b') {
+    @include s.proof-element('child') { content: 'double block context'; }
+  }
+  @include s.proof-element('item') {
+    @include s.proof-modifier('a', 'b') {
+      @include s.proof-element('child') { content: 'double element context'; }
+    }
+  }
+}
+@include s.proof-block('a') {
+  @include s.proof-block('b') {
+    content: 'two blocks';
+    @include s.proof-block('c') { content: 'three blocks'; }
+  }
+}
+@mixin descend($remaining) {
+  @include s.proof-block('icon') {
+    @include s.assert-depth(5 - $remaining);
+    content: 'depth #{$remaining}';
+    @if $remaining > 1 { @include descend($remaining - 1); }
+    @include s.assert-depth(5 - $remaining);
+  }
+}
+@include s.proof-block('icon') { @include descend(3); }
+@include s.proof-block('standard-object') {
+  @include s.proof-block('icon') {
+    @include s.proof-element('label') { content: 'inner element'; }
+    @include s.proof-modifier('active') { content: 'inner modifier'; }
+    @include s.proof-element('label') {
+      @include s.proof-modifier('active') { content: 'inner element modifier'; }
+    }
+  }
+}
+@include s.proof-block('block') {
+  @include s.proof-element('item') {
+    @include s.proof-selector(':before') { content: 'pseudo'; }
+    @include s.proof-selector('+') {
+      @include s.assert-depth(3);
+      @include s.proof-element('other') { content: 'adjacent'; }
+      @include s.assert-depth(3);
+    }
+  }
+}
+@include s.proof-block('a') {
+  @include s.proof-extend('b', 'm') {
+    content: 'single extend';
+    @include s.proof-element('item') { content: 'single extend element'; }
+  }
+  @include s.proof-extend('b', 'x', 'y') {
+    content: 'double extend';
+    @include s.proof-element('item') { content: 'double extend element'; }
+  }
+}
+@include s.assert-depth(0);

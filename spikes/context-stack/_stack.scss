@@ -1,0 +1,107 @@
+// DISPOSABLE transport experiment. No production API.
+@use 'sass:list';
+@use 'sass:map';
+@use '../selector-engine/proof' as p;
+
+// The only evolving module variable. All writes are in push/pop.
+$-context-stack: ();
+
+@function -current-context() {
+  @if list.length($-context-stack) == 0 {
+    @return p.frame(null, null, (), root);
+  }
+  @return list.nth($-context-stack, -1);
+}
+
+@mixin -push-context($child) {
+  $-context-stack: list.append($-context-stack, $child, comma) !global;
+}
+
+@mixin -pop-context($previous, $child) {
+  // Check exact contents, not only depth, before restoring the saved list.
+  @if $-context-stack != list.append($previous, $child, comma) {
+    @error 'SPIKE stack corruption';
+  }
+  $-context-stack: $previous !global;
+}
+
+// Pure derivation: reads only its arguments, never the stack or ambient &.
+@function -derive($parent, $kind, $name, $first: null, $second: null) {
+  $relation: p.relation($parent, $kind);
+  @if $relation != valid {
+    @error 'SPIKE #{$relation} nesting: #{map.get($parent, kind)} -> #{$kind}';
+  }
+  $owner: map.get($parent, owner);
+  $subject: map.get($parent, subject);
+  $scope: map.get($parent, scope);
+  $under-extend: map.get($parent, under-extend);
+  $parent-kind: map.get($parent, kind);
+
+  @if $kind == block or $kind == extend {
+    $owner: p.atom($name);
+    $subject: $owner;
+    @if $parent-kind != root { $scope: (p.current($parent),); }
+    @if $kind == extend {
+      $under-extend: true;
+      $subject: -qualify($subject, $first, $second);
+    }
+  } @else if $kind == element {
+    $subject: p.suffix($owner, '__#{$name}');
+    @if $parent-kind == adjacent {
+      $scope: (p.current($parent), '+');
+    } @else if $parent-kind != block {
+      $scope: (p.current($parent),);
+    }
+  } @else if $kind == modifier {
+    $subject: -qualify($subject, $name, $first);
+  } @else if $kind == before {
+    $subject: p.suffix($subject, ':before');
+  }
+  @return p.frame($owner, $subject, $scope, $kind, $under-extend);
+}
+
+@function -qualify($subject, $first, $second) {
+  @if $second == null { @return p.suffix($subject, '--#{$first}'); }
+  @return p.both($subject, $first, $second);
+}
+
+// Single entry/emission boundary. Saved lists are invocation-local values.
+@mixin -enter($kind, $name: null, $first: null, $second: null) {
+  $previous: $-context-stack;
+  $child: -derive(-current-context(), $kind, $name, $first, $second);
+  @include -push-context($child);
+  @if $kind == adjacent {
+    @content;
+  } @else {
+    @at-root #{p.current($child)} { @content; }
+  }
+  @include -pop-context($previous, $child);
+  @if $-context-stack != $previous { @error 'SPIKE restoration failure'; }
+}
+
+@mixin proof-block($name) {
+  @include -enter(block, $name) { @content; }
+}
+@mixin proof-element($name) {
+  @include -enter(element, $name) { @content; }
+}
+@mixin proof-modifier($first, $second: null) {
+  @include -enter(modifier, $first, $second) { @content; }
+}
+@mixin proof-selector($form) {
+  $kind: adjacent;
+  @if $form == ':before' { $kind: before; }
+  @else if $form != '+' { @error 'SPIKE deferred selector form'; }
+  @include -enter($kind) { @content; }
+}
+@mixin proof-extend($name, $first, $second: null) {
+  @include -enter(extend, $name, $first, $second) { @content; }
+}
+
+// Test-only observation; exposes neither a context value nor stack mutation.
+// This is not a proposed public API requirement.
+@mixin assert-depth($expected) {
+  @if list.length($-context-stack) != $expected {
+    @error 'SPIKE unexpected stack depth';
+  }
+}

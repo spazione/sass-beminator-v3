@@ -1,0 +1,149 @@
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:meta';
+@use 'sass:selector';
+@use 'sass:string';
+
+// The only evolving module-global value. Writes belong to push/restore only.
+$-context-stack: ();
+
+@function -current-context() {
+  @if list.length($-context-stack) == 0 {
+    @return (owner: null, subject: null, scope: (), kind: root, under-extend: false);
+  }
+  @return list.nth($-context-stack, -1);
+}
+
+@mixin -push-context($context) {
+  $-context-stack: list.append($-context-stack, $context, comma) !global;
+}
+
+@mixin -restore-context($previous) {
+  $-context-stack: $previous !global;
+}
+
+// Narrow first-slice name policy, not a CSS selector parser or escaping layer.
+@function -name($name) {
+  @if meta.type-of($name) != string or string.length($name) == 0 {
+    @error 'BEMinator: expected a nonempty literal BEM name.';
+  }
+  $letters: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_';
+  @if not string.index($letters, string.slice($name, 1, 1)) {
+    @error 'BEMinator: a BEM name must start with an ASCII letter or underscore.';
+  }
+  @for $index from 1 through string.length($name) {
+    @if not string.index($letters + '0123456789-', string.slice($name, $index, $index)) {
+      @error 'BEMinator: a BEM name may contain only ASCII letters, digits, underscores and hyphens.';
+    }
+  }
+  @return $name;
+}
+
+@function -validate($parent, $kind) {
+  $parent-kind: map.get($parent, kind);
+  // Ancestry takes precedence over immediate-parent and deferred relationships.
+  @if $kind == block and map.get($parent, under-extend) {
+    @error 'BEMinator: invalid nesting: block is forbidden beneath extend.';
+  }
+  @if ($parent-kind == element and $kind == element) or
+      ($parent-kind == modifier and $kind == modifier) {
+    @error 'BEMinator: invalid nesting: #{$parent-kind} -> #{$kind}.';
+  }
+  $allowed: (root: (block,), block: (block, element, modifier, extend),
+    element: (modifier, before, adjacent), modifier: (block, element),
+    before: (), adjacent: (element,), extend: (element,));
+  @if not list.index(map.get($allowed, $parent-kind), $kind) {
+    @error 'BEMinator: nesting #{$parent-kind} -> #{$kind} is deferred; not implemented in this slice.';
+  }
+  @return $parent;
+}
+
+@function -complete-selector($context) {
+  @return selector.nest(list.append(
+    map.get($context, scope), map.get($context, subject), comma
+  )...);
+}
+
+// Shared subject qualification for modifier and extend; scope is composed once.
+@function -qualify($subject, $first, $second) {
+  $qualified: selector.append($subject, '--#{$first}');
+  @if $second != null {
+    $qualified: selector.append($qualified, selector.append($subject, '--#{$second}'));
+  }
+  @return $qualified;
+}
+
+// Pure derivation: no stack access, ambient selector, or selector-string parsing.
+@function -derive($parent, $kind, $name, $first, $second) {
+  $owner: map.get($parent, owner);
+  $subject: map.get($parent, subject);
+  $scope: map.get($parent, scope);
+  $parent-kind: map.get($parent, kind);
+
+  @if $kind == block or $kind == extend {
+    $owner: selector.parse('.#{$name}');
+    $subject: $owner;
+    @if $parent-kind != root { $scope: (-complete-selector($parent),); }
+    @if $kind == extend { $subject: -qualify($subject, $first, $second); }
+  } @else if $kind == element {
+    $subject: selector.append($owner, '__#{$name}');
+    @if $parent-kind == modifier or $parent-kind == extend {
+      $scope: (-complete-selector($parent),);
+    }
+    @else if $parent-kind == adjacent { $scope: (-complete-selector($parent), '+'); }
+  } @else if $kind == modifier {
+    $subject: -qualify($subject, $name, $first);
+  } @else if $kind == before {
+    $subject: selector.append($subject, ':before');
+  }
+  // An adjacent frame retains the left subject/scope until an element resolves it.
+  @return (owner: $owner, subject: $subject, scope: $scope, kind: $kind,
+    under-extend: map.get($parent, under-extend) or $kind == extend);
+}
+
+// One lifecycle and emission boundary; saved values are local to each call.
+@mixin -enter($kind, $name, $first: null, $second: null) {
+  $parent: -validate(-current-context(), $kind);
+  @if $kind != before and $kind != adjacent { $name: -name($name); }
+  @if $kind == extend or $first != null { $first: -name($first); }
+  @if $second != null { $second: -name($second); }
+  $child: -derive($parent, $kind, $name, $first, $second);
+  $previous: $-context-stack;
+  @include -push-context($child);
+  @at-root {
+    @if $kind == adjacent {
+      // No style rule exists for a pending relation. Sass rejects declarations
+      // here; a child element enters this same boundary with a complete target.
+      @content;
+    } @else {
+      #{-complete-selector($child)} { @content; }
+    }
+  }
+  @include -restore-context($previous);
+}
+
+@mixin block($name) {
+  @include -enter(block, $name) { @content; }
+}
+
+@mixin element($name) {
+  @include -enter(element, $name) { @content; }
+}
+
+@mixin modifier($mod1, $mod2: null) {
+  @include -enter(modifier, $mod1, $mod2) { @content; }
+}
+
+@mixin extend($name, $mod1, $mod2: null) {
+  @include -enter(extend, $name, $mod1, $mod2) { @content; }
+}
+
+@mixin selector($name) {
+  $kind: null;
+  @if $name == ':before' { $kind: before; }
+  @else if $name == '+' { $kind: adjacent; }
+  @else {
+    @error 'BEMinator: selector form is not supported in this slice; expected ":before" or "+".';
+  }
+  @include -enter($kind, $name) { @content; }
+}

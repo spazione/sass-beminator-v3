@@ -1,0 +1,23 @@
+@use 'stack' as s;
+
+@mixin tree {
+  @include s.proof-element('gigi') {
+    @include s.proof-modifier('fatherdMod') {
+      @include s.proof-block('icon') {
+        content: 'BLOCK INSIDE BLOCK';
+        @include s.proof-modifier('mod') {
+          content: 'BLOCK INSIDE BLOCK WITH SINGLE MODIFIER';
+        }
+        @include s.proof-element('nested-element') {
+          @include s.proof-modifier('nestedMod') { content: 'nestedMod'; }
+        }
+      }
+      @include s.assert-depth(3);
+      @include s.proof-element('pippo') {
+        content: 'pippo';
+        @include s.proof-modifier('mod') { content: 'mod'; }
+      }
+      @include s.proof-element('test-ele') { content: 'test-ele'; }
+    }
+  }
+}
