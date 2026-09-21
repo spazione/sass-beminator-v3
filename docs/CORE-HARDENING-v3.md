@@ -1,9 +1,11 @@
 # Core API hardening: decisions for maintainer review
 
 The approved selector subset is implemented, but the whole API is **not yet
-stable**. Of the original 11 hardening decision groups, **7 remain unresolved**:
-D03, D05, D07, D08, D09, D10, and D11. Maintainer decisions resolve D01/D02
-(separator policy), D04 (public signatures), and D06 (retired debug machinery).
+stable**. Of the original 11 hardening decision groups, **6 remain unresolved**:
+D03, D05, D08, D09, D10, and D11. Maintainer decisions resolve D01/D02
+(separator policy), D04 (public signatures), D06 (retired debug machinery), and
+D07 (pending body contract). D11 is partially settled by structural selector
+approval; other deferred subset/release decisions remain open.
 CSS Layers are retained as a future optional capability; their API/integration
 review remains under D08. Approval of a feature is distinct from implementation.
 
@@ -11,8 +13,9 @@ The original audit used Node 22.19.0 and Dart Sass 1.104.1, with 49 production
 observations and 21 read-only legacy observations in the
 [separate probes](../audits/core-hardening/README.md). Findings below remain
 observations unless explicitly marked as maintainer decisions. This stabilization
-updates only the modifier keyword names in production; selector semantics,
-SPEC-v3, historical artifacts, and existing spikes remain unchanged. Browser
+records signature and structural-selector stabilization. SPEC-v3 now approves
+compound qualifiers and pending `+`, `>`, `~`; historical artifacts and existing
+spikes remain unchanged. Browser
 behavior and other Sass versions were not tested.
 
 ## 1. Legacy configuration: what belongs in the core contract?
@@ -210,12 +213,12 @@ name validation remain in force. Broader name policy remains D03.
 | Direct modifier → modifier | BEMinator `invalid nesting: modifier -> modifier` | Same |
 | Block under extend, including indirect descendants | BEMinator `block is forbidden beneath extend` | Same; ancestry prohibition must stay distinguishable |
 | Deferred top-level element/modifier/selector/extend | BEMinator `nesting root -> … is deferred; not implemented in this slice` | Stable “unsupported in current subset” category; avoid permanently rejecting the semantic possibility |
-| Other deferred relationships | Same BEMinator policy; selector kinds appear as `before`/`adjacent` | Prefer user-facing operation/form names over internal kinds if messages become public |
-| Unsupported selector form | BEMinator lists `:before` and `+` | Useful stable BEMinator category; preserve unsupported/deferred distinction |
+| Other deferred relationships | Same BEMinator policy; selector kinds appear as `qualified`/`pending-relation` | Prefer user-facing operation/form names over internal kinds if messages become public |
+| Unsupported selector shape/type/family or functional pseudo | BEMinator string, compound-cardinality, token-family, or deferred-function errors; malformed selectors/parent references may fail in Sass parsing | Useful BEMinator categories; D05 still decides wording stability |
 | Wrong type/empty name, invalid first character, invalid later character | Three BEMinator name errors | Useful stable categories; may add argument identity (target/mod1/mod2) later |
 | Missing/extra/unknown keyword arguments | Sass signature validation | Sass normally gives useful call-site details; custom wrappers are not justified solely for exact wording |
 | Obsolete v3-only modifier `$name`/`$second` keywords | Sass signature validation: missing `$mod1` or unknown `$second` | D04 RESOLVED: unsupported aliases; use `$mod1`/`$mod2` |
-| Declaration directly inside pending `+` | Sass evaluator: `Declarations may only be used within style rules.` | D07: understandable compiler message, but does not explain the required BEM element child |
+| Declaration directly inside pending `+`, `>`, `~` | Sass evaluator: `Declarations may only be used within style rules.` | D07 resolved: retain rejection; docs explain the required child element. Wording stability remains D05 |
 | Malformed SCSS, invalid source escapes, inaccessible private members, unavailable configuration | Sass parser/module evaluator | Leave compiler-owned unless a concrete consumer need arises |
 
 D05 should settle whether stability means error categories, exact text, codes,
@@ -224,14 +227,14 @@ for semantic misuse, without promising Sass stack-trace/text stability. Existing
 messages say “this slice”; decide version-neutral language before declaring it
 stable. No messages were rewritten.
 
-For pending `+`, the current error is acceptable as a documented compiler result
-for the approved usage, but is not a complete content-policy guarantee. A
-BEMinator-specific explanation would help users understand “put declarations in
-a child element”. Sass mixins cannot generally inspect a content block's AST or
-catch/relabel evaluator errors. Do not promise a simple custom replacement or
-add a parser/finally mechanism just to control text. D07 must first decide the
-allowed body contract; retaining the native error plus actionable documentation
-is a viable option for maintainer approval.
+**D07 RESOLVED:** pending `+`, `>`, `~` bodies support resolving element children;
+empty bodies emit nothing and direct declarations must fail without acquiring the
+left target. Structural-selector approval explicitly preserves this behavior.
+Retain the native Sass style-rule diagnostic with actionable usage documentation.
+Sass mixins cannot generally inspect content ASTs or catch/relabel evaluator errors;
+no custom parser or cleanup machinery is introduced. Diagnostic stability remains
+D05, and arbitrary raw wrapper behavior remains D09. This is not a promise that
+every possible content block is inspected or sandboxed.
 
 D06 is resolved: legacy `$debug` is retired. No debug/error setting is restored,
 and SPEC-v3 mandatory rejection cannot be disabled as a compatibility fix.
@@ -279,9 +282,9 @@ mixing BEM style rules into descriptor at-rules.
 The raw-wrapper losses follow the authoritative complete-selector boundary;
 they are not mutable-stack failures. They can change matching dramatically, so
 raw/BEM interleaving needs an explicit contract (D09). Do not infer support from
-successful compilation. D07 additionally needs a pending-body rule: “bare
-properties fail” is true, but “all content must resolve an adjacent target” is
-not currently enforced.
+successful compilation. D07 now settles direct-declaration rejection and resolving
+element children, but arbitrary raw wrappers are not sandboxed; that remaining
+integration question belongs to D09.
 
 The [legacy draft](../../sass-beminator/draft.md) (around lines 948–1004) discouraged
 mixing manual classes and BEM mixins and discouraged raw HTML tags except WYSIWYG
@@ -326,10 +329,10 @@ block prohibition continues to override local deferral.
 | root → modifier | Likely unnecessary | No subject exists |
 | root → selector | Requires real use case | Raw Sass already represents free selectors; no implicit BEM owner |
 | root → extend (Q01) | Requires real use case | Historical experiment alone is insufficient |
-| block → selector | Likely future core capability | Pseudo-classes on a component are plausible, but exact forms/output need approval |
+| block → pending relation | Requires real use case | Qualified compounds are now approved here; pending parents remain element-only |
 | element → block | Requires real use case | Need semantics for component scope relative to element |
 | element → extend | Requires real use case | Need an explicit descendant-target contract |
-| modifier → selector | Tied to future conditional selector work | Modified-subject qualification and condition composition need deliberate scope |
+| modifier → pending relation | Requires real use case | Modified-subject qualification is now approved; relation scope is not |
 | modifier → extend | Requires real use case | No approved contextual extend contract |
 | selector → block | Requires real use case | Pending versus complete selector semantics differ |
 | selector → modifier | Tied to future conditional selector work | Which subject is qualified depends on selector form |
@@ -338,8 +341,8 @@ block prohibition continues to override local deferral.
 | extend → modifier | Likely unnecessary | Existing one/two modifiers already qualify target; element modifiers remain valid |
 | extend → selector | Tied to future conditional selector work | Need target-condition scope contract |
 | extend → extend (Q02) | Requires real use case | No approved nested retargeting semantics |
-| `:before` → element (form-specific exception) | Likely unnecessary | Pseudo-element descendants have no approved target meaning |
-| Any other selector string/form or combinations beyond the two approved forms | Tied to future conditional selector work | Simple additions may be independent, but no blanket selector language is approved |
+| qualified → element | Requires real use case | Qualified bodies support declarations only, regardless of their tokens |
+| Functional pseudos and compounds containing them | Tied to future conditional selector work | Structural compound approval does not interpret functional arguments |
 | Q07 complete composite outcome | Requires real use case | Constituent valid relationships do not approve this full historical branch |
 
 Legacy automatic theme loading, paths, and their CSS-variable injection system
@@ -388,7 +391,7 @@ core API decision counted in D01–D11.
 
 ## 11. Explicit decisions before calling the API stable
 
-There are **7 unresolved groups** from the original 11. Four are resolved as
+There are **6 unresolved groups** from the original 11. Five are resolved as
 recorded below; approved separator configuration remains implementation work,
 not an unresolved policy decision. Layer API design is included in D08 rather
 than counted as a new group. The whole API is not yet stable.
@@ -401,16 +404,18 @@ than counted as a new group. The whole API is not yet stable.
 | D04 | RESOLVED / IMPLEMENTED | `modifier($mod1, $mod2: null)`; positional/named parity; no obsolete aliases or empty-string sentinel; other signatures unchanged |
 | D05 | UNRESOLVED | Stable diagnostic categories/text/codes and compiler-owned boundaries |
 | D06 | RESOLVED | Retire `$debug`; no legacy debug machinery restored |
-| D07 | UNRESOLVED | Pending `+` body restrictions and acceptable diagnostic experience |
+| D07 | RESOLVED / IMPLEMENTED | Pending `+`, `>`, `~`: resolving elements, empty output, direct-declaration rejection with native Sass diagnostic; raw wrappers remain D09 |
 | D08 | UNRESOLVED | Supported at-rule envelope and optional CSS Layers API/integration; Layers KEEP is decided, API is not |
 | D09 | UNRESOLVED | Raw Sass leaf nesting and BEM re-entry through raw wrappers |
 | D10 | UNRESOLVED | Stable import path, deep-import policy, and publication surface |
-| D11 | UNRESOLVED | Explicit stable-subset boundary and continuing DEFER treatment, including selector policy |
+| D11 | PARTIALLY RESOLVED / still open | Compound qualifiers and three pending relations approved; functional pseudos and selector-context chaining deferred. Other deferred matrix/release boundaries including Q07 and root/nested extend still require review |
 
 The legacy retirement decisions in section 1 also stand; they are not additional
-unresolved groups. Remaining selector, conditional-selector, raw nesting, import,
-and layer questions require review. No layer or separator API implementation,
-selector expansion, or conditional-selector support is included in this task.
+unresolved groups. Structural selector policy is implemented; conditional-selector,
+other deferred relationships, raw nesting, import, and layer questions still require
+review. No layer/separator configuration or conditional-selector implementation
+is included. Multiple qualifier tokens in one call are approved; nested selector
+calls remain deferred. See [the selector design decision](SELECTOR-DESIGN-v3.md).
 
 Historical audit validation (before signature stabilization):
 
@@ -432,3 +437,19 @@ obsolete keyword rejection, retained empty-name rejection, and unchanged extend
 keywords. The architecture guard confirms exactly **one mutable module global**,
 **one emission boundary**, and no additional public helpers/functions/variables.
 Logs are under ignored `tmp/stabilization-*.log`.
+
+
+Structural-selector stabilization validation: **139 production tests** (39 added),
+**42 original spike tests** (27 selector-engine + 15 context-stack), **16 unchanged
+structural experiment tests**, and **201 combined project tests** pass on Node
+22.19.0 / Dart Sass 1.104.1. Production, both original spikes, the structural
+experiment, characterization, normal project, and legacy commands all pass.
+Detailed runs disable Node test-process isolation to report individual test
+counts rather than file totals. Logs are `tmp/structural-selector-*.log`;
+production detail is `tmp/structural-production-initial.log`.
+
+Source/API guards confirm **one mutable module global**, **one emission boundary**,
+and exactly five public mixins with no public functions or variables. Existing
+block/element/modifier/extend outputs and original `:before`/`+` output regressions
+remain green. Six hardening groups remain open; no separator configuration,
+CSS Layers, functional pseudo API, or selector-context chaining was implemented.

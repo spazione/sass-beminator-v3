@@ -2,7 +2,8 @@
 
 This specification records the maintainer-approved initial core semantics.
 It specifies observable selectors, nesting validity, and isolation, not how to
-implement them. No v3 implementation exists as part of this phase.
+implement them. The approved subset is implemented in production; later
+maintainer approvals below include the structural selector model.
 
 Authority and evidence:
 
@@ -26,16 +27,17 @@ arguments, or module-export syntax. `→` means lexical nesting, not consecutive
 sibling invocations. Separate consecutive calls are siblings unless nested.
 
 The demonstrated BEM separators are `__` for elements and `--` for modifiers.
-A descendant combinator, a same-element class conjunction, and `+` are distinct
-semantics and must not be interchanged. Preserve the selectors, declaration
+Descendant composition, same-element class conjunction, and the pending
+relations `+`, `>`, `~` are distinct semantics and must not be interchanged. Preserve the selectors, declaration
 values, and semantically relevant rule ordering of the approved examples.
 This does not prescribe incidental whitespace or serialization formatting.
 
 Themed buttons, Atomic Design helpers, project-specific paths/conventions, and
 Eurobet-specific behavior are excluded from the core; if retained, they belong
-to future plugins/presets. CSS layers, theme infrastructure, and CSS-variable
-helpers are separate addon-design questions. Historical `atoms` wrappers and
-theme options do not become core requirements through the selector fixtures.
+to future plugins/presets. CSS Layers remain a future optional v3 capability.
+Legacy automatic theme/path discovery and its injection plumbing are retired;
+theme loading belongs outside BEMinator. Historical `atoms` wrappers and theme
+options do not become core requirements through the selector fixtures.
 
 ## Nesting contract
 
@@ -52,16 +54,18 @@ assume valid ancestors and the named arguments/forms specified below.
 | Parent ↓ / child → | block | element | modifier | selector | extend |
 | --- | --- | --- | --- | --- | --- |
 | Top level | VALID | DEFERRED | DEFERRED | DEFERRED | DEFERRED |
-| block | VALID | VALID | VALID | DEFERRED | VALID |
+| block | VALID | VALID | VALID | VALID¹ | VALID |
 | element | DEFERRED | INVALID | VALID | VALID¹ | DEFERRED |
-| modifier | VALID² | VALID | INVALID | DEFERRED | DEFERRED |
-| selector | DEFERRED | VALID¹ | DEFERRED | DEFERRED | DEFERRED |
+| modifier | VALID² | VALID | INVALID | VALID¹ | DEFERRED |
+| qualified selector | DEFERRED | DEFERRED | DEFERRED | DEFERRED | DEFERRED |
+| pending-relation selector | DEFERRED | VALID¹ | DEFERRED | DEFERRED | DEFERRED |
 | extend | INVALID³ | VALID | DEFERRED | DEFERRED | DEFERRED |
 
-1. Only the tested `element → selector(':before')` declaration case and
-   `element → selector('+') → element` case are approved. An element under
-   `selector(':before')`, other selector strings, and other selector combinations
-   remain DEFERRED.
+1. Qualified compounds are valid under block, element, and modifier. Pending
+   relations `+`, `>`, `~` are valid only under element, with element children.
+   Qualified bodies support declarations, not public BEM children. Multiple
+   qualifier tokens in one call are not selector-context chaining; nested selector
+   calls remain DEFERRED. See the structural input contract below.
 2. Includes the approved historical `block → element → modifier → block`
    composition. A later modifier inside that block targets the inner block.
 3. A block is INVALID **anywhere beneath an extend**, even with intervening
@@ -146,7 +150,7 @@ composition. A block directly under an element or selector is DEFERRED. Any
 extend ancestor makes it INVALID.
 
 **Valid children:** block, element, modifier, and the approved single/double
-extend forms. Direct selector use under block is DEFERRED.
+extend forms, plus qualified selectors. Pending relations under block are DEFERRED.
 
 **Selector semantics:**
 
@@ -180,8 +184,8 @@ Evidence: B01–B05, Q06; `core/block/basic`, `core/combinations/block-block`,
 **Purpose:** select a named element belonging to the current public component,
 with the explicitly enclosing contextual relationships.
 
-**Valid parents:** block, modifier, approved extend, or the tested adjacent-sibling
-selector. **Valid children:** modifier and the two approved selector cases.
+**Valid parents:** block, modifier, approved extend, or a pending-relation
+selector (`+`, `>`, `~`). **Valid children:** modifier and both structural selector families.
 Direct child element is INVALID; block and extend children are DEFERRED.
 
 **Selector semantics:**
@@ -216,8 +220,8 @@ or a conjunction of two modifier classes on the same target.
 
 **Valid parents:** block or element, including an inner block/element reached
 through the approved regression nesting. **Valid children:** element or nested
-block composition. Direct child modifier is INVALID; selector/extend children
-and modifier directly under extend remain DEFERRED.
+block composition, or qualified selector. Direct child modifier is INVALID;
+pending relations, extend children, and modifier directly under extend remain DEFERRED.
 
 **Selector semantics:** one modifier yields `.a--m` on block a or `.a__item--m`
 on its element. A nested block preserves its outer composition, e.g.
@@ -250,29 +254,85 @@ cases, and the complete historical regression.
 
 ## selector
 
-**Purpose:** express the two approved custom selector relationships on an element.
+`selector($name)` requires a Sass string in one of two approved structural families.
 
-**Valid parent:** element in a supported component context. **Valid child:**
-element for the adjacent-sibling `+` case. The `:before` case is approved for
-declarations; core-mixin children there remain DEFERRED.
+### Qualified compound
 
-**Selector semantics:**
+A qualifier appends to the current subject, retaining BEM owner, enclosing scope,
+and extend ancestry. Valid parents are **block, element, modifier**, including an
+already-valid element descendant of extend. Examples:
 
-- `block('a') → element('item') → selector(':before')` selects
-  `.a__item:before`, retaining the tested pseudo-element spelling.
-- `block('a') → element('item') → selector('+') → element('other')` selects
-  `.a__item + .a__other`. It means adjacent siblings, not descendants. The
-  second element keeps the component naming base.
+```css
+.button:hover
+.button:focus:hover
+.card__button:focus-visible
+.card__button--active[disabled]:hover
+.card .icon--large .icon__label:hover
+```
 
-**Invalid nesting:** no additional selector-specific prohibition has been
-approved. The core ancestor prohibition on blocks beneath extend still applies;
-untested selector parents, strings, chaining, and children remain DEFERRED.
+The input must parse as exactly **one complex selector containing one compound**,
+with **one or more simple selectors**, every one either a non-functional pseudo
+or an attribute selector. Sass owns parsing; normalized simple-token family
+checks impose this subset without a pseudo-name registry or attribute grammar.
 
-**Isolation:** completing a selector call must not leave a pseudo-element or
-combinator attached to later sibling selectors.
+Approved examples include `:hover`, `:focus`, `:focus-visible`, `:active`,
+`:disabled`, `:before`, `:after`, `::before`, `::after`, `[disabled]`,
+`[data-state="open"]`, `:hover:focus`, `:focus-visible:hover`,
+`:placeholder:hover`, `:focus::before`, `[disabled]:hover`,
+`[data-state="open"]:focus`, and `:hover[aria-expanded="true"]`.
+Punctuation inside a valid attribute value is literal data, not BEM selector syntax.
 
-Evidence: S01–S02; `core/selector/before`, `core/selector/adjacent-element`,
-and the derived `state-isolation/after-selector--*` comparisons.
+BEMinator validates the **supported structural family**, not browser support,
+element applicability, usefulness of combinations, or every CSS specification's
+pseudo-element ordering. Unknown syntactically accepted non-functional pseudos
+such as `:made-up` are allowed. Preserve `:before` versus `::before`; Sass may
+normalize other equivalent serialization, including attribute quotes and escapes.
+
+Bodies support declarations. All public BEM children beneath qualified contexts
+remain **DEFERRED**, including selector → selector. A compound `:hover:focus`
+in **one call** is approved; nested `selector(':hover') → selector(':focus')`
+is selector-context chaining and remains deferred. An inherited block-beneath-extend
+prohibition still takes precedence over deferred relationships.
+
+### Pending relation
+
+Exact strings **`+`, `>`, `~`** are pending relations. Only
+**element → pending relation → element** is approved:
+
+```css
+.card__item + .card__other
+.card__item > .card__child
+.card__item ~ .card__other
+```
+
+The right element uses the same BEM owner as the left, including under nested
+blocks and extend descendants. Enclosing scope is retained once. Ordinary RHS
+modifiers work; multiple RHS element siblings resolve independently. No incomplete
+combinator rule is emitted, and an empty branch emits nothing.
+
+Direct declarations have no target and fail with Sass's “Declarations may only
+be used within style rules.” They must not attach to the left selector. Raw Sass
+wrappers remain a separate integration question, not an approved workaround.
+Other pending parents/children remain DEFERRED.
+
+### Excluded forms and isolation
+
+Class, ID, type, universal, placeholder, parent-reference, list, and complex
+selector inputs are outside this subset, including `.foo`, `#foo`, `button`, `*`,
+`%placeholder`, `.foo:hover`, `button:hover`, `.foo .bar`, `:hover .foo`,
+`:hover, :focus`, `.theme &`, and `&:hover`. Other relation strings such as `||`
+are unsupported. Malformed selectors may report Sass parser diagnostics.
+
+All functional pseudos remain **DEFERRED**, including `:has(...)`, `:not(...)`,
+`:is(...)`, `:where(...)`, `:nth-child(...)`, and compounds containing them such
+as `:hover:has(.foo)` or `[disabled]:not(.foo)`. No argument interpretation or
+BEM-aware functional API is approved.
+
+Completing either structural family restores the exact parent context; later
+siblings acquire no qualifier, relation, owner, scope, or ancestry from it.
+Existing `:before` and `+` expectations remain unchanged. Historical evidence:
+S01–S02 and the derived `state-isolation/after-selector--*` comparisons. Expanded
+approval and production coverage are recorded in [SELECTOR-DESIGN-v3.md](SELECTOR-DESIGN-v3.md).
 
 ## extend
 
@@ -313,8 +373,7 @@ extend/block fixtures. Deferred experimental successes are not v3 requirements.
 
 ## Remaining semantic decisions before broader implementation design
 
-The approved subset has an observable contract suitable for a subsequent design
-phase. This task does not authorize that phase. These questions prevent claiming
+The approved subset is implemented. These questions prevent claiming
 a complete public API contract, not progress on the already approved subset:
 
 1. **Explicit DEFER:** whether top-level extend (Q01) and nested extends (Q02)
@@ -323,14 +382,14 @@ a complete public API contract, not progress on the already approved subset:
    regression combination. Its valid individual relationships are unaffected.
 3. **Untested contexts and selector scope:** disposition and runtime treatment
    of the other DEFERRED matrix entries, additional selector strings, and
-   combinations beyond the two tested selector forms.
-4. **Public arguments and configuration:** final signatures, accepted name/value
-   forms, argument validation, unsupported arities, and whether any BEM separator
-   configuration is public. The demonstrated literal names and one/two-modifier
-   forms do not establish all input-domain rules.
+   forms outside the approved structural families, including functional pseudos
+   and selector-context chaining.
+4. **Public arguments and configuration:** the remaining name-domain policy. Public
+   signatures and load-time separator policy are recorded in PRODUCTION-v3;
+   separator configuration is approved but not yet implemented.
 5. **Diagnostics:** exact error messages and any public diagnostic contract for
    invalid nesting. Rejection itself is already required.
 
-Addon interfaces, CSS-layer/theme/variable-helper semantics, and future
-plugin/preset packaging remain separate design questions; they must not be
+Addon interfaces, optional CSS Layers, and future plugin/preset packaging
+remain separate design questions; they must not be
 coupled to or treated as prerequisites for this initial core behavior.

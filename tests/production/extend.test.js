@@ -87,8 +87,8 @@ for (const [label, source, parent] of [
   ['nested extend', block(extend(extend(''))), 'extend'],
   ['element parent', block(`@include bem.element('label') { ${extend('')} }`), 'element'],
   ['modifier parent', block(`@include bem.modifier('active') { ${extend('')} }`), 'modifier'],
-  ['before parent', block(`@include bem.element('label') { @include bem.selector(':before') { ${extend('')} } }`), 'before'],
-  ['adjacent parent', block(`@include bem.element('label') { @include bem.selector('+') { ${extend('')} } }`), 'adjacent'],
+  ['before parent', block(`@include bem.element('label') { @include bem.selector(':before') { ${extend('')} } }`), 'qualified'],
+  ['adjacent parent', block(`@include bem.element('label') { @include bem.selector('+') { ${extend('')} } }`), 'pending-relation'],
 ]) {
   test(`${label} remains deferred`, () => {
     assert.throws(() => compile(source), new RegExp(`nesting ${parent} -> extend is deferred; not implemented in this slice`));
@@ -96,7 +96,7 @@ for (const [label, source, parent] of [
 }
 test('direct selector and modifier beneath extend remain deferred', () => {
   for (const call of ["@include bem.selector(':before') {}", "@include bem.selector('+') {}", "@include bem.modifier('active') {}"]) {
-    assert.throws(() => compile(block(extend(call))), /nesting extend -> (before|adjacent|modifier) is deferred; not implemented in this slice/);
+    assert.throws(() => compile(block(extend(call))), /nesting extend -> (qualified|pending-relation|modifier) is deferred; not implemented in this slice/);
   }
 });
 test('approved selector children of an extend element retain the target owner', () => {

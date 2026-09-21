@@ -99,11 +99,12 @@ test('empty pending + and empty child produce no incomplete combinator CSS', () 
     @include bem.modifier('after') { content: 'after'; }
   `))), [['.card__item--after', 'after']]);
 });
-test('unsupported selector values report a slice limitation, including functional selectors', () => {
-  for (const value of ["'::before'", "':hover'", "'>'", "'~'", "''", 'null', '12', "(':before', '+')",
-    "':has(.card__featured)'", "':not(.card__featured)'", "':is(.card__featured)'", "':where(.card__featured)'"]) {
+test('functional selector values remain deferred, including mixed compounds', () => {
+  for (const value of ["':has(.card__featured)'", "':not(.card__featured)'",
+    "':is(.card__featured)'", "':where(.card__featured)'", "':nth-child(2n)'",
+    "':hover:has(.foo)'", "'[disabled]:not(.foo)'"]) {
     assert.throws(() => compile(wrap(`@include bem.selector(${value}) {}`)),
-      /BEMinator: selector form is not supported in this slice; expected ":before" or "\+"/);
+      /BEMinator: functional pseudo selectors are deferred/);
   }
 });
 test('selector requires exactly one argument', () => {
@@ -111,28 +112,32 @@ test('selector requires exactly one argument', () => {
     assert.throws(() => compile(wrap(`@include bem.selector(${args}) {}`)), /Missing argument|Only 1 argument allowed/);
   }
 });
-for (const form of [':before', '+']) {
-  test(`${form} rejects unsupported root, block, and modifier parents`, () => {
+test('qualified selectors reject root parent', () => {
+  assert.throws(() => compile("@include bem.selector(':before') {}"),
+    /nesting root -> qualified is deferred/);
+});
+test('pending relations reject root, block, and modifier parents', () => {
+  for (const form of ['+', '>', '~']) {
     const call = `@include bem.selector('${form}') {}`;
     for (const [source, parent] of [
       [call, 'root'], [`@include bem.block('card') { ${call} }`, 'block'],
       [wrap(`@include bem.modifier('active') { ${call} }`), 'modifier'],
     ]) {
-      assert.throws(() => compile(source), new RegExp(`nesting ${parent} -> (before|adjacent) is deferred; not implemented in this slice`));
+      assert.throws(() => compile(source), new RegExp(`nesting ${parent} -> pending-relation is deferred`));
     }
-  });
-}
+  }
+});
 test(':before has no approved core children; + permits only element children', () => {
   const children = [
     ['block', "'other'"], ['element', "'other'"], ['modifier', "'active'"],
-    ['selector', "':before'"], ['selector', "'+'"],
+    ['selector', "':before'"], ['selector', "'+'"], ['extend', "'icon', 'active'"],
   ];
   for (const form of [':before', '+']) {
     for (const [mixin, args] of children) {
       if (form === '+' && mixin === 'element') continue;
       assert.throws(() => compile(wrap(`@include bem.selector('${form}') {
         @include bem.${mixin}(${args}) {}
-      }`)), /nesting (before|adjacent) -> \w+ is deferred; not implemented in this slice/);
+      }`)), /nesting (qualified|pending-relation) -> [\w-]+ is deferred; not implemented in this slice/);
     }
   }
 });

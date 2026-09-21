@@ -39,6 +39,36 @@ $-context-stack: ();
   @return $name;
 }
 
+// Parse caller input only. BEM provenance never comes from serialized selectors.
+// Sass supplies the grammar; normalized token checks constrain the allowed family.
+@function -selector-shape($input) {
+  @if meta.type-of($input) != string {
+    @error 'BEMinator: selector requires a string.';
+  }
+  @if list.index(('+', '>', '~'), $input) {
+    @return (kind: pending-relation, value: $input);
+  }
+  $parsed: selector.parse($input);
+  @if list.length($parsed) != 1 or list.length(list.nth($parsed, 1)) != 1 {
+    @error 'BEMinator: selector requires one qualified compound, not a selector list or complex selector.';
+  }
+  $simples: selector.simple-selectors(list.nth(list.nth($parsed, 1), 1));
+  @if list.length($simples) == 0 {
+    @error 'BEMinator: selector requires at least one qualifier.';
+  }
+  @each $simple in $simples {
+    $start: string.slice($simple, 1, 1);
+    @if $start == ':' {
+      @if string.index($simple, '(') {
+        @error 'BEMinator: functional pseudo selectors are deferred; not implemented in this subset.';
+      }
+    } @else if $start != '[' {
+      @error 'BEMinator: selector qualifiers must be non-functional pseudos or attributes.';
+    }
+  }
+  @return (kind: qualified, value: $parsed);
+}
+
 @function -validate($parent, $kind) {
   $parent-kind: map.get($parent, kind);
   // Ancestry takes precedence over immediate-parent and deferred relationships.
@@ -49,9 +79,9 @@ $-context-stack: ();
       ($parent-kind == modifier and $kind == modifier) {
     @error 'BEMinator: invalid nesting: #{$parent-kind} -> #{$kind}.';
   }
-  $allowed: (root: (block,), block: (block, element, modifier, extend),
-    element: (modifier, before, adjacent), modifier: (block, element),
-    before: (), adjacent: (element,), extend: (element,));
+  $allowed: (root: (block,), block: (block, element, modifier, extend, qualified),
+    element: (modifier, qualified, pending-relation), modifier: (block, element, qualified),
+    qualified: (), pending-relation: (element,), extend: (element,));
   @if not list.index(map.get($allowed, $parent-kind), $kind) {
     @error 'BEMinator: nesting #{$parent-kind} -> #{$kind} is deferred; not implemented in this slice.';
   }
@@ -90,28 +120,32 @@ $-context-stack: ();
     @if $parent-kind == modifier or $parent-kind == extend {
       $scope: (-complete-selector($parent),);
     }
-    @else if $parent-kind == adjacent { $scope: (-complete-selector($parent), '+'); }
+    @else if $parent-kind == pending-relation {
+      $scope: (-complete-selector($parent), map.get($parent, relation));
+    }
   } @else if $kind == modifier {
     $subject: -qualify($subject, $name, $first);
-  } @else if $kind == before {
-    $subject: selector.append($subject, ':before');
+  } @else if $kind == qualified {
+    $subject: selector.append($subject, $name);
   }
-  // An adjacent frame retains the left subject/scope until an element resolves it.
-  @return (owner: $owner, subject: $subject, scope: $scope, kind: $kind,
+  // A pending frame retains the left subject/scope until an element resolves it.
+  $child: (owner: $owner, subject: $subject, scope: $scope, kind: $kind,
     under-extend: map.get($parent, under-extend) or $kind == extend);
+  @if $kind == pending-relation { $child: map.set($child, relation, $name); }
+  @return $child;
 }
 
 // One lifecycle and emission boundary; saved values are local to each call.
 @mixin -enter($kind, $name, $first: null, $second: null) {
   $parent: -validate(-current-context(), $kind);
-  @if $kind != before and $kind != adjacent { $name: -name($name); }
+  @if $kind != qualified and $kind != pending-relation { $name: -name($name); }
   @if $kind == extend or $first != null { $first: -name($first); }
   @if $second != null { $second: -name($second); }
   $child: -derive($parent, $kind, $name, $first, $second);
   $previous: $-context-stack;
   @include -push-context($child);
   @at-root {
-    @if $kind == adjacent {
+    @if $kind == pending-relation {
       // No style rule exists for a pending relation. Sass rejects declarations
       // here; a child element enters this same boundary with a complete target.
       @content;
@@ -139,11 +173,6 @@ $-context-stack: ();
 }
 
 @mixin selector($name) {
-  $kind: null;
-  @if $name == ':before' { $kind: before; }
-  @else if $name == '+' { $kind: adjacent; }
-  @else {
-    @error 'BEMinator: selector form is not supported in this slice; expected ":before" or "+".';
-  }
-  @include -enter($kind, $name) { @content; }
+  $shape: -selector-shape($name);
+  @include -enter(map.get($shape, kind), map.get($shape, value)) { @content; }
 }

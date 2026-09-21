@@ -1,0 +1,109 @@
+// Disposable structural-selector experiment. Not production or an approved API.
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:meta';
+@use 'sass:selector';
+@use 'sass:string';
+@use '../selector-engine/proof' as p;
+
+// Pure boundary classification. Sass parses structure; these small token checks
+// choose a conservative family, not recognized/browser-valid pseudo names.
+@function classify($input) {
+  @if meta.type-of($input) != string { @error 'PROBE expected selector string'; }
+  @if list.index(('+', '>', '~'), $input) {
+    @return (kind: pending-relation, relation: $input);
+  }
+  $parsed: selector.parse($input);
+  @if list.length($parsed) != 1 { @error 'PROBE selector lists excluded'; }
+  $complex: list.nth($parsed, 1);
+  @if list.length($complex) != 1 { @error 'PROBE complex selectors excluded'; }
+  $simple: selector.simple-selectors(list.nth($complex, 1));
+  @if list.length($simple) != 1 { @error 'PROBE multiple simple selectors excluded'; }
+  $token: list.nth($simple, 1);
+  $start: string.slice($token, 1, 1);
+  @if $start == ':' {
+    // Inspect the parser's normalized pseudo token, not parentheses elsewhere
+    // in raw CSS. Functional forms remain outside this experiment's contract.
+    @if string.index($token, '(') { @error 'PROBE functional pseudo deferred'; }
+    @return (kind: qualified, value: $parsed);
+  }
+  @if $start == '[' { @return (kind: qualified, value: $parsed); }
+  @error 'PROBE expected one pseudo or attribute qualifier';
+}
+
+$-context-stack: ();
+@function -current() {
+  @if list.length($-context-stack) == 0 { @return p.frame(null, null, (), root); }
+  @return list.nth($-context-stack, -1);
+}
+@mixin -push($child) {
+  $-context-stack: list.append($-context-stack, $child, comma) !global;
+}
+@mixin -restore($previous, $child) {
+  @if $-context-stack != list.append($previous, $child, comma) { @error 'PROBE stack corrupted'; }
+  $-context-stack: $previous !global;
+}
+@function -validate($parent, $kind) {
+  @if $kind == block and map.get($parent, under-extend) { @error 'PROBE block under extend'; }
+  $allowed: (root: (block,), block: (block, element, modifier, extend, qualified),
+    element: (modifier, qualified, pending-relation), modifier: (block, element, qualified),
+    extend: (element,), pending-relation: (element,), qualified: (qualified,));
+  @if not list.index(map.get($allowed, map.get($parent, kind)), $kind) {
+    @error 'PROBE relationship outside experiment';
+  }
+  @return $parent;
+}
+@function -qualify-modifier($subject, $first, $second) {
+  @if $second == null { @return p.suffix($subject, '--#{$first}'); }
+  @return p.both($subject, $first, $second);
+}
+@function -derive($parent, $kind, $value, $first, $second) {
+  $owner: map.get($parent, owner);
+  $subject: map.get($parent, subject);
+  $scope: map.get($parent, scope);
+  $parent-kind: map.get($parent, kind);
+  @if $kind == block or $kind == extend {
+    $owner: p.atom($value);
+    $subject: $owner;
+    @if $parent-kind != root { $scope: (p.current($parent),); }
+    @if $kind == extend { $subject: -qualify-modifier($subject, $first, $second); }
+  } @else if $kind == element {
+    $subject: p.suffix($owner, '__#{$value}');
+    @if $parent-kind == pending-relation {
+      $scope: (p.current($parent), map.get($parent, relation));
+    } @else if $parent-kind != block { $scope: (p.current($parent),); }
+  } @else if $kind == modifier {
+    $subject: -qualify-modifier($subject, $value, $first);
+  } @else if $kind == qualified {
+    $subject: selector.append($subject, $value);
+  }
+  $child: p.frame($owner, $subject, $scope, $kind,
+    map.get($parent, under-extend) or $kind == extend);
+  @if $kind == pending-relation { $child: map.set($child, relation, $value); }
+  @return $child;
+}
+@mixin -enter($kind, $value, $first: null, $second: null) {
+  $parent: -validate(-current(), $kind);
+  $child: -derive($parent, $kind, $value, $first, $second);
+  $previous: $-context-stack;
+  @include -push($child);
+  @at-root {
+    @if $kind == pending-relation { @content; }
+    @else { #{p.current($child)} { @content; } }
+  }
+  @include -restore($previous, $child);
+  @if $previous != $-context-stack { @error 'PROBE restoration failed'; }
+}
+@mixin proof-block($name) { @include -enter(block, $name) { @content; } }
+@mixin proof-element($name) { @include -enter(element, $name) { @content; } }
+@mixin proof-modifier($first, $second: null) { @include -enter(modifier, $first, $second) { @content; } }
+@mixin proof-extend($name, $first, $second: null) { @include -enter(extend, $name, $first, $second) { @content; } }
+@mixin proof-selector($input) {
+  $shape: classify($input);
+  $value: map.get($shape, value);
+  @if map.get($shape, kind) == pending-relation { $value: map.get($shape, relation); }
+  @include -enter(map.get($shape, kind), $value) { @content; }
+}
+@mixin assert-depth($depth) {
+  @if list.length($-context-stack) != $depth { @error 'PROBE unexpected depth'; }
+}

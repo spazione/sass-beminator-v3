@@ -55,62 +55,86 @@ are retired. Theme loading belongs outside BEMinator through normal Sass/build
 mechanisms. These are not future addon candidates absent a new use case.
 **CSS Layers are kept as an optional future v3 capability**, not implemented or
 designed here; BEMinator must remain usable without layers. See the explicit
-[maintainer decisions](CORE-HARDENING-v3.md). Seven hardening decision groups
+[maintainer decisions](CORE-HARDENING-v3.md). Six hardening decision groups
 remain open; the whole API is not yet stable.
 
 ## Selector forms and declarations
 
-`selector($name)` accepts exactly `':before'` and `'+'` (equivalent Sass string
-quoting is accepted). Other values report “selector form is not supported in this
-slice”; they are not declared permanently invalid by SPEC-v3. Fixed arity requires
-one argument. No arbitrary-selector parser or BEM-reference API is provided.
+`selector($name)` takes one Sass string in either of two structural families:
+
+| Family | Input | Valid parent | Body |
+| --- | --- | --- | --- |
+| Qualified | One compound of one or more non-functional pseudos/attributes | block, element, modifier | Declarations; public BEM children deferred |
+| Pending relation | Exact `+`, `>`, or `~` | element | Element children resolve the right target |
 
 ```scss
 @include bem.block('card') {
+  @include bem.selector(':hover:focus') { color: red; }
   @include bem.element('item') {
     @include bem.selector(':before') { content: 'before'; }
-    @include bem.selector('+') {
-      @include bem.element('other') { color: red; }
+    @include bem.selector('[disabled]:hover') { color: gray; }
+    @include bem.selector('>') {
+      @include bem.element('other') { color: blue; }
     }
   }
 }
-// .card__item:before { content: 'before'; }
-// .card__item + .card__other { color: red; }
+// .card:hover:focus
+// .card__item:before
+// .card__item[disabled]:hover
+// .card__item > .card__other
 ```
 
-Both selector forms are supported only directly under an element. `:before`
-qualifies that element's subject, retains its enclosing scope, and preserves the
-single colon exactly. Declarations are valid; core-mixin children remain deferred.
+Qualified input is parsed by Sass as exactly one complex selector with one compound.
+Every simple token must be a non-functional pseudo or attribute. There is no
+pseudo-name whitelist. Supported examples include `:hover`, `:focus`,
+`:focus-visible`, `:active`, `:disabled`, `:before`, `:after`, `::before`, `::after`,
+`[disabled]`, `[data-state="open"]`, and compounds `:hover:focus`,
+`:focus-visible:hover`, `:placeholder:hover`, `:focus::before`,
+`[disabled]:hover`, `[data-state="open"]:focus`, `:hover[aria-expanded="true"]`.
+Sass parses attribute grammar; selector-like punctuation in values stays data.
 
-`+` is a pending relation, not a style rule. An element child resolves its right
-side using the same BEM owner, including inside nested blocks. The resolved
-element may receive its approved modifier children. Multiple right-hand element
-siblings resolve independently from the same left context. Empty pending branches
-emit no CSS; no incomplete trailing combinator is emitted. Other core children
-of `+`, and other selector parents, remain deferred/unimplemented. Direct
-element/element and modifier/modifier rejection is unchanged.
+A qualifier changes only the subject, retaining owner, scope, and extend ancestry.
+It also works beneath an element descendant of extend or on a modified subject:
+`.card .icon--large .icon__label:hover`, `.card__button--active[disabled]:hover`.
+BEMinator validates shape, not browser support, element applicability, useful
+combinations, or pseudo-element ordering across CSS specifications. Unknown
+non-functional pseudos such as `:made-up` may pass. `:before` and `::before` remain
+distinct; arbitrary source-text fidelity is not promised (e.g. attribute quotes).
 
-Direct declarations in `selector('+')` are rejected with Dart Sass's diagnostic:
-**“Declarations may only be used within style rules.”** The central emission
-boundary removes enclosing style rules before executing pending content, so a
-bare declaration has no target. This also rejects custom properties, declarations
-in control flow or helper mixins, and declarations after a completed child. A
-child element emits through the same boundary with a complete selector. No
-content-string inspection, second mutable state, or selector-specific cleanup is
-needed. A compilation error aborts the fixture; no successful partial CSS is
-returned. Raw user-created rule/at-rule wrappers remain outside this subset's
-integration contract; this is not a general content-body validator.
+Multiple tokens in **one call** are approved. Nested selector calls remain
+**DEFERRED**, as do every other public BEM child of a qualified context. The
+stronger prohibition against blocks anywhere under extend still applies.
 
-After either selector call, siblings receive the exact saved parent context.
-Tests cover repeated calls, alternate modifier/selector orders, nested block
-ownership, independent roots, and compiler reuse after a pending-declaration error.
+A pending relation retains the complete left selector until an element child
+supplies the right subject from the same owner. Nested-block/extend ownership,
+ordinary RHS modifiers, and multiple independent RHS siblings are preserved.
+Empty branches emit nothing; no incomplete combinator rule is emitted. Pending
+parents other than element and children other than element remain deferred.
+Direct element/element and modifier/modifier rejection is unchanged.
 
-**BEM-aware functional/conditional selectors are deferred to a separate future
-API-design phase.** This includes `:has(...)`, BEM-aware `:not(...)`, `:is(...)`,
-`:where(...)`, and other functional selectors containing dynamically generated
-BEM targets, such as `.block__item:has(.block__featured)`. This slice supports none
-of these forms and introduces no reference helper, special argument, or future
-API proposal.
+Direct declarations in any pending relation fail with Dart Sass's diagnostic:
+**“Declarations may only be used within style rules.”** The single emission
+boundary removes enclosing style rules while executing pending content, so bare
+properties cannot accidentally attach to the left subject. This includes custom
+properties and declarations after a completed child. A child element emits a
+complete selector through that same boundary. No extra state or cleanup is needed.
+Raw user-created rules/at-rule wrappers remain outside this body contract; this
+is not a general content-AST validator. Diagnostic wording policy remains under
+hardening review, while the direct-declaration rejection contract is approved.
+
+Non-string arguments, targets such as `.foo`, `#foo`, `button`, `*`, `%placeholder`,
+compounds containing those targets, selector lists/complex selectors, parent
+references, and unsupported relations such as `||` are outside this subset.
+Sass owns malformed-syntax diagnostics; BEMinator checks parsed shape/families.
+
+**All functional pseudos remain deferred**, including static `:has(...)`,
+`:not(...)`, `:is(...)`, `:where(...)`, `:nth-child(...)` and compounds containing
+them. BEM-aware functional/conditional selectors remain a separate future API-design
+phase. There is no reference helper, BEM-target argument, or public AST API.
+
+After either family completes, siblings receive the exact saved parent context.
+Tests cover compounds, repeated calls, alternate sibling orders, independent roots,
+nested-block and extend ownership, and all existing `:before`/`+` regressions.
 
 ## Extend: scoped target construction
 
@@ -171,8 +195,9 @@ sets it to true and derivation inherits it. There is exactly **one mutable
 module-global value**, the private context stack. Private push/restore helpers are its only writers. One
 entry boundary validates, derives, pushes, emits with `@at-root`, and restores
 the exact saved stack list after successful content. `kind` distinguishes normal
-elements, `before` qualified subjects, and `adjacent` pending relations. Pending
-frames retain the left subject/scope; element derivation adds the `+` operand and
+elements, `qualified` subjects, and `pending-relation` frames. Pending
+frames add only immutable `relation` data and retain the left subject/scope;
+element derivation adds that relation operand and
 right-hand subject. No pending-selector variable or history exists outside the
 stack. Pure helpers never read ambient `&` or the stack. Production has no spike assertions or debugging exports.
 As proven in the spike, an error aborts evaluation; the next compilation starts
@@ -189,7 +214,7 @@ Run `npm run test:production` alone, or `npm test` for unit and production tests
 remain separate and unchanged. No dependencies or runtime configuration are added.
 
 The approved v3 core behavior subset is implemented. Whole-API stabilization
-still has seven open hardening decision groups. This does not settle top-level/nested extend, Q07, broader argument
+still has six open hardening decision groups. This does not settle top-level/nested extend, Q07, broader argument
 policy, deferred selector forms, or raw CSS/at-rule integration. All remain outside
 this contract; addon/plugin work has not begun.
 
@@ -218,3 +243,19 @@ changing any selector output or validation rule. No separator configuration or
 CSS Layers implementation was added. Architecture remains one private mutable
 context stack, one emission boundary, and five public mixins with no public
 functions or variables. Logs are `tmp/stabilization-*.log`.
+
+
+Structural-selector stabilization validation: **139 production tests** (39 added),
+**42 original spike tests** (27 selector-engine + 15 context-stack), **16 unchanged
+structural experiment tests**, and **201 combined project tests** pass on Node
+22.19.0 / Dart Sass 1.104.1. Production, both original spikes, the structural
+experiment, characterization, normal project, and legacy commands all pass.
+Detailed runs disable Node test-process isolation to report individual test
+counts rather than file totals. Logs are `tmp/structural-selector-*.log`;
+production detail is `tmp/structural-production-initial.log`.
+
+Source/API guards confirm **one mutable module global**, **one emission boundary**,
+and exactly five public mixins with no public functions or variables. Existing
+block/element/modifier/extend outputs and original `:before`/`+` output regressions
+remain green. Six hardening groups remain open; no separator configuration,
+CSS Layers, functional pseudo API, or selector-context chaining was implemented.
