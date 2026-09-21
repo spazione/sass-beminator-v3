@@ -1,1 +1,2 @@
-@forward 'core/bem' show block, element, modifier, selector, extend;
+@forward 'core/bem' show block, element, modifier, selector, extend,
+  $element-separator, $modifier-separator;

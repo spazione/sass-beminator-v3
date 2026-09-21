@@ -26,7 +26,10 @@ they establish behavior without finalizing all Sass parameter names, optional
 arguments, or module-export syntax. `→` means lexical nesting, not consecutive
 sibling invocations. Separate consecutive calls are siblings unless nested.
 
-The demonstrated BEM separators are `__` for elements and `--` for modifiers.
+The default BEM separators are `__` for elements and `--` for modifiers.
+The approved load-time configuration accepts nonempty strings containing only
+`-` and `_`, including equal separators; consumers own naming collisions.
+See PRODUCTION-v3 for usage and the Sass explicit-null/default limitation.
 Descendant composition, same-element class conjunction, and the pending
 relations `+`, `>`, `~` are distinct semantics and must not be interchanged. Preserve the selectors, declaration
 values, and semantically relevant rule ordering of the approved examples.
@@ -386,7 +389,8 @@ a complete public API contract, not progress on the already approved subset:
    and selector-context chaining.
 4. **Public arguments and configuration:** the remaining name-domain policy. Public
    signatures and load-time separator policy are recorded in PRODUCTION-v3;
-   separator configuration is approved but not yet implemented.
+   separator configuration is implemented (including the documented Sass null-default
+   limitation).
 5. **Diagnostics:** exact error messages and any public diagnostic contract for
    invalid nesting. Rejection itself is already required.
 

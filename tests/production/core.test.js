@@ -203,7 +203,7 @@ test('unsupported names cannot introduce selectors through interpolation', () =>
     }
   }
 });
-test('public module exposes exactly five mixins and no variables/functions/debug hooks', () => {
+test('public module exposes exactly five mixins, two separator settings, and no functions/debug hooks', () => {
   assert.equal(compileScss(`@use '../../src' as bem;
     @use 'sass:meta'; @use 'sass:map'; @use 'sass:list';
     $mixins: meta.module-mixins('bem');
@@ -213,7 +213,9 @@ test('public module exposes exactly five mixins and no variables/functions/debug
         not map.has-key($mixins, 'selector') or
         not map.has-key($mixins, 'extend') { @error 'Unexpected mixin exports'; }
     @if list.length(map.keys(meta.module-functions('bem'))) != 0 or
-        list.length(map.keys(meta.module-variables('bem'))) != 0 { @error 'Leaked internals'; }
+        list.length(map.keys(meta.module-variables('bem'))) != 2 or
+        not map.has-key(meta.module-variables('bem'), 'element-separator') or
+        not map.has-key(meta.module-variables('bem'), 'modifier-separator') { @error 'Leaked internals'; }
   `, { url }), '');
 });
 test('private stack and lifecycle helpers cannot be accessed even by deep import', () => {

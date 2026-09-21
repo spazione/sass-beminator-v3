@@ -30,8 +30,8 @@ not by itself establish an intentionally documented long-term API.
 
 | Legacy setting | Core relevance | v2 behavior | Needed in v3? | Maintainer decision / remaining work |
 | --- | --- | --- | --- | --- |
-| `$element-separator: "__" !default` | Direct naming input | Interpolated between owner and element; descendants of modifiers, selector branches, and extends use it | Approved configurable input; implementation pending | D01/D02 RESOLVED: load-time module configuration; policy in section 2 |
-| `$modifier-separator: "--" !default` | Direct naming input | Used for both single/double modifier construction, including extend via modifier | Approved configurable input; implementation pending | D01/D02 RESOLVED: same policy |
+| `$element-separator: "__" !default` | Direct naming input | Interpolated between owner and element; descendants of modifiers, selector branches, and extends use it | Implemented load-time configuration | D01/D02 RESOLVED: load-time module configuration; policy in section 2 |
+| `$modifier-separator: "--" !default` | Direct naming input | Used for both single/double modifier construction, including extend via modifier | Implemented load-time configuration | D01/D02 RESOLVED: same policy |
 | `$debug: false !default` | Observable output from core operations | `true` injects `checkProps` comments and multiple `content` declarations into generated rules, not Sass debug logging | No — RETIRED / REMOVE | D06 RESOLVED: do not restore CSS-polluting debug output |
 | Error severity/validation toggle | No such dedicated core setting found | `validate-context` throws an unconditional `@error` for its narrow block/extend/block check, with an internal Eurobet URL; debug true/false both throw | Rejections are already mandatory in SPEC-v3; severity is not a compatibility feature | D05: stable diagnostic contract; do not infer a legacy error-disable option |
 | `$where-prefix`, `$where-suffix`, `$where-mode` | Related specificity machinery, not BEM separators | Prefix/suffix are declared configurable; component/block setup resets them to empty and mode false. Object helpers set `:where(...)`. Mode originates in imported settings and is mutated internally | No — RETIRED / REMOVE | Old specificity strategy superseded by CSS Layers in real projects |
@@ -89,14 +89,13 @@ Layers remain important to future v3 design, and consumers must be able to use
 BEMinator without them. This does not preserve legacy `$layer` parameters or
 `$cssLayers` theme/path coupling. The layer API has not been designed.
 
-## 2. Separators: approved configuration policy, implementation pending
+## 2. Separators: approved configuration policy, implemented
 
 **Finding: configurable separators appear architecturally feasible.** Names and
 scope are already stored separately, and no production code splits selectors to
-recover them. Construction-time separator values could be passed to pure suffix
-construction; immutable contexts and centralized stack restoration would remain
-unchanged. No evolving runtime context, extra context argument for consumers, or
-selector parsing is needed. No configurable-separator implementation was added.
+recover them. Construction-time separator values now feed suffix construction; immutable
+contexts and centralized stack restoration remain unchanged. No evolving runtime context, extra context argument for consumers, or
+selector parsing is needed. The approved two public configuration values are now implemented.
 
 With element separator `--` and modifier separator `-`, the legacy probes observe:
 
@@ -113,7 +112,7 @@ With element separator `--` and modifier separator `-`, the legacy probes observ
 | page → card → modifier active → element item | `.page .card-active .card--item` |
 
 These illustrate the approved configuration policy's construction implications;
-they are historical observations, not implemented v3 configuration outputs.
+they were historical observations and now have production configuration coverage.
 A single element modifier would become
 `.card--item-active`. Bare block composition does not use a separator.
 
@@ -125,7 +124,7 @@ $element-separator: '__';
 $modifier-separator: '--';
 ```
 
-Intended usage once implemented (not currently available):
+Supported load-time usage (import/publication naming remains D10):
 
 ```scss
 @use 'sass-beminator' with (
@@ -141,9 +140,13 @@ stylesheet execution is outside the supported contract. Public Sass variables
 can technically be reassigned; the supported contract is load-time configuration,
 not intrinsic Sass constness.
 
-This task records the decision only. Production still uses fixed `__`/`--` and
-exports no configuration variables. A later implementation must honor this policy
-without changing runtime context transport. Import/publication details remain
+Production exports exactly these two configuration variables in addition to the
+five mixins, without changing runtime context transport. Values are validated at
+module load with BEMinator-owned errors naming the setting. **Implementation
+limitation:** Sass replaces explicit `null` configuration with the `!default` value
+before validation, so null cannot be distinguished from omission or rejected under
+this standard configuration surface. This limitation is documented/tested rather
+than silently claimed as validation; all other invalid values are rejected. Import/publication details remain
 D10; they do not reopen the approved separator surface or value policy.
 
 Collisions need no parsing to detect their possibility. Even today,
@@ -297,8 +300,10 @@ choice is made and no architectural redesign is proposed here.
 
 Sass `meta.module-mixins`, `meta.module-functions`, and `meta.module-variables`
 confirm that the supported entrypoint exposes exactly **block, element, modifier,
-selector, extend**, with **zero public functions and zero public variables**.
-The explicit forward allowlist does not leak configuration or debug helpers.
+selector, extend**, with **zero public functions** and exactly the two approved
+public separator configuration variables.
+The explicit forward allowlist exposes only the approved configuration and mixins,
+with no debug helpers.
 Private stack access is covered by production tests; the audit also confirms
 private derivation cannot be called through a deep import. Context construction
 is private derivation, not an exposed constructor.
@@ -310,12 +315,11 @@ deep-imported element uses the same canonical module instance and compiles
 access is not a package privacy boundary. D10 should identify the supported import
 path, whether deep imports carry any compatibility promise, and the intended
 publication/package entry policy before release. The package remains private;
-no exports or packaging were changed.
+packaging is unchanged; only the two approved configuration exports were added.
 
 Module inspection and source inspection retain exactly one evolving private
-module-global value: the context stack. Introducing public configuration later
-will change the currently tested public-variable surface when D01/D02 are
-implemented. D10 still covers stable import paths and publication policy.
+module-global value: the context stack. The public-variable surface now explicitly tests both separator settings,
+which are load-time construction inputs rather than evolving lexical state. D10 still covers stable import paths and publication policy.
 
 ## 8. Deferred matrix: triage, not new semantics
 
@@ -392,14 +396,14 @@ core API decision counted in D01–D11.
 ## 11. Explicit decisions before calling the API stable
 
 There are **6 unresolved groups** from the original 11. Five are resolved as
-recorded below; approved separator configuration remains implementation work,
-not an unresolved policy decision. Layer API design is included in D08 rather
+recorded below; separator configuration is implemented with the explicit Sass
+null-default limitation documented in section 2. Layer API design is included in D08 rather
 than counted as a new group. The whole API is not yet stable.
 
 | ID | Status | Decision or remaining review |
 | --- | --- | --- |
-| D01 | RESOLVED | Approve separator configuration through Sass module configuration at load time; implementation pending |
-| D02 | RESOLVED | Non-empty strings of `-`/`_` only; equal separators allowed; consumer owns naming collisions; runtime changes unsupported |
+| D01 | RESOLVED / IMPLEMENTED | Separator configuration through Sass module configuration at load time |
+| D02 | RESOLVED / IMPLEMENTED with Sass limitation | Non-empty strings of `-`/`_` only; equal separators allowed; consumer owns naming collisions; runtime changes unsupported. Sass substitutes defaults for explicit null before validation |
 | D03 | UNRESOLVED | Final evaluated-name domain: ASCII/Unicode, leading hyphens, escape treatment |
 | D04 | RESOLVED / IMPLEMENTED | `modifier($mod1, $mod2: null)`; positional/named parity; no obsolete aliases or empty-string sentinel; other signatures unchanged |
 | D05 | UNRESOLVED | Stable diagnostic categories/text/codes and compiler-owned boundaries |
@@ -413,8 +417,8 @@ than counted as a new group. The whole API is not yet stable.
 The legacy retirement decisions in section 1 also stand; they are not additional
 unresolved groups. Structural selector policy is implemented; conditional-selector,
 other deferred relationships, raw nesting, import, and layer questions still require
-review. No layer/separator configuration or conditional-selector implementation
-is included. Multiple qualifier tokens in one call are approved; nested selector
+review. Separator configuration is implemented; layers and conditional selectors
+are not. Multiple qualifier tokens in one call are approved; nested selector
 calls remain deferred. See [the selector design decision](SELECTOR-DESIGN-v3.md).
 
 Historical audit validation (before signature stabilization):
@@ -453,3 +457,15 @@ and exactly five public mixins with no public functions or variables. Existing
 block/element/modifier/extend outputs and original `:before`/`+` output regressions
 remain green. Six hardening groups remain open; no separator configuration,
 CSS Layers, functional pseudo API, or selector-context chaining was implemented.
+
+
+Separator validation: **172 production tests** (33 added), **234 combined project
+tests**, and **58 spike tests** (27 selector-engine, 15 context-stack, 16 structural)
+pass on Node 22.19.0 / Dart Sass 1.104.1. Normal project, characterization, and
+legacy commands pass with legacy warnings unsuppressed. Default CSS regressions
+remain unchanged; custom settings cover conjunctions, extend ancestry, selector
+integration, sibling restoration, invalid load-time values, and compiler reuse.
+Logs: `tmp/separators-*.log`. There is still one evolving mutable module global
+and one emission boundary; public configuration adds two load-time inputs only.
+Six hardening decision groups remain open; the explicit-null/default limitation
+is documented above rather than counted as a new design decision.

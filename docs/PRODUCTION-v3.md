@@ -3,7 +3,8 @@
 The public entrypoint is `src/_index.scss`. It exports only `block($name)`,
 `element($name)`, `modifier($mod1, $mod2: null)`, `selector($name)`, and
 `extend($name, $mod1, $mod2: null)` as mixins. Calls nest without context arguments
-or `using` clauses. These are the five explicit exports; helpers remain private.
+or `using` clauses. These are the five mixin exports; the only public variables
+are `$element-separator` and `$modifier-separator`. Helpers remain private.
 
 The core implements the approved relationships in
 [SPEC-v3.md](SPEC-v3.md), including recursive/equal-name blocks, single and
@@ -42,12 +43,53 @@ unchanged.
 
 ## Approved configuration and retired machinery
 
-Separator configuration is approved for a future implementation through Sass
-module configuration at load time, defaulting to element `__` and modifier `--`.
-Separators must be non-empty strings containing only `-` and `_`; equal separators
-are allowed. Naming collisions are the consumer's responsibility, and runtime
-separator changes are unsupported. **Configuration is not implemented yet:**
-production still exports only the five mixins and uses the default separators.
+Separator configuration is available through normal Sass module configuration at
+load time. The two public construction settings default to:
+
+```scss
+$element-separator: '__' !default;
+$modifier-separator: '--' !default;
+```
+
+Using the consumer's BEMinator module path (package/import naming remains D10):
+
+```scss
+@use 'sass-beminator' as bem with (
+  $element-separator: '-',
+  $modifier-separator: '_'
+);
+```
+
+Both values must be nonempty Sass strings containing only `-` and `_`. Equal
+separators are allowed; naming collisions are the consumer's responsibility.
+Invalid values fail at module load with a BEMinator diagnostic naming the setting,
+even when no BEM mixin is called. No selector parser is needed for this validation.
+
+**Sass limitation:** explicit `null` in `with (...)` is treated by Sass as unset;
+Sass substitutes the `!default` value before BEMinator can inspect it. Therefore
+BEMinator cannot reject an explicitly configured null with these standard default
+variables. This is a documented implementation limitation relative to the requested
+null rejection, not a new supported separator value. Tests record the actual
+fallback behavior; other non-string values are rejected.
+
+| With element `-`, modifier `_` | Selector |
+| --- | --- |
+| card → element title | `.card-title` |
+| card → modifier active,large | `.card_active.card_large` |
+| card → element button → modifier active → qualifier `:hover` | `.card-button_active:hover` |
+| card → element item → relation `>` → element child | `.card-item > .card-child` |
+| card → extend icon,a,b → element item | `.card .icon_a.icon_b .icon-item` |
+
+With element `--` and modifier `-`, the last example instead emits
+`.card .icon-a.icon-b .icon--item`. Double modifiers remain conjunctive classes;
+only construction suffixes change. Nested blocks, extend descendants, and all
+pending relations use the same settings. Default settings preserve existing CSS.
+
+The supported lifetime is **load-time configuration only**. Sass public variables
+can technically be reassigned, but execution-time reassignment is outside the
+contract. There are no setter mixins, per-block arguments, separator snapshots,
+or separator fields in context values. Configuration is read only where names
+are constructed; the only evolving runtime state remains the private stack.
 
 Legacy debug, `:where()` specificity controls, automatic theme discovery/path
 construction, theme arguments, and their CSS-variable/theme injection plumbing
@@ -211,7 +253,7 @@ existing spike retains the direct depth and exact-stack assertions.
 
 Run `npm run test:production` alone, or `npm test` for unit and production tests.
 `npm run test:watch` watches both. Characterization and disposable spike suites
-remain separate and unchanged. No dependencies or runtime configuration are added.
+remain separate and unchanged. No dependencies or runtime configuration APIs are added.
 
 The approved v3 core behavior subset is implemented. Whole-API stabilization
 still has six open hardening decision groups. This does not settle top-level/nested extend, Q07, broader argument
@@ -259,3 +301,23 @@ and exactly five public mixins with no public functions or variables. Existing
 block/element/modifier/extend outputs and original `:before`/`+` output regressions
 remain green. Six hardening groups remain open; no separator configuration,
 CSS Layers, functional pseudo API, or selector-context chaining was implemented.
+
+
+Separator implementation adds only the two approved public settings. All five
+mixin signatures, structural selector semantics, immutable context facts, and
+centralized stack restoration remain unchanged. Source guards distinguish these
+two load-time inputs from the **one evolving mutable stack** and still enforce
+**one emission boundary**. CSS Layers and functional selectors remain unimplemented;
+retired legacy configuration is not restored.
+
+
+Separator validation: **172 production tests** (33 added), **234 combined project
+tests**, and **58 spike tests** (27 selector-engine, 15 context-stack, 16 structural)
+pass on Node 22.19.0 / Dart Sass 1.104.1. Normal project, characterization, and
+legacy commands pass with legacy warnings unsuppressed. Default CSS regressions
+remain unchanged; custom settings cover conjunctions, extend ancestry, selector
+integration, sibling restoration, invalid load-time values, and compiler reuse.
+Logs: `tmp/separators-*.log`. There is still one evolving mutable module global
+and one emission boundary; public configuration adds two load-time inputs only.
+Six hardening decision groups remain open; the explicit-null/default limitation
+is documented above rather than counted as a new design decision.

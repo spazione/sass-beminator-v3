@@ -4,6 +4,24 @@
 @use 'sass:selector';
 @use 'sass:string';
 
+// Load-time construction inputs, not evolving lexical context.
+$element-separator: '__' !default;
+$modifier-separator: '--' !default;
+
+@mixin -validate-separator($value, $setting) {
+  @if meta.type-of($value) != string or string.length($value) == 0 {
+    @error 'BEMinator: $#{$setting} must be a nonempty string containing only "-" and "_".';
+  }
+  @for $index from 1 through string.length($value) {
+    @if not list.index(('-', '_'), string.slice($value, $index, $index)) {
+      @error 'BEMinator: $#{$setting} must be a nonempty string containing only "-" and "_".';
+    }
+  }
+}
+
+@include -validate-separator($element-separator, element-separator);
+@include -validate-separator($modifier-separator, modifier-separator);
+
 // The only evolving module-global value. Writes belong to push/restore only.
 $-context-stack: ();
 
@@ -96,9 +114,9 @@ $-context-stack: ();
 
 // Shared subject qualification for modifier and extend; scope is composed once.
 @function -qualify($subject, $first, $second) {
-  $qualified: selector.append($subject, '--#{$first}');
+  $qualified: selector.append($subject, '#{$modifier-separator}#{$first}');
   @if $second != null {
-    $qualified: selector.append($qualified, selector.append($subject, '--#{$second}'));
+    $qualified: selector.append($qualified, selector.append($subject, '#{$modifier-separator}#{$second}'));
   }
   @return $qualified;
 }
@@ -116,7 +134,7 @@ $-context-stack: ();
     @if $parent-kind != root { $scope: (-complete-selector($parent),); }
     @if $kind == extend { $subject: -qualify($subject, $first, $second); }
   } @else if $kind == element {
-    $subject: selector.append($owner, '__#{$name}');
+    $subject: selector.append($owner, '#{$element-separator}#{$name}');
     @if $parent-kind == modifier or $parent-kind == extend {
       $scope: (-complete-selector($parent),);
     }
