@@ -1,0 +1,4 @@
+// Candidate A: Sass emits module CSS once per compilation, even without layer use.
+@forward 'proof';
+@use 'proof';
+@include proof.css-layers();

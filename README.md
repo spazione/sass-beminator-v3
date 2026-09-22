@@ -1,7 +1,7 @@
 # Sass BEMinator v3
 
 A from-scratch rewrite. The approved core implements `block`, `element`,
-`modifier`, `selector`, and `extend` through `src/_index.scss`; the package remains private.
+`modifier`, `selector`, `extend`, and optional `css-layers` through `src/_index.scss`; the package remains private.
 
 ```scss
 @use "./src" as bem;
@@ -13,6 +13,30 @@ A from-scratch rewrite. The approved core implements `block`, `element`,
 }
 // .card__title--large { font-size: 2rem; }
 ```
+
+Optional layers use `block($name, $layer: null)` and the configurable flat
+`$css-layers` registry:
+
+```scss
+@use "./src" as bem;
+
+@include bem.css-layers();
+@include bem.block('card', $layer: 'molecules') {
+  color: red;
+}
+```
+
+Emit `@include bem.css-layers();` at stylesheet root before the first layered
+CSS in the **final effective CSS ordering**. BEMinator cannot guarantee that order
+after bundler/framework splitting, extraction, concatenation, or runtime injection.
+Consumers may instead place this manual declaration before all layered CSS:
+
+```css
+@layer generic, elements, atoms, molecules, organisms, templates, pages, utilities;
+```
+
+Nested blocks inherit the outer layer when the argument is omitted/null; explicit
+nested selection is rejected. Ordering is never emitted automatically.
 
 See [the production subset contract](docs/PRODUCTION-v3.md) for argument limits,
 supported nesting, private context architecture, and work still out of scope.

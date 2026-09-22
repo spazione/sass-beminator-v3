@@ -159,14 +159,14 @@ test('extend constructs new rules without native Sass extension or rule merging'
     ['.icon--mod1', 'existing'], ['.standard-object .icon--mod1', 'constructed'],
   ]);
 });
-test('source architecture has two load-time settings, one evolving stack, and no native extension primitives', () => {
+test('source architecture has three load-time settings, one evolving stack, and no native extension primitives', () => {
   const source = readFileSync(new URL('../../src/core/_bem.scss', import.meta.url), 'utf8')
     .replace(/\/\/[^\n]*/g, '');
   // Guard this cohesive module's architectural constraint, not a general SCSS parser.
   assert.deepEqual([...source.matchAll(/^\$([\w-]+):/gm)].map((match) => match[1]),
-    ['element-separator', 'modifier-separator', '-context-stack']);
+    ['element-separator', 'modifier-separator', 'css-layers', '-context-stack']);
   assert.deepEqual([...source.matchAll(/^\$([\w-]+):[^;]*!default/gm)].map((match) => match[1]),
-    ['element-separator', 'modifier-separator']);
+    ['element-separator', 'modifier-separator', 'css-layers']);
   const writes = [...source.matchAll(/\$([\w-]+):[^;]*!global/g)].map((match) => match[1]);
   assert.deepEqual(writes, ['-context-stack', '-context-stack']);
   assert.equal([...source.matchAll(/@at-root\b/g)].length, 1);

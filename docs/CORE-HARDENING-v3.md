@@ -6,14 +6,15 @@ D03, D05, D08, D09, D10, and D11. Maintainer decisions resolve D01/D02
 (separator policy), D04 (public signatures), D06 (retired debug machinery), and
 D07 (pending body contract). D11 is partially settled by structural selector
 approval; other deferred subset/release decisions remain open.
-CSS Layers are retained as a future optional capability; their API/integration
-review remains under D08. Approval of a feature is distinct from implementation.
+Optional flat CSS Layers are approved and implemented. D08 is partially resolved
+for layers and their tested media/supports/container integration; the broader
+at-rule envelope remains open. See [the layer contract](PRODUCTION-v3.md#optional-css-layers).
 
 The original audit used Node 22.19.0 and Dart Sass 1.104.1, with 49 production
 observations and 21 read-only legacy observations in the
 [separate probes](../audits/core-hardening/README.md). Findings below remain
 observations unless explicitly marked as maintainer decisions. This stabilization
-records signature and structural-selector stabilization. SPEC-v3 now approves
+records signature, structural-selector, separator, and CSS Layers stabilization. SPEC-v3 now approves
 compound qualifiers and pending `+`, `>`, `~`; historical artifacts and existing
 spikes remain unchanged. Browser
 behavior and other Sass versions were not tested.
@@ -37,7 +38,7 @@ not by itself establish an intentionally documented long-term API.
 | `$where-prefix`, `$where-suffix`, `$where-mode` | Related specificity machinery, not BEM separators | Prefix/suffix are declared configurable; component/block setup resets them to empty and mode false. Object helpers set `:where(...)`. Mode originates in imported settings and is mutated internally | No — RETIRED / REMOVE | Old specificity strategy superseded by CSS Layers in real projects |
 | `$context-stack: () !default` | Implementation state accidentally public | Stack and push/pop helpers are public; configurable initial stack could affect legacy rejection | No: v3 architecture requires a private stack, not user-supplied history | D10: document internals as unsupported migration surface |
 | `$moduleFolder`, `$path-components`, `$path-objects`, `$path-modules`, `$beminator-theme-id` | Theme/path plumbing called from shared block implementation | Builds module/theme lookup paths; defaults are null/empty strings | No — RETIRED / REMOVE | Fragile folder-dependent theme plumbing; not an addon backlog item |
-| `$cssLayers`, `$layer`, layer map `pathTheme`/`filePrefix` | Layer/Atomic Design/theme coupling | Layer lookup, wrapping, missing-layer errors and theme-path construction | CSS Layers KEEP as optional v3 capability | API not designed or implemented here; legacy theme-path map coupling is retired |
+| `$cssLayers`, `$layer`, layer map `pathTheme`/`filePrefix` | Layer/Atomic Design/theme coupling | Layer lookup, wrapping, missing-layer errors and theme-path construction | CSS Layers KEEP as optional v3 capability | Flat registry, root block selection, and explicit ordering implemented; legacy theme-path map coupling is retired |
 | `$theme`, `$include-theme`, `$css3Vars...` and related state | Non-core block/extend options and internal plumbing | Optional theme loading/CSS-variable injection; include-theme evolves internally | No — RETIRED / REMOVE for this legacy theme/injection system | No theme arguments or varargs restored; external Sass theme loading instead |
 | `$btnSkins`, `$btnSizes`, button prefixes/paths, Atomic Design helpers | Buttons/presets/project conventions | Generates project-specific button CSS and helper behavior | No core dependency to preserve | Existing addon exclusion stands |
 | `$block`, `$stored-block`, `$root`, `$wrapper`, `$modifier-check`, `$state-check`, `$nested`, `$state-wrapper`, etc. | Legacy mutable state, not legitimate configuration | Tracks selector history and contributes to legacy leaks | No | No new choice needed: authoritative v3 architecture replaces these |
@@ -84,10 +85,11 @@ loading now belongs outside BEMinator, using ordinary Sass mechanisms such as
 `meta.load-css()` and build-provided theme identifiers. No such loading machinery
 is restored here.
 
-**CSS Layers: KEEP — optional v3 capability — not implemented in this task.**
-Layers remain important to future v3 design, and consumers must be able to use
-BEMinator without them. This does not preserve legacy `$layer` parameters or
-`$cssLayers` theme/path coupling. The layer API has not been designed.
+**CSS Layers: KEEP — optional v3 capability — implemented.**
+Consumers can continue using BEMinator without layers. The approved surface is
+`block($name, $layer: null)`, `$css-layers`, and `css-layers()`. Explicit selection
+is root-only; nested null/omitted selection inherits lexically. No legacy theme/path
+coupling, enable switch, layer stack, current-layer global, or ordering cache returns.
 
 ## 2. Separators: approved configuration policy, implemented
 
@@ -140,8 +142,8 @@ stylesheet execution is outside the supported contract. Public Sass variables
 can technically be reassigned; the supported contract is load-time configuration,
 not intrinsic Sass constness.
 
-Production exports exactly these two configuration variables in addition to the
-five mixins, without changing runtime context transport. Values are validated at
+Production exports these two separator variables plus `$css-layers` and six
+mixins, without changing runtime context transport. Separators are validated at
 module load with BEMinator-owned errors naming the setting. **Implementation
 limitation:** Sass replaces explicit `null` configuration with the `!default` value
 before validation, so null cannot be distinguished from omission or rejected under
@@ -187,14 +189,15 @@ or escaped-selector completeness is not a prerequisite to a useful core API.
 [legacy guide](../../sass-beminator/sass-beminator-guide.md) (around lines 220–275).
 The audit found that the initial v3 `$name`/`$second` keyword names broke those
 calls. Production now uses `$mod1`/`$mod2`, preserving all positional outputs.
-The final five public signatures for this phase are:
+The current six public signatures, including approved CSS Layers, are:
 
 ```scss
-block($name)
+block($name, $layer: null)
 element($name)
 modifier($mod1, $mod2: null)
 selector($name)
 extend($name, $mod1, $mod2: null)
+css-layers()
 ```
 
 `modifier('active')` and `modifier($mod1: 'active')` are equivalent; the positional
@@ -203,9 +206,9 @@ The legacy empty-string sentinel is not restored. Obsolete v3-only `$name` and
 `$second` modifier keywords have no compatibility aliases. The audit probes now
 label those calls as obsolete and the legacy-compatible names as supported.
 
-Extend is unchanged and still requires `$mod1`. Block, element, and selector
-signatures are unchanged. No legacy theme/layer arguments, varargs, wrapper
-mixins, or variadic argument parsing are introduced. Current fixed arity and
+Extend is unchanged and still requires `$mod1`. Element and selector signatures
+are unchanged. Block adds the approved optional `$layer` argument. No legacy theme
+arguments, varargs, wrapper mixins, or variadic argument parsing are introduced. Current fixed arity and
 name validation remain in force. Broader name policy remains D03.
 
 ## 4. Diagnostics: stable categories versus compiler-owned wording
@@ -249,7 +252,7 @@ Probe IDs and full source/CSS are in `tmp/core-hardening/production.json`.
 
 | Probes | Observation | Decision |
 | --- | --- | --- |
-| `media-outside`, `supports-outside`, `container-outside` | All five operations stay inside the enclosing at-rule; no duplicate selector scope | D08: consider approving these ordinary conditional wrappers |
+| `media-outside`, `supports-outside`, `container-outside` | All five operations stay inside the enclosing at-rule; no duplicate selector scope | Approved layer integration; broader D08 remains open |
 | Corresponding `*-inside` | At-rule within block content retains all inner output; following element emits outside it with the correct owner | Same |
 | Corresponding `*-pending` | At-rule between pending `+` and right-hand element is retained; later modifier uses the original left element outside it | Same |
 | `nested-media-supports` | Both wrappers preserved; later sibling remains in media only | Same; not a general at-rule normalization promise |
@@ -260,9 +263,10 @@ leak was observed in these probes. Default `@at-root` strips style-rule ancestry
 while retaining these at-rules. Ordinary Sass may reorganize/bubble wrappers;
 this report records expanded output, not a guarantee of source-shaped formatting.
 
-D08 should define the supported at-rule envelope and test it as production
-semantics if approved. This audit does not generalize to keyframes, descriptor
-at-rules, CSS layers, arbitrary directives, or user `@at-root` queries. A diagnostic
+Layer production tests now cover media/supports/container in both wrapper orders
+and around pending RHS elements, with sibling restoration. D08 still needs the
+broader supported envelope; this does not generalize to keyframes, descriptor
+at-rules, arbitrary directives, or user `@at-root` queries. A diagnostic
 probe with pending `+` under `@font-face` also errors; it is not an endorsement of
 mixing BEM style rules into descriptor at-rules.
 
@@ -300,8 +304,9 @@ choice is made and no architectural redesign is proposed here.
 
 Sass `meta.module-mixins`, `meta.module-functions`, and `meta.module-variables`
 confirm that the supported entrypoint exposes exactly **block, element, modifier,
-selector, extend**, with **zero public functions** and exactly the two approved
-public separator configuration variables.
+selector, extend, css-layers**, with **zero public functions** and exactly three
+public configuration variables: `$element-separator`, `$modifier-separator`,
+and `$css-layers`.
 The explicit forward allowlist exposes only the approved configuration and mixins,
 with no debug helpers.
 Private stack access is covered by production tests; the audit also confirms
@@ -309,16 +314,16 @@ private derivation cannot be called through a deep import. Context construction
 is private derivation, not an exposed constructor.
 
 Consumers can deep-import `src/core/_bem.scss` as a filesystem Sass module. It
-exposes the same five mixins, not private helpers. Mixing entrypoint block with
+exposes the same six mixins, not private helpers. Mixing entrypoint block with
 deep-imported element uses the same canonical module instance and compiles
 `.card__title`. There is no demonstrated accidental helper exposure, but file
 access is not a package privacy boundary. D10 should identify the supported import
 path, whether deep imports carry any compatibility promise, and the intended
 publication/package entry policy before release. The package remains private;
-packaging is unchanged; only the two approved configuration exports were added.
+packaging is unchanged; the approved layer surface is explicitly allowlisted.
 
 Module inspection and source inspection retain exactly one evolving private
-module-global value: the context stack. The public-variable surface now explicitly tests both separator settings,
+module-global value: the context stack. The public-variable surface tests both separator settings and the layer registry,
 which are load-time construction inputs rather than evolving lexical state. D10 still covers stable import paths and publication policy.
 
 ## 8. Deferred matrix: triage, not new semantics
@@ -351,8 +356,8 @@ block prohibition continues to override local deferral.
 
 Legacy automatic theme loading, paths, and their CSS-variable injection system
 are **retired**, not addon candidates absent a new use case. CSS Layers are
-**kept as an optional future v3 capability**, with API review still pending under
-D08. Buttons and Atomic Design remain outside the core. None adds a core matrix
+**implemented as an optional flat capability**; broader at-rule review remains
+under D08. Buttons and Atomic Design remain outside the core. None adds a core matrix
 cell. D11 can retain deferred relationships while stabilizing the approved subset;
 it need not solve them all.
 
@@ -397,8 +402,8 @@ core API decision counted in D01–D11.
 
 There are **6 unresolved groups** from the original 11. Five are resolved as
 recorded below; separator configuration is implemented with the explicit Sass
-null-default limitation documented in section 2. Layer API design is included in D08 rather
-than counted as a new group. The whole API is not yet stable.
+null-default limitation documented in section 2. The approved flat layer API and
+conditional integration partially resolve D08 rather than creating a new group. The whole API is not yet stable.
 
 | ID | Status | Decision or remaining review |
 | --- | --- | --- |
@@ -409,15 +414,15 @@ than counted as a new group. The whole API is not yet stable.
 | D05 | UNRESOLVED | Stable diagnostic categories/text/codes and compiler-owned boundaries |
 | D06 | RESOLVED | Retire `$debug`; no legacy debug machinery restored |
 | D07 | RESOLVED / IMPLEMENTED | Pending `+`, `>`, `~`: resolving elements, empty output, direct-declaration rejection with native Sass diagnostic; raw wrappers remain D09 |
-| D08 | UNRESOLVED | Supported at-rule envelope and optional CSS Layers API/integration; Layers KEEP is decided, API is not |
+| D08 | PARTIALLY RESOLVED / still open | Flat CSS Layers API and tested media/supports/container integration approved and implemented; broader at-rule envelope remains open |
 | D09 | UNRESOLVED | Raw Sass leaf nesting and BEM re-entry through raw wrappers |
 | D10 | UNRESOLVED | Stable import path, deep-import policy, and publication surface |
 | D11 | PARTIALLY RESOLVED / still open | Compound qualifiers and three pending relations approved; functional pseudos and selector-context chaining deferred. Other deferred matrix/release boundaries including Q07 and root/nested extend still require review |
 
 The legacy retirement decisions in section 1 also stand; they are not additional
 unresolved groups. Structural selector policy is implemented; conditional-selector,
-other deferred relationships, raw nesting, import, and layer questions still require
-review. Separator configuration is implemented; layers and conditional selectors
+other deferred relationships, raw nesting, imports, and broader at-rules still require
+review. Separator configuration and flat layers are implemented; conditional selectors
 are not. Multiple qualifier tokens in one call are approved; nested selector
 calls remain deferred. See [the selector design decision](SELECTOR-DESIGN-v3.md).
 
@@ -469,3 +474,56 @@ Logs: `tmp/separators-*.log`. There is still one evolving mutable module global
 and one emission boundary; public configuration adds two load-time inputs only.
 Six hardening decision groups remain open; the explicit-null/default limitation
 is documented above rather than counted as a new design decision.
+
+
+## CSS Layers stabilization: completed recovery verification
+
+The interrupted working tree already contained the production implementation,
+30 layer tests (202 production tests total), export/architecture guards, the
+57-test CSS Layers spike, and the layer sections in SPEC and PRODUCTION.
+Recovery completed README and hardening documentation, clarified historical
+design decisions, added exact unnamespaced legacy usage coverage, and added
+same-layer nested rejection coverage. No production source repair was needed.
+
+Verified on Node 22.19.0 / Dart Sass 1.104.1:
+
+| Suite | Passing tests |
+| --- | ---: |
+| Production | 203 |
+| Normal project (unit + production) | 205 |
+| Characterization | 58 |
+| Legacy (smoke + characterization) | 60 |
+| Combined project (unit + production + legacy + characterization) | 265 |
+| Selector-engine spike | 27 |
+| Context-stack spike | 15 |
+| Structural-selector spike | 16 |
+| CSS Layers spike | 57 |
+
+All required npm scripts and all four spike suites pass. Detailed runs use
+`--experimental-test-isolation=none` to count individual tests in this environment;
+the default isolated reporter counts files. Combined project counts exclude spikes
+and include characterization only once. Legacy warnings remain unsuppressed in
+`tmp/layers-recovery-*.log`; no historical expected outputs were updated.
+
+Source and export guards confirm six public mixins, three load-time configuration
+variables, no public functions, exactly one evolving mutable module-global value
+(the private BEM context stack), and exactly one BEM emission boundary. No layer
+stack, mutable current-layer value, order history/cache, enable switch, or retired
+theme/path/debug/`:where()` machinery exists in production.
+
+Production tests verify strict flat registry lookup, quoted/unquoted string
+equivalence, explicit repeatable ordering, lexical inheritance, nested explicit
+selection rejection (including the same layer), all approved descendant forms,
+custom separators, and media/supports/container integration. The root-only check
+uses existing context provenance; no layer field was added.
+
+Ordering belongs before the first layered CSS in the final effective CSS ordering.
+Consumers may use `css-layers()` or a manual declaration; external CSS splitting,
+extraction, concatenation, and runtime injection remain outside BEMinator's
+guarantee. See [the ordering contract](PRODUCTION-v3.md#optional-css-layers).
+
+This CSS Layers task is complete. Six broader hardening groups remain open:
+D03 (BEM name domain), D05 (diagnostics), D08 (broader at-rule envelope),
+D09 (raw nesting/re-entry), D10 (imports/publication), and D11 (deferred relationships,
+functional selectors, Q07 and release scope). Flat layers and their tested
+conditional integrations are implemented, not pending decisions.

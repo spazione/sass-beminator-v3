@@ -1,0 +1,81 @@
+// Disposable API candidate. All BEM operations still use the unchanged core.
+@forward '../../src' show element, modifier, selector, extend,
+  $element-separator, $modifier-separator;
+@use '../../src' as core;
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:meta';
+@use 'sass:string';
+
+$css-layers: (
+  generic: (), elements: (), atoms: (), molecules: (), organisms: (),
+  templates: (), pages: (), utilities: (),
+) !default;
+
+// Conservative experimental domain, not a full CSS identifier parser.
+@function -name($value) {
+  @if meta.type-of($value) != string or string.length($value) == 0 {
+    @error 'Layer spike: expected a nonempty string layer name.';
+  }
+  $name: string.unquote($value);
+  $letters: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_';
+  @if not string.index($letters, string.slice($name, 1, 1)) {
+    @error 'Layer spike: names must start with an ASCII letter or underscore.';
+  }
+  @for $i from 1 through string.length($name) {
+    @if not string.index($letters + '0123456789-', string.slice($name, $i, $i)) {
+      @error 'Layer spike: names may contain only ASCII letters, digits, underscores and hyphens.';
+    }
+  }
+  @if list.index(('initial', 'inherit', 'unset', 'revert', 'revert-layer', 'default'), string.to-lower-case($name)) {
+    @error 'Layer spike: reserved layer name.';
+  }
+  @return $name;
+}
+
+@mixin -validate-registry() {
+  @if meta.type-of($css-layers) != map or list.length($css-layers) == 0 {
+    @error 'Layer spike: css-layers must be a nonempty map.';
+  }
+  $seen: ();
+  @each $key, $ignored in $css-layers {
+    $name: -name($key);
+    @if map.has-key($seen, $name) { @error 'Layer spike: duplicate normalized name.'; }
+    $seen: map.set($seen, $name, true);
+  }
+}
+@include -validate-registry();
+
+@function -lookup($value) {
+  $name: -name($value);
+  @if not map.has-key($css-layers, $name) {
+    @error 'Layer spike: unknown configured layer "#{$name}".';
+  }
+  @return $name;
+}
+
+@mixin block($name, $layer: null) {
+  @if $layer == null {
+    @include core.block($name) { @content; }
+  } @else {
+    $resolved: -lookup($layer);
+    @layer #{$resolved} {
+      @include core.block($name) { @content; }
+    }
+  }
+}
+
+// Candidate B: call explicitly at stylesheet root before any layer use.
+@mixin css-layers() {
+  $names: ();
+  @each $key, $ignored in $css-layers {
+    $names: list.append($names, -name($key), comma);
+  }
+  @layer #{$names};
+}
+
+// Secondary evidence only; not a recommended extra public API.
+@mixin layer($name) {
+  $resolved: -lookup($name);
+  @layer #{$resolved} { @content; }
+}

@@ -37,10 +37,39 @@ This does not prescribe incidental whitespace or serialization formatting.
 
 Themed buttons, Atomic Design helpers, project-specific paths/conventions, and
 Eurobet-specific behavior are excluded from the core; if retained, they belong
-to future plugins/presets. CSS Layers remain a future optional v3 capability.
+to future plugins/presets. Optional flat CSS Layers are approved as specified below.
 Legacy automatic theme/path discovery and its injection plumbing are retired;
 theme loading belongs outside BEMinator. Historical `atoms` wrappers and theme
 options do not become core requirements through the selector fixtures.
+
+## Optional flat CSS Layers
+
+The public block signature is `block($name, $layer: null)`. A non-null selection
+must be a configured top-level name in the ordered `$css-layers` map; it wraps
+the complete root block subtree in that layer without changing BEM selectors.
+Null/omitted adds no wrapper and does not escape an existing lexical layer.
+Nested blocks inherit naturally, but explicit non-null layer selection on any
+nested BEM block is rejected, even beneath an unlayered root. Blocks beneath
+extend remain invalid regardless of layer selection.
+
+The registry is a nonempty load-time Sass map. Values have no semantics and nested
+values are not interpreted. Keys are case-sensitive evaluated strings using the
+conservative ASCII name domain documented in PRODUCTION-v3; reserved keywords,
+empty names, whitespace, dots, commas, arbitrary CSS, and non-strings are rejected.
+Quoted/unquoted equivalent strings match. Duplicate normalized names are invalid;
+Sass may diagnose duplicates before module validation. Explicit null configuration
+is subject to Sass's documented default substitution. Unknown selection is an error.
+
+`css-layers()` emits configured top-level key order at its call site. No ordering
+CSS is automatic; repeats emit repeats. Consumers may instead write the statement
+manually. Final order must precede layered CSS; external framework/bundler ordering
+is outside BEMinator's guarantee. There is no mutable layer/order state.
+
+Layer propagation through `@media`, `@supports`, and `@container` is approved in
+both lexical wrapper orders, including conditional wrappers around pending RHS
+elements. This does not approve raw selector re-entry or arbitrary at-rules.
+See [PRODUCTION-v3](PRODUCTION-v3.md#optional-css-layers) for configuration,
+exact signatures, validation domain, examples, and integration responsibilities.
 
 ## Nesting contract
 
@@ -102,7 +131,8 @@ this invariant does not claim that adding A leaves the whole stylesheet or its
 cascade unchanged. Returning from a nested call must likewise leave later
 sibling calls governed by their enclosing public context.
 
-The invariant applies to all five mixins and independent top-level calls.
+The invariant applies to all five BEM composition mixins and independent top-level
+calls. The stateless ordering mixin does not alter their context.
 Names, modifier targeting, combinators, and ancestor scope may not depend on
 previous completed siblings. It is an observable guarantee only.
 
@@ -394,6 +424,6 @@ a complete public API contract, not progress on the already approved subset:
 5. **Diagnostics:** exact error messages and any public diagnostic contract for
    invalid nesting. Rejection itself is already required.
 
-Addon interfaces, optional CSS Layers, and future plugin/preset packaging
+Addon interfaces, future nested CSS Layers, and plugin/preset packaging
 remain separate design questions; they must not be
 coupled to or treated as prerequisites for this initial core behavior.

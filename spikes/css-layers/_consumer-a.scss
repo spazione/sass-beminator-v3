@@ -1,0 +1,2 @@
+@use 'automatic' as p;
+@include p.block('a', $layer: 'molecules') { color: red; }

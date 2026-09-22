@@ -7,6 +7,48 @@
 // Load-time construction inputs, not evolving lexical context.
 $element-separator: '__' !default;
 $modifier-separator: '--' !default;
+$css-layers: (
+  generic: (), elements: (), atoms: (), molecules: (), organisms: (),
+  templates: (), pages: (), utilities: (),
+) !default;
+
+// Validate evaluated names, not arbitrary CSS or a complete identifier grammar.
+@function -layer-name($value) {
+  @if meta.type-of($value) != string or string.length($value) == 0 {
+    @error 'BEMinator: layer names must be nonempty Sass strings.';
+  }
+  $name: string.unquote($value);
+  $letters: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_';
+  @if not string.index($letters, string.slice($name, 1, 1)) {
+    @error 'BEMinator: layer names must start with an ASCII letter or underscore.';
+  }
+  @for $index from 1 through string.length($name) {
+    @if not string.index($letters + '0123456789-', string.slice($name, $index, $index)) {
+      @error 'BEMinator: layer names may contain only ASCII letters, digits, underscores and hyphens.';
+    }
+  }
+  @if list.index(('initial', 'inherit', 'unset', 'revert', 'revert-layer', 'default'), string.to-lower-case($name)) {
+    @error 'BEMinator: reserved layer name "#{$name}".';
+  }
+  @return $name;
+}
+
+@mixin -validate-layers() {
+  @if meta.type-of($css-layers) != map or list.length($css-layers) == 0 {
+    @error 'BEMinator: $css-layers must be a nonempty Sass map.';
+  }
+  $seen: ();
+  @each $key, $ignored in $css-layers {
+    $name: -layer-name($key);
+    @if map.has-key($seen, $name) {
+      @error 'BEMinator: duplicate normalized layer name "#{$name}".';
+    }
+    $seen: map.set($seen, $name, true);
+  }
+}
+
+@include -validate-layers();
+
 
 @mixin -validate-separator($value, $setting) {
   @if meta.type-of($value) != string or string.length($value) == 0 {
@@ -174,8 +216,33 @@ $-context-stack: ();
   @include -restore-context($previous);
 }
 
-@mixin block($name) {
-  @include -enter(block, $name) { @content; }
+@mixin block($name, $layer: null) {
+  @if $layer == null {
+    @include -enter(block, $name) { @content; }
+  } @else {
+    // Every active core context belongs to a root block. No new ancestry fact
+    // is needed; existing validation retains the stronger extend prohibition.
+    $parent: -validate(-current-context(), block);
+    @if map.get($parent, kind) != root {
+      @error 'BEMinator: explicit layer selection is supported only on the root BEM block of a composition.';
+    }
+    $resolved: -layer-name($layer);
+    @if not map.has-key($css-layers, $resolved) {
+      @error 'BEMinator: unknown configured layer "#{$resolved}" in $css-layers.';
+    }
+    @layer #{$resolved} {
+      @include -enter(block, $name) { @content; }
+    }
+  }
+}
+
+// Explicit call-site output: no automatic emission, hoisting, or history.
+@mixin css-layers() {
+  $names: ();
+  @each $key, $ignored in $css-layers {
+    $names: list.append($names, -layer-name($key), comma);
+  }
+  @layer #{$names};
 }
 
 @mixin element($name) {

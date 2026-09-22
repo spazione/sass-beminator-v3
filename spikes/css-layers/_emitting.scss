@@ -1,0 +1,3 @@
+// Consumer emits layered CSS immediately during @use, without declaring order.
+@use 'proof' as p;
+@include p.block('page', $layer: templates) { color: red; }
