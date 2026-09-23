@@ -3,7 +3,10 @@
 This specification records the maintainer-approved initial core semantics.
 It specifies observable selectors, nesting validity, and isolation, not how to
 implement them. The approved subset is implemented in production; later
-maintainer approvals below include the structural selector model.
+maintainer approvals below include the structural selector model. The
+[adopted stability contract](CORE-STABILITY-v3.md) closes D03/D05/D08/D09/D10/D11
+without broadening these semantics. The core API is stable; publication has not
+been performed.
 
 Authority and evidence:
 
@@ -20,10 +23,9 @@ acceptance criteria. Future v3 tests must express the decisions below separately
 
 ## Scope and notation
 
-The initial public core is `block`, `element`, `modifier`, `selector`, and
-`extend`. Examples use conceptual calls such as `block('a') → element('item')`;
-they establish behavior without finalizing all Sass parameter names, optional
-arguments, or module-export syntax. `→` means lexical nesting, not consecutive
+The stable public core is `block`, `element`, `modifier`, `selector`, `extend`,
+and the ordering mixin `css-layers`. Examples use conceptual calls such as `block('a') → element('item')`;
+the exact public signatures and exports are fixed in the adopted stability contract. `→` means lexical nesting, not consecutive
 sibling invocations. Separate consecutive calls are siblings unless nested.
 
 The default BEM separators are `__` for elements and `--` for modifiers.
@@ -75,9 +77,11 @@ exact signatures, validation domain, examples, and integration responsibilities.
 
 - **VALID**: approved relationship in the stated supported context.
 - **INVALID**: reject during compilation; do not silently accept the nesting or
-  produce a successful CSS result for it. Exact diagnostic wording is unresolved.
-- **DEFERRED**: unapproved/unspecified in this phase, not a promise of support and
-  not a maintainer decision to reject it. Runtime handling requires a later decision.
+  produce a successful CSS result for it. Semantic failure categories are stable;
+  exact diagnostic text and Sass-owned diagnostics are not public API.
+- **UNSUPPORTED / DEFERRED**: outside the stable API, with no future semantics
+  or implementation promised. Production rejects these matrix calls today.
+  No matrix completion is required for core stability.
 
 “Parent” is the nearest enclosing public core mixin. A plain declaration or Sass
 control-flow construct does not establish a new public parent. VALID entries
@@ -115,8 +119,10 @@ historical regression. The same distinction allows the tested
 `element → selector('+') → element` despite direct element nesting being invalid.
 
 The matrix is not blanket approval of every composite selector outcome.
-Q07's complete commented combination remains awaiting a decision about its exact
-output; its individually approved relationships are not revoked. Additional
+Q07's complete commented combination has no approved whole-output contract;
+its individually approved relationships are not revoked. Q07 remains archival
+evidence outside the stable contract, not a release-blocking decision. No runtime
+history detector rejects otherwise valid primitive compositions. Additional
 ordinary block depths and equal-name nesting are explicitly approved, however.
 
 ## Core invariant: lexical/context isolation
@@ -404,26 +410,28 @@ Evidence: X01–X03, N03, Q01–Q05; the four `core/extend/*` fixtures,
 both `invalid/block-extend-block*` cases, and the corresponding exploratory
 extend/block fixtures. Deferred experimental successes are not v3 requirements.
 
-## Remaining semantic decisions before broader implementation design
+## Adopted release policy and unsupported future semantics
 
-The approved subset is implemented. These questions prevent claiming
-a complete public API contract, not progress on the already approved subset:
+[CORE-STABILITY-v3.md](CORE-STABILITY-v3.md) is the adopted stable contract for
+D03, D05, D08, D09, D10, and D11. BEM names are evaluated Sass strings matching
+`[A-Za-z_][A-Za-z0-9_-]*`; variables, interpolation, and normalized escapes use
+that same rule. Already-BEM-looking names are opaque. Diagnostic categories are
+stable; exact wording and Sass-owned diagnostics are not API.
 
-1. **Explicit DEFER:** whether top-level extend (Q01) and nested extends (Q02)
-   will be supported. Neither is silently approved or converted into REJECT.
-2. **Unaddressed composite output:** whether to approve the exact Q07 commented
-   regression combination. Its valid individual relationships are unaffected.
-3. **Untested contexts and selector scope:** disposition and runtime treatment
-   of the other DEFERRED matrix entries, additional selector strings, and
-   forms outside the approved structural families, including functional pseudos
-   and selector-context chaining.
-4. **Public arguments and configuration:** the remaining name-domain policy. Public
-   signatures and load-time separator policy are recorded in PRODUCTION-v3;
-   separator configuration is implemented (including the documented Sass null-default
-   limitation).
-5. **Diagnostics:** exact error messages and any public diagnostic contract for
-   invalid nesting. Rejection itself is already required.
+The sole public entrypoint is `src/_index.scss`, exposed through the package root.
+Deep imports have no compatibility promise. At-rule integration guarantees cover
+tested media/supports/container forms and flat CSS Layers only. Keyframes,
+font-face, property, page, scope, custom/unknown at-rules, and caller-authored
+at-root queries are outside the BEM integration guarantee, not prohibited CSS.
 
-Addon interfaces, future nested CSS Layers, and plugin/preset packaging
-remain separate design questions; they must not be
-coupled to or treated as prerequisites for this initial core behavior.
+Raw leaf rules inside a complete BEM rule are supported as ordinary Sass styling.
+Raw selectors do not establish BEM context; BEM re-entry through them is
+unsupported and can silently lose lexical conditions. Qualified selector bodies
+still cannot contain BEM children, so they are not a conditional-descendant
+workaround.
+
+Root extend (Q01), nested extend (Q02), Q07's complete historical output, other
+DEFERRED entries, functional pseudos, and selector-context chaining remain outside
+the stable subset with no future implementation promised. Addons, nested CSS
+Layers, broader identifiers, and additional at-rule integrations are non-blocking
+future topics. Publication is separate from this stable core declaration.

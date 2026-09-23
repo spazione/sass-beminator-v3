@@ -73,17 +73,17 @@ test('malformed, empty, and unsupported relation input does not emit CSS', () =>
 test('functional pseudos are deferred even when escaped or mixed with attributes/pseudos', () => {
   for (const input of [':has(.foo)', ':not(.foo)', ':is(.foo, .bar)', ':where(.foo)', ':nth-child(2n)',
     ':hover:has(.foo)', '[disabled]:not(.foo)', String.raw`:hover:h\61 s(.foo)`]) {
-    assert.throws(() => compile(block(`@include bem.selector(${quote(input)}) {}`)), /functional pseudo selectors are deferred/);
+    assert.throws(() => compile(block(`@include bem.selector(${quote(input)}) {}`)), /functional pseudo selectors are unsupported in the current BEMinator API/);
   }
 });
 test('one compound call is allowed but qualified selector-context chaining remains deferred', () => {
   assert.deepEqual(rules(compile(block("@include bem.selector(':hover:focus') { content: 'compound'; }"))), [['.card:hover:focus', 'compound']]);
-  assert.throws(() => compile(block("@include bem.selector(':hover') { @include bem.selector(':focus') {} }")), /nesting qualified -> qualified is deferred/);
+  assert.throws(() => compile(block("@include bem.selector(':hover') { @include bem.selector(':focus') {} }")), /nesting qualified -> qualified is unsupported in the current BEMinator API/);
 });
 test('all public BEM children of qualified compounds remain deferred', () => {
   for (const child of ["@include bem.block('inner') {}", "@include bem.element('inner') {}", "@include bem.modifier('active') {}",
     "@include bem.extend('icon', 'active') {}", "@include bem.selector('[disabled]:hover') {}", "@include bem.selector('>') {}"]) {
-    assert.throws(() => compile(block(`@include bem.selector('[disabled]:hover') { ${child} }`)), /nesting qualified -> [\w-]+ is deferred/);
+    assert.throws(() => compile(block(`@include bem.selector('[disabled]:hover') { ${child} }`)), /nesting qualified -> [\w-]+ is unsupported in the current BEMinator API/);
   }
 });
 test('extend ancestry overrides qualified and pending local restrictions', () => {
@@ -125,7 +125,7 @@ for (const relation of ['+', '>', '~']) {
   test(`${relation} pending frame accepts only an element child`, () => {
     for (const child of ["@include bem.block('bad') {}", "@include bem.modifier('bad') {}", "@include bem.extend('icon', 'bad') {}",
       "@include bem.selector(':hover') {}", "@include bem.selector('>') {}"]) {
-      assert.throws(() => compile(element(`@include bem.selector('${relation}') { ${child} }`)), /nesting pending-relation -> [\w-]+ is deferred/);
+      assert.throws(() => compile(element(`@include bem.selector('${relation}') { ${child} }`)), /nesting pending-relation -> [\w-]+ is unsupported in the current BEMinator API/);
     }
   });
 }

@@ -91,8 +91,8 @@ $-context-stack: ();
   @if not string.index($letters, string.slice($name, 1, 1)) {
     @error 'BEMinator: a BEM name must start with an ASCII letter or underscore.';
   }
-  @each $character in string.split($name, '') {
-    @if not string.index('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789-', $character) {
+  @for $index from 1 through string.length($name) {
+    @if not string.index($letters + '0123456789-', string.slice($name, $index, $index)) {
       @error 'BEMinator: a BEM name may contain only ASCII letters, digits, underscores and hyphens.';
     }
   }
@@ -129,11 +129,6 @@ $-context-stack: ();
   @return (kind: qualified, value: $parsed);
 }
 
-// Private immutable relationship data; only the context stack evolves at runtime.
-$-allowed-transitions: (root: (block,), block: (block, element, modifier, extend, qualified),
-  element: (modifier, qualified, pending-relation), modifier: (block, element, qualified),
-  qualified: (), pending-relation: (element,), extend: (element,));
-
 @function -validate($parent, $kind) {
   $parent-kind: map.get($parent, kind);
   // Ancestry takes precedence over immediate-parent and deferred relationships.
@@ -144,7 +139,10 @@ $-allowed-transitions: (root: (block,), block: (block, element, modifier, extend
       ($parent-kind == modifier and $kind == modifier) {
     @error 'BEMinator: invalid nesting: #{$parent-kind} -> #{$kind}.';
   }
-  @if not list.index(map.get($-allowed-transitions, $parent-kind), $kind) {
+  $allowed: (root: (block,), block: (block, element, modifier, extend, qualified),
+    element: (modifier, qualified, pending-relation), modifier: (block, element, qualified),
+    qualified: (), pending-relation: (element,), extend: (element,));
+  @if not list.index(map.get($allowed, $parent-kind), $kind) {
     @error 'BEMinator: nesting #{$parent-kind} -> #{$kind} is unsupported in the current BEMinator API.';
   }
   @return $parent;

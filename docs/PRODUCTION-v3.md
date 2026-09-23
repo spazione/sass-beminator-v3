@@ -1,5 +1,8 @@
 # Approved production core
 
+The [adopted stability contract](CORE-STABILITY-v3.md) closes all six remaining
+hardening groups. **The core API is stable; package publication has not occurred.**
+
 The public entrypoint is `src/_index.scss`. It explicitly exports six mixins:
 
 ```scss
@@ -13,22 +16,31 @@ css-layers()
 
 The only public variables are `$element-separator`, `$modifier-separator`, and
 `$css-layers`. Calls nest without context arguments or `using` clauses. All
-helpers remain private; there are no public functions.
+helpers remain private; there are no public functions. The supported module is
+`src/_index.scss` (`@use './src' as bem` from the repository root). Only this
+entrypoint is supported; deep imports have no compatibility promise. Package-style
+`sass-beminator` examples assume a configured consumer resolver. The finalized
+package name is `sass-beminator`, with root `sass`/`exports` metadata. The verified
+Dart Sass NodePackageImporter syntax is `@use 'pkg:sass-beminator' as bem;`.
+See [package resolution](CORE-STABILITY-v3.md#4-d10-one-supported-entrypoint-explicit-resolver-requirements).
+Namespaced examples are preferred; custom namespaces and `as *` work.
 
 The core implements the approved relationships in
 [SPEC-v3.md](SPEC-v3.md), including recursive/equal-name blocks, single and
 conjunctive double modifiers, contextual elements, and sibling isolation.
 Direct element/element and modifier/modifier calls fail compilation. Top-level
-element/modifier and element/block are deferred and report “not implemented in
-this slice”; that boundary does not decide their future semantics. Q07 remains
+element/modifier and element/block are unsupported and report “unsupported in
+the current BEMinator API”; no future semantics or implementation is promised. Q07 remains
 unapproved as a complete combination; no special history tracking is introduced.
 
 Block, element, modifier, and extend target/modifier names are nonempty quoted or unquoted
 strings starting with an ASCII letter or underscore, followed by ASCII letters,
 digits, underscores or hyphens. Examples include `card`, `standard-object`, and `fatherdMod`. Whitespace,
-selector lists, escapes, arbitrary selectors, numbers, and other name forms are
-outside this slice and rejected. This conservative input policy is not a general
-CSS identifier validator or the final input-domain decision. A modifier accepts
+selector lists, arbitrary selectors, numbers, leading hyphens, and Unicode names
+are rejected. Validation checks evaluated Sass strings: variables and interpolation
+work when their resulting value passes, and Sass-normalized escapes yielding valid
+ASCII tokens pass too. There is no source-spelling preservation or full CSS
+identifier parser. This evaluated token domain is the stable v3 policy. A modifier accepts
 one required name and an optional second name (`null` means absent). Zero or
 more than two arguments fail through Sass's fixed mixin signature.
 
@@ -60,7 +72,7 @@ $element-separator: '__' !default;
 $modifier-separator: '--' !default;
 ```
 
-Using the consumer's BEMinator module path (package/import naming remains D10):
+Using the consumer's configured BEMinator package resolver:
 
 ```scss
 @use 'sass-beminator' as bem with (
@@ -106,8 +118,8 @@ are retired. Theme loading belongs outside BEMinator through normal Sass/build
 mechanisms. These are not future addon candidates absent a new use case.
 **CSS Layers are implemented as an optional v3 capability**; BEMinator remains
 usable without layers. See the explicit
-[maintainer decisions](CORE-HARDENING-v3.md). Six hardening decision groups
-remain open; the whole API is not yet stable.
+[adopted stability contract](CORE-STABILITY-v3.md). Future optional features do
+not block the stable core.
 
 ## Optional CSS Layers
 
@@ -325,7 +337,7 @@ ancestry check precedes local/deferred relationship checks and reports
 “invalid nesting: block is forbidden beneath extend.” It needs no global boolean.
 
 Top-level extend and extend → extend remain **DEFERRED**, reporting the existing
-“deferred; not implemented in this slice” diagnostic. Extend under element,
+“unsupported in the current BEMinator API” diagnostic. Extend under element,
 modifier, or selector is likewise unimplemented. Direct modifier/selector children
 of extend remain deferred; the only approved immediate child is element. Once
 that element exists, its already-approved modifier and selector relationships
@@ -339,6 +351,30 @@ artifacts, repeated calls, empty calls, independent roots, ancestry errors throu
 six paths, and representative sibling sequences mixing all five operations in
 valid contexts. Existing selector behavior and both historical leak corrections
 remain unchanged.
+
+## Stable integration boundaries
+
+Semantic failure categories are stable; exact diagnostic text and Sass-owned
+diagnostics are not public API. Temporary production wording has been replaced
+with version-neutral wording; focused rejection assertions remain category-specific.
+
+Support covers the tested media/supports/container wrapper forms
+and the documented CSS Layers behavior. BEM calls in `@keyframes`, `@font-face`,
+`@property`, `@page`, `@scope`, unknown/custom at-rule, or caller-authored `@at-root`
+contexts are
+outside that bounded contract. Unrelated CSS using them is not prohibited.
+Successful compilation alone does not grant BEM integration support.
+
+Ordinary raw leaf styling such as `> img { ... }` inside a complete BEM rule can
+be delegated to Sass. Raw selectors do not establish BEM context: re-entering BEM
+mixins through `&:hover` or `.wrapper` is unsupported and may silently lose that
+condition. `selector()` supports qualification of the current subject only;
+its qualified body cannot contain `element()` or other public BEM children.
+Raw rules inside pending relations do not supply a supported RHS.
+
+Unsupported/deferred matrix calls remain rejected;
+future meanings, root/nested extend, functional pseudos, and the historical Q07
+whole-output question need not be solved to release the approved subset.
 
 ## Private architecture and verification
 
@@ -366,16 +402,19 @@ Run `npm run test:production` alone, or `npm test` for unit and production tests
 `npm run test:watch` watches both. Characterization and disposable spike suites
 remain separate and unchanged. No dependencies or runtime configuration APIs are added.
 
-The approved v3 core behavior subset is implemented. Whole-API stabilization
-still has six open hardening decision groups. This does not settle top-level/nested extend, Q07, broader argument
-policy, deferred selector forms, or broader raw CSS/at-rule integration. Those remaining questions are outside
-this contract; addon/plugin work has not begun.
+The approved v3 core subset is stable. D03/D05/D08/D09/D10/D11 are adopted.
+Root/nested extend, Q07, broader identifiers, deferred selector forms, and broader
+raw CSS/at-rule integration remain outside the stable API, with no future delivery
+promised. Addon/plugin work has not begun. `npm run test:package` additionally
+verifies a packed artifact through the public package entrypoint.
 
 Relative to the spike, approved selector outputs are unchanged. Production adds
 safe rejection of bare declarations in a pending `+` by executing pending content
 outside style rules. It retains the existing pure derivation and saved-stack
 restoration architecture, with no production depth assertions or debug exports.
 It imports no spike or legacy code.
+
+## Historical validation before stable-core adoption
 
 Extend-slice validation, before keyword stabilization, on Node 22.19.0 / Dart Sass
 1.104.1: **93 production tests passed**
@@ -435,7 +474,7 @@ Six hardening decision groups remain open; the explicit-null/default limitation
 is documented above rather than counted as a new design decision.
 
 
-## CSS Layers stabilization: completed recovery verification
+## Historical CSS Layers stabilization: completed recovery verification
 
 The interrupted working tree already contained the production implementation,
 30 layer tests (202 production tests total), export/architecture guards, the
@@ -486,3 +525,20 @@ D03 (BEM name domain), D05 (diagnostics), D08 (broader at-rule envelope),
 D09 (raw nesting/re-entry), D10 (imports/publication), and D11 (deferred relationships,
 functional selectors, Q07 and release scope). Flat layers and their tested
 conditional integrations are implemented, not pending decisions.
+
+
+## Stable-core adoption completed
+
+D03/D05/D08/D09/D10/D11 are formally adopted in
+[CORE-STABILITY-v3.md](CORE-STABILITY-v3.md). Earlier open-group counts above are
+historical. The core API is stable and the package is not published. The follow-up
+changes only diagnostic wording in production, adds the supported raw-leaf sibling
+regression, and verifies the finalized `sass-beminator` package entrypoint from an
+actual offline packed artifact. No deferred feature or relationship is added.
+
+Final validation: 204 production, 206 normal project, 58 characterization,
+60 legacy (including characterization), 1 package-entrypoint, and 267 combined
+project tests pass. Spikes pass separately: 27 selector-engine, 15 context-stack,
+16 structural-selector, 57 CSS Layers. Architecture stays one evolving mutable
+global and one BEM emission boundary. See the adopted contract for distribution
+prerequisites and the non-blocking future feature list.

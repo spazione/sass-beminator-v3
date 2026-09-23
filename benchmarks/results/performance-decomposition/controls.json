@@ -1,0 +1,21 @@
+{
+  "coreSha256": "805b444631498f9f5ba634605b289ab10fc6fee8a6083af1588a0338070346e7",
+  "nameCases": 205,
+  "relationshipCases": 84,
+  "fixtureCases": 43,
+  "helperCountsIncludingStartup": {
+    "-validate-layers": 1,
+    "-layer-name": 8,
+    "-validate-separator": 2,
+    "-enter": 5,
+    "-current-context": 5,
+    "-validate": 5,
+    "-name": 5,
+    "-derive": 5,
+    "-push-context": 5,
+    "-complete-selector": 5,
+    "-qualify": 2,
+    "-restore-context": 5
+  },
+  "completedAt": "2026-09-22T20:08:43.541Z"
+}

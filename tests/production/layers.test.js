@@ -130,8 +130,8 @@ test('empty layered blocks establish a layer; pending declarations and selector 
   assert.equal(compile(block('')), '@layer molecules {}');
   for (const [body, diagnostic] of [
     ["@include bem.element('item') { @include bem.selector('>') { color: red; } }", /Declarations may only be used within style rules/],
-    ["@include bem.selector(':has(.foo)') {}", /functional pseudo selectors are deferred/],
-    ["@include bem.selector(':hover') { @include bem.selector(':focus') {} }", /qualified -> qualified is deferred/],
+    ["@include bem.selector(':has(.foo)') {}", /functional pseudo selectors are unsupported in the current BEMinator API/],
+    ["@include bem.selector(':hover') { @include bem.selector(':focus') {} }", /qualified -> qualified is unsupported in the current BEMinator API/],
   ]) assert.throws(() => compile(block(body)), diagnostic);
 });
 test('layer parameters do not expand descendant signatures or restore retired arguments', () => {

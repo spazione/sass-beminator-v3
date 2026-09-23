@@ -104,7 +104,7 @@ test('functional selector values remain deferred, including mixed compounds', ()
     "':is(.card__featured)'", "':where(.card__featured)'", "':nth-child(2n)'",
     "':hover:has(.foo)'", "'[disabled]:not(.foo)'"]) {
     assert.throws(() => compile(wrap(`@include bem.selector(${value}) {}`)),
-      /BEMinator: functional pseudo selectors are deferred/);
+      /BEMinator: functional pseudo selectors are unsupported in the current BEMinator API/);
   }
 });
 test('selector requires exactly one argument', () => {
@@ -114,7 +114,7 @@ test('selector requires exactly one argument', () => {
 });
 test('qualified selectors reject root parent', () => {
   assert.throws(() => compile("@include bem.selector(':before') {}"),
-    /nesting root -> qualified is deferred/);
+    /nesting root -> qualified is unsupported in the current BEMinator API/);
 });
 test('pending relations reject root, block, and modifier parents', () => {
   for (const form of ['+', '>', '~']) {
@@ -123,7 +123,7 @@ test('pending relations reject root, block, and modifier parents', () => {
       [call, 'root'], [`@include bem.block('card') { ${call} }`, 'block'],
       [wrap(`@include bem.modifier('active') { ${call} }`), 'modifier'],
     ]) {
-      assert.throws(() => compile(source), new RegExp(`nesting ${parent} -> pending-relation is deferred`));
+      assert.throws(() => compile(source), new RegExp(`nesting ${parent} -> pending-relation is unsupported in the current BEMinator API`));
     }
   }
 });
@@ -137,7 +137,7 @@ test(':before has no approved core children; + permits only element children', (
       if (form === '+' && mixin === 'element') continue;
       assert.throws(() => compile(wrap(`@include bem.selector('${form}') {
         @include bem.${mixin}(${args}) {}
-      }`)), /nesting (qualified|pending-relation) -> [\w-]+ is deferred; not implemented in this slice/);
+      }`)), /nesting (qualified|pending-relation) -> [\w-]+ is unsupported in the current BEMinator API/);
     }
   }
 });

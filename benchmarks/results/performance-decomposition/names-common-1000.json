@@ -1,0 +1,260 @@
+{
+  "startedAt": "2026-09-22T20:02:47.221Z",
+  "group": "names",
+  "scenario": "common",
+  "scale": 1000,
+  "node": "v22.19.0",
+  "sass": "dart-sass\t1.104.1\t(Sass Compiler)\t[Dart]\ndart2js\t3.13.3\t(Dart Compiler)\t[Dart]",
+  "coreSha256": "805b444631498f9f5ba634605b289ab10fc6fee8a6083af1588a0338070346e7",
+  "harnessSha256": "ec07e21d8e046a5187e11668ff2d70d1dc18592a9ad4eedadad942f621479ce6",
+  "scriptSha256": "197e27501d4587b61a34db40e8aa74ba98946ed9ccea1f16a9e1fc7abf6c29be",
+  "cpu": "Intel(R) Core(TM) Ultra 5 238V",
+  "loadAverageStart": [
+    0.51,
+    0.28,
+    0.29
+  ],
+  "methodology": {
+    "warmups": 2,
+    "iterations": 6,
+    "order": "rotate starting lane, reverse alternate rounds; order stored explicitly",
+    "v3Loading": "identical in-memory importer per variant; fresh compilation every call",
+    "v2Loading": "original file entrypoint; fresh compilation",
+    "timing": "compileString only; fixture generation, transforms, checks, I/O untimed",
+    "logger": "silent for all timing lanes",
+    "gc": "not forced"
+  },
+  "cssBytes": 134677,
+  "orders": [
+    {
+      "round": 0,
+      "warmup": true,
+      "names": [
+        "stock",
+        "name-first",
+        "name-type",
+        "name-bypass",
+        "name-hoist",
+        "name-equivalent"
+      ]
+    },
+    {
+      "round": 1,
+      "warmup": true,
+      "names": [
+        "stock",
+        "name-equivalent",
+        "name-hoist",
+        "name-bypass",
+        "name-type",
+        "name-first"
+      ]
+    },
+    {
+      "round": 2,
+      "warmup": false,
+      "names": [
+        "name-type",
+        "name-bypass",
+        "name-hoist",
+        "name-equivalent",
+        "stock",
+        "name-first"
+      ]
+    },
+    {
+      "round": 3,
+      "warmup": false,
+      "names": [
+        "name-type",
+        "name-first",
+        "stock",
+        "name-equivalent",
+        "name-hoist",
+        "name-bypass"
+      ]
+    },
+    {
+      "round": 4,
+      "warmup": false,
+      "names": [
+        "name-hoist",
+        "name-equivalent",
+        "stock",
+        "name-first",
+        "name-type",
+        "name-bypass"
+      ]
+    },
+    {
+      "round": 5,
+      "warmup": false,
+      "names": [
+        "name-hoist",
+        "name-bypass",
+        "name-type",
+        "name-first",
+        "stock",
+        "name-equivalent"
+      ]
+    },
+    {
+      "round": 6,
+      "warmup": false,
+      "names": [
+        "stock",
+        "name-first",
+        "name-type",
+        "name-bypass",
+        "name-hoist",
+        "name-equivalent"
+      ]
+    },
+    {
+      "round": 7,
+      "warmup": false,
+      "names": [
+        "stock",
+        "name-equivalent",
+        "name-hoist",
+        "name-bypass",
+        "name-type",
+        "name-first"
+      ]
+    }
+  ],
+  "results": [
+    {
+      "name": "stock",
+      "label": "production control",
+      "samplesMs": [
+        1130.3077759999978,
+        1165.7767310000017,
+        1143.9374470000039,
+        1263.5263609999965,
+        1261.3146320000014,
+        1161.8229320000028
+      ],
+      "sourceSha256": "805b444631498f9f5ba634605b289ab10fc6fee8a6083af1588a0338070346e7",
+      "statsMs": {
+        "median": 1163.7998315000023,
+        "mean": 1187.780979833334,
+        "min": 1130.3077759999978,
+        "max": 1263.5263609999965,
+        "p95": 1263.5263609999965,
+        "stddev": 54.04934861350266
+      }
+    },
+    {
+      "name": "name-first",
+      "label": "diagnostic lower bound only",
+      "samplesMs": [
+        896.4724219999989,
+        971.5865529999974,
+        903.3650189999971,
+        939.131607999996,
+        1061.3584239999982,
+        1107.0255259999976
+      ],
+      "sourceSha256": "26a66e0b0b1b12cf09ba92382c8fdeb36dfba3ffe16818b6fc7ccbb9b649ba6d",
+      "statsMs": {
+        "median": 955.3590804999967,
+        "mean": 979.8232586666642,
+        "min": 896.4724219999989,
+        "max": 1107.0255259999976,
+        "p95": 1107.0255259999976,
+        "stddev": 78.89368177157894
+      }
+    },
+    {
+      "name": "name-type",
+      "label": "diagnostic lower bound only",
+      "samplesMs": [
+        900.5917260000024,
+        1008.5338069999998,
+        981.3129780000017,
+        916.9188920000015,
+        1202.7883589999983,
+        1001.0772330000036
+      ],
+      "sourceSha256": "6009f77f0453b2bc6623039d162d68df043e54e2426cf5a0bca980a114fa0454",
+      "statsMs": {
+        "median": 991.1951055000027,
+        "mean": 1001.8704991666679,
+        "min": 900.5917260000024,
+        "max": 1202.7883589999983,
+        "p95": 1202.7883589999983,
+        "stddev": 98.58143205269535
+      }
+    },
+    {
+      "name": "name-bypass",
+      "label": "diagnostic lower bound only",
+      "samplesMs": [
+        1189.7124159999985,
+        1881.555177000002,
+        952.683020000004,
+        843.3947410000037,
+        946.1646219999966,
+        865.6254489999992
+      ],
+      "sourceSha256": "c1aedf698aa30343e5042e6e788a13fcfad17a23ea7af25a5c52ee32090ab417",
+      "statsMs": {
+        "median": 949.4238210000003,
+        "mean": 1113.1892375000007,
+        "min": 843.3947410000037,
+        "max": 1881.555177000002,
+        "p95": 1881.555177000002,
+        "stddev": 361.4734618172089
+      }
+    },
+    {
+      "name": "name-hoist",
+      "label": "equivalent validation; hoist character alphabet per name",
+      "samplesMs": [
+        1195.3898929999996,
+        2467.951242000003,
+        2549.774636000002,
+        1190.840903999997,
+        1121.1880729999975,
+        1358.2462339999984
+      ],
+      "sourceSha256": "e5334417396c4a86b981f802ca458848907c9e1440765b36fbcd2ae15e9cfb3b",
+      "statsMs": {
+        "median": 1276.818063499999,
+        "mean": 1647.231830333333,
+        "min": 1121.1880729999975,
+        "max": 2549.774636000002,
+        "p95": 2549.774636000002,
+        "stddev": 613.84748271825
+      }
+    },
+    {
+      "name": "name-equivalent",
+      "label": "equivalent validation; hoist alphabet and skip already-checked first character",
+      "samplesMs": [
+        1120.9283990000004,
+        1163.877410000001,
+        1726.816098000003,
+        1148.1985669999995,
+        1232.6794789999985,
+        1178.5460450000028
+      ],
+      "sourceSha256": "db75e2a7583612395c87e7e0ecdcb04e2eef5de5dacd2c2dd521ec3894399319",
+      "statsMs": {
+        "median": 1171.2117275000019,
+        "mean": 1261.8409996666676,
+        "min": 1120.9283990000004,
+        "max": 1726.816098000003,
+        "p95": 1726.816098000003,
+        "stddev": 210.69650932879344
+      }
+    }
+  ],
+  "completedAt": "2026-09-22T20:03:43.349Z",
+  "loadAverageEnd": [
+    0.88,
+    0.43,
+    0.34
+  ]
+}

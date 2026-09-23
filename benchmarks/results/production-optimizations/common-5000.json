@@ -1,0 +1,298 @@
+{
+  "startedAt": "2026-09-23T07:47:12.520Z",
+  "scenario": "common",
+  "scale": 5000,
+  "node": "v22.19.0",
+  "sass": "dart-sass\t1.104.1\t(Sass Compiler)\t[Dart]\ndart2js\t3.13.3\t(Dart Compiler)\t[Dart]",
+  "cpu": "Intel(R) Core(TM) Ultra 5 238V",
+  "sourceHashes": {
+    "oldV3": "805b444631498f9f5ba634605b289ab10fc6fee8a6083af1588a0338070346e7",
+    "productionV3": "3a73cbdbb227f0f7a0d1d7a092eea4c47510694b3361378f234ddc2921cce6cd",
+    "entry": "e15f73fe8d86a34cf5fcf75c545a2c35e2f4435e753a21673fa9e6186a115c14",
+    "legacyEntry": "d0bebf30f8f98770ec2f554eec1f315116f2141105691c883e604849c016f58a",
+    "harness": "ec07e21d8e046a5187e11668ff2d70d1dc18592a9ad4eedadad942f621479ce6",
+    "script": "a0b508b55f25ce1fa95b35a06de301af0c207531f12cd703d9a97d8c693cdfcc"
+  },
+  "loadAverageStart": [
+    0.95,
+    0.49,
+    0.27
+  ],
+  "methodology": {
+    "warmups": 3,
+    "iterations": 10,
+    "api": "sass.compileString",
+    "unit": "ms",
+    "loading": "all lanes use real file imports; old and new v3 have identical entry/core layout",
+    "order": "rotate first lane; reverse alternate rounds; stored explicitly",
+    "logger": "silent for all lanes",
+    "p95": "nearest rank",
+    "stddev": "population",
+    "timing": "compile only; generation, correctness, statistics and I/O excluded",
+    "gc": "not forced"
+  },
+  "warningAudit": {
+    "v2": [
+      {
+        "message": "The Sass if() syntax is deprecated in favor of the modern CSS syntax.\n\nSuggestion: if(sass($isExtend == true): \"extend\"; else: \"block\")\n\nMore info: https://sass-lang.com/d/if-function",
+        "deprecation": true
+      },
+      {
+        "message": "The Sass if() syntax is deprecated in favor of the modern CSS syntax.\n\nSuggestion: if(sass($i != list.length($list) or $is-nested): $result #{$e}#{$glue}; else: $result #{$e})\n\nMore info: https://sass-lang.com/d/if-function",
+        "deprecation": true
+      }
+    ],
+    "old-v3": [],
+    "production-v3": []
+  },
+  "totalCalls": 25000,
+  "cssBytes": [
+    686677,
+    686677,
+    686677
+  ],
+  "orders": [
+    {
+      "round": 0,
+      "warmup": true,
+      "names": [
+        "v2",
+        "old-v3",
+        "production-v3"
+      ]
+    },
+    {
+      "round": 1,
+      "warmup": true,
+      "names": [
+        "v2",
+        "production-v3",
+        "old-v3"
+      ]
+    },
+    {
+      "round": 2,
+      "warmup": true,
+      "names": [
+        "production-v3",
+        "v2",
+        "old-v3"
+      ]
+    },
+    {
+      "round": 3,
+      "warmup": false,
+      "names": [
+        "production-v3",
+        "old-v3",
+        "v2"
+      ]
+    },
+    {
+      "round": 4,
+      "warmup": false,
+      "names": [
+        "old-v3",
+        "production-v3",
+        "v2"
+      ]
+    },
+    {
+      "round": 5,
+      "warmup": false,
+      "names": [
+        "old-v3",
+        "v2",
+        "production-v3"
+      ]
+    },
+    {
+      "round": 6,
+      "warmup": false,
+      "names": [
+        "v2",
+        "old-v3",
+        "production-v3"
+      ]
+    },
+    {
+      "round": 7,
+      "warmup": false,
+      "names": [
+        "v2",
+        "production-v3",
+        "old-v3"
+      ]
+    },
+    {
+      "round": 8,
+      "warmup": false,
+      "names": [
+        "production-v3",
+        "v2",
+        "old-v3"
+      ]
+    },
+    {
+      "round": 9,
+      "warmup": false,
+      "names": [
+        "production-v3",
+        "old-v3",
+        "v2"
+      ]
+    },
+    {
+      "round": 10,
+      "warmup": false,
+      "names": [
+        "old-v3",
+        "production-v3",
+        "v2"
+      ]
+    },
+    {
+      "round": 11,
+      "warmup": false,
+      "names": [
+        "old-v3",
+        "v2",
+        "production-v3"
+      ]
+    },
+    {
+      "round": 12,
+      "warmup": false,
+      "names": [
+        "v2",
+        "old-v3",
+        "production-v3"
+      ]
+    }
+  ],
+  "results": [
+    {
+      "name": "v2",
+      "samplesMs": [
+        1798.5500879999963,
+        2805.310243999993,
+        2043.7559630000032,
+        2155.351518999989,
+        1774.8295249999937,
+        2366.117114000008,
+        2338.8573050000123,
+        1988.3187529999996,
+        1927.8810820000072,
+        1699.3897759999963
+      ],
+      "statsMs": {
+        "median": 2016.0373580000014,
+        "mean": 2089.8361369,
+        "min": 1699.3897759999963,
+        "max": 2805.310243999993,
+        "p95": 2805.310243999993,
+        "stddev": 320.89279732088653
+      }
+    },
+    {
+      "name": "old-v3",
+      "samplesMs": [
+        4108.324324000001,
+        5374.481959999997,
+        5071.528925000006,
+        4291.848501,
+        5738.811449000001,
+        6852.218070999996,
+        4899.491185999999,
+        5543.649773000012,
+        5446.966779999988,
+        4450.069546000013
+      ],
+      "statsMs": {
+        "median": 5223.005442500002,
+        "mean": 5177.739051500002,
+        "min": 4108.324324000001,
+        "max": 6852.218070999996,
+        "p95": 6852.218070999996,
+        "stddev": 768.7925286869769
+      }
+    },
+    {
+      "name": "production-v3",
+      "samplesMs": [
+        3833.6733319999985,
+        5702.848541999992,
+        5313.246530999997,
+        3669.6523529999977,
+        3902.2486060000083,
+        5112.350372000001,
+        5336.711326000004,
+        5155.175901999988,
+        4024.08702799998,
+        3831.7613469999924
+      ],
+      "statsMs": {
+        "median": 4568.21869999999,
+        "mean": 4588.175533899996,
+        "min": 3669.6523529999977,
+        "max": 5702.848541999992,
+        "p95": 5702.848541999992,
+        "stddev": 754.8901110607278
+      }
+    }
+  ],
+  "pairedRatios": {
+    "productionToOld": {
+      "samples": [
+        0.9331476849586711,
+        1.0610973456500346,
+        1.0476616834044756,
+        0.8550283991023842,
+        0.6799750507014798,
+        0.746086934044981,
+        1.0892378664236269,
+        0.9299245286215481,
+        0.7387757609933484,
+        0.8610565087559602
+      ],
+      "stats": {
+        "median": 0.8954905186887541,
+        "mean": 0.8941991762656508,
+        "min": 0.6799750507014798,
+        "max": 1.0892378664236269,
+        "p95": 1.0892378664236269,
+        "stddev": 0.13669585008609494
+      },
+      "fasterPairs": 7
+    },
+    "productionToV2": {
+      "samples": [
+        2.131535483820235,
+        2.0328762404077283,
+        2.5997460690956227,
+        1.7025771994271235,
+        2.1986610832384152,
+        2.1606497589451035,
+        2.2817601204618922,
+        2.5927311172928365,
+        2.087310812669702,
+        2.2547866305393147
+      ],
+      "stats": {
+        "median": 2.179655421091759,
+        "mean": 2.204263451589797,
+        "min": 1.7025771994271235,
+        "max": 2.5997460690956227,
+        "p95": 2.5997460690956227,
+        "stddev": 0.24856295839741996
+      },
+      "fasterPairs": 0
+    }
+  },
+  "completedAt": "2026-09-23T07:49:47.619Z",
+  "loadAverageEnd": [
+    1.01,
+    0.71,
+    0.39
+  ]
+}

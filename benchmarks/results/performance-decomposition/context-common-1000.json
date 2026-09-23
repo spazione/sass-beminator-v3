@@ -1,0 +1,289 @@
+{
+  "startedAt": "2026-09-22T20:04:58.063Z",
+  "group": "context",
+  "scenario": "common",
+  "scale": 1000,
+  "node": "v22.19.0",
+  "sass": "dart-sass\t1.104.1\t(Sass Compiler)\t[Dart]\ndart2js\t3.13.3\t(Dart Compiler)\t[Dart]",
+  "coreSha256": "805b444631498f9f5ba634605b289ab10fc6fee8a6083af1588a0338070346e7",
+  "harnessSha256": "ec07e21d8e046a5187e11668ff2d70d1dc18592a9ad4eedadad942f621479ce6",
+  "scriptSha256": "586ecbd4baa3d4ae1ad15dc976551a3fad1d8db23314cb6d5817f6848f37b4e7",
+  "cpu": "Intel(R) Core(TM) Ultra 5 238V",
+  "loadAverageStart": [
+    0.81,
+    0.54,
+    0.39
+  ],
+  "methodology": {
+    "warmups": 2,
+    "iterations": 6,
+    "order": "rotate starting lane, reverse alternate rounds; order stored explicitly",
+    "v3Loading": "identical in-memory importer per variant; fresh compilation every call",
+    "v2Loading": "original file entrypoint; fresh compilation",
+    "timing": "compileString only; fixture generation, transforms, checks, I/O untimed",
+    "logger": "silent for all timing lanes",
+    "gc": "not forced"
+  },
+  "cssBytes": 134677,
+  "orders": [
+    {
+      "round": 0,
+      "warmup": true,
+      "names": [
+        "stock",
+        "root-constant",
+        "minimal-map",
+        "tuple-context",
+        "stack-singleton",
+        "stack-pointer",
+        "inline-stack"
+      ]
+    },
+    {
+      "round": 1,
+      "warmup": true,
+      "names": [
+        "stock",
+        "inline-stack",
+        "stack-pointer",
+        "stack-singleton",
+        "tuple-context",
+        "minimal-map",
+        "root-constant"
+      ]
+    },
+    {
+      "round": 2,
+      "warmup": false,
+      "names": [
+        "minimal-map",
+        "tuple-context",
+        "stack-singleton",
+        "stack-pointer",
+        "inline-stack",
+        "stock",
+        "root-constant"
+      ]
+    },
+    {
+      "round": 3,
+      "warmup": false,
+      "names": [
+        "minimal-map",
+        "root-constant",
+        "stock",
+        "inline-stack",
+        "stack-pointer",
+        "stack-singleton",
+        "tuple-context"
+      ]
+    },
+    {
+      "round": 4,
+      "warmup": false,
+      "names": [
+        "stack-singleton",
+        "stack-pointer",
+        "inline-stack",
+        "stock",
+        "root-constant",
+        "minimal-map",
+        "tuple-context"
+      ]
+    },
+    {
+      "round": 5,
+      "warmup": false,
+      "names": [
+        "stack-singleton",
+        "tuple-context",
+        "minimal-map",
+        "root-constant",
+        "stock",
+        "inline-stack",
+        "stack-pointer"
+      ]
+    },
+    {
+      "round": 6,
+      "warmup": false,
+      "names": [
+        "inline-stack",
+        "stock",
+        "root-constant",
+        "minimal-map",
+        "tuple-context",
+        "stack-singleton",
+        "stack-pointer"
+      ]
+    },
+    {
+      "round": 7,
+      "warmup": false,
+      "names": [
+        "inline-stack",
+        "stack-pointer",
+        "stack-singleton",
+        "tuple-context",
+        "minimal-map",
+        "root-constant",
+        "stock"
+      ]
+    }
+  ],
+  "results": [
+    {
+      "name": "stock",
+      "label": "production control",
+      "samplesMs": [
+        1285.3240089999963,
+        1141.554056999994,
+        1122.2756670000017,
+        1042.398951999996,
+        1173.3286599999992,
+        1126.5321850000037
+      ],
+      "sourceSha256": "805b444631498f9f5ba634605b289ab10fc6fee8a6083af1588a0338070346e7",
+      "statsMs": {
+        "median": 1134.0431209999988,
+        "mean": 1148.5689216666651,
+        "min": 1042.398951999996,
+        "max": 1285.3240089999963,
+        "p95": 1285.3240089999963,
+        "stddev": 72.81623255735082
+      }
+    },
+    {
+      "name": "root-constant",
+      "label": "equivalent immutable root context",
+      "samplesMs": [
+        1235.129224999997,
+        1432.220236999994,
+        1059.1341639999955,
+        1181.795385000005,
+        1185.9153170000063,
+        1050.4711249999964
+      ],
+      "sourceSha256": "73a3ca694f8983b86f5f8b9f88010fbc9955427b8bb5c60cf2a07530271efc86",
+      "statsMs": {
+        "median": 1183.8553510000056,
+        "mean": 1190.777575499999,
+        "min": 1050.4711249999964,
+        "max": 1432.220236999994,
+        "p95": 1432.220236999994,
+        "stddev": 127.39821869028084
+      }
+    },
+    {
+      "name": "minimal-map",
+      "label": "diagnostic lower bound only; removes two fields and their reads, common only",
+      "samplesMs": [
+        1462.3407519999964,
+        1190.110127,
+        1182.9911120000033,
+        1008.468492,
+        1059.2577880000026,
+        1200.8334860000032
+      ],
+      "sourceSha256": "2cfe5168b44ff708275f338db6896cd218a2cd2209b13420f978073f40852c8e",
+      "statsMs": {
+        "median": 1186.5506195000016,
+        "mean": 1184.0002928333342,
+        "min": 1008.468492,
+        "max": 1462.3407519999964,
+        "p95": 1462.3407519999964,
+        "stddev": 143.8559590566668
+      }
+    },
+    {
+      "name": "tuple-context",
+      "label": "diagnostic lower bound only; positional context construction and access instead of maps",
+      "samplesMs": [
+        990.6337360000034,
+        979.2606539999979,
+        1151.8548880000017,
+        1010.5761259999999,
+        1365.7796320000052,
+        1059.3639640000038
+      ],
+      "sourceSha256": "62af719181b73a9832596c24faa3e9a0eca0b5755572aea25e5f1723a917c267",
+      "statsMs": {
+        "median": 1034.9700450000018,
+        "mean": 1092.911500000002,
+        "min": 979.2606539999979,
+        "max": 1365.7796320000052,
+        "p95": 1365.7796320000052,
+        "stddev": 134.9154965394
+      }
+    },
+    {
+      "name": "stack-singleton",
+      "label": "diagnostic lower bound only; retain latest frame, local saved stack restores parents",
+      "samplesMs": [
+        1388.3844919999974,
+        1163.6694779999962,
+        1197.951648000002,
+        1083.0007430000041,
+        1036.150787999999,
+        1068.0373309999995
+      ],
+      "sourceSha256": "678db025e43ea74ce2a5f65321a92de663e5773a1f050500e215c857eb94269a",
+      "statsMs": {
+        "median": 1123.3351105000002,
+        "mean": 1156.1990799999996,
+        "min": 1036.150787999999,
+        "max": 1388.3844919999974,
+        "p95": 1388.3844919999974,
+        "stddev": 117.79306166953923
+      }
+    },
+    {
+      "name": "stack-pointer",
+      "label": "diagnostic lower bound only; single current frame with lexical restoration",
+      "samplesMs": [
+        1271.5604410000014,
+        1242.435903000005,
+        1205.256236000001,
+        1231.6241670000018,
+        1097.9501730000047,
+        1019.6583230000106
+      ],
+      "sourceSha256": "439dc806f3111eab8da40e416833fab1597b8ec78b8636097106a6791c4ed8bf",
+      "statsMs": {
+        "median": 1218.4402015000014,
+        "mean": 1178.0808738333374,
+        "min": 1019.6583230000106,
+        "max": 1271.5604410000014,
+        "p95": 1271.5604410000014,
+        "stddev": 89.44646223422262
+      }
+    },
+    {
+      "name": "inline-stack",
+      "label": "equivalent push/restore operations, remove mixin dispatch",
+      "samplesMs": [
+        1222.360424999999,
+        1072.9191080000019,
+        1419.1202510000003,
+        1299.113953999993,
+        1367.0544729999965,
+        1098.632679000002
+      ],
+      "sourceSha256": "3f39c5cab3939b545d46f4841276f5143a43825e326826ea2ea7c2dad85339e9",
+      "statsMs": {
+        "median": 1260.737189499996,
+        "mean": 1246.5334816666655,
+        "min": 1072.9191080000019,
+        "max": 1419.1202510000003,
+        "p95": 1419.1202510000003,
+        "stddev": 128.8908732309387
+      }
+    }
+  ],
+  "completedAt": "2026-09-22T20:06:04.960Z",
+  "loadAverageEnd": [
+    1.07,
+    0.69,
+    0.45
+  ]
+}

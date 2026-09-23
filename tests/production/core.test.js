@@ -156,7 +156,7 @@ test('empty children and repeated same/different roots leave no stale stack fram
     @include bem.block('card') { content: 'card'; }
   `)).slice(-3), [['.other', 'other'], ['.card__after', 'after'], ['.card', 'card']]);
   // A top-level element after a completed root must observe root, not block.
-  assert.throws(() => compile("@include bem.block('card') {} @include bem.element('leak') {}"), /nesting root -> element is deferred/);
+  assert.throws(() => compile("@include bem.block('card') {} @include bem.element('leak') {}"), /nesting root -> element is unsupported in the current BEMinator API/);
 });
 for (const kind of ['element', 'modifier']) {
   for (const afterHistory of [false, true]) {
@@ -179,7 +179,7 @@ for (const [path, diagnostic] of [
   [[['block', "'card'"], ['element', "'title'"], ['block', "'icon'"]], 'element -> block'],
 ]) {
   test(`deferred ${diagnostic} has no implemented output`, () => {
-    assert.throws(() => compile(tree(path)), new RegExp(`nesting ${diagnostic} is deferred; not implemented in this slice`));
+    assert.throws(() => compile(tree(path)), new RegExp(`nesting ${diagnostic} is unsupported in the current BEMinator API`));
   });
 }
 test('modifier accepts exactly the one/two-name shapes and rejects zero/three arguments', () => {
@@ -199,7 +199,7 @@ test('unsupported names cannot introduce selectors through interpolation', () =>
       [['block', "'card'"], ['modifier', name]], [['block', "'card'"], ['modifier', `'a', ${name}`]],
     ]) {
       if (name === 'null' && path.at(-1)[1] === "'a', null") continue;
-      assert.throws(() => compile(tree(path)), /BEMinator: (expected a nonempty literal BEM name|a BEM name)/);
+      assert.throws(() => compile(tree(path)), /BEMinator: (expected a nonempty BEM name string|a BEM name)/);
     }
   }
 });
@@ -242,4 +242,24 @@ test('reusing a compiler after successful and aborted fixtures cannot retain con
       assert.equal(run(fresh), expected);
     }
   } finally { compiler.dispose(); }
+});
+
+test('raw leaf styling preserves the following BEM sibling owner and scope', () => {
+  assert.deepEqual(rules(compile(`
+    @include bem.block('page') {
+      @include bem.block('card') {
+        > img { content: 'raw-child'; }
+        &:hover { content: 'raw-hover'; }
+        @include bem.element('title') { content: 'inner-sibling'; }
+      }
+      @include bem.element('after') { content: 'outer-sibling'; }
+    }
+    @include bem.block('other') { content: 'independent-root'; }
+  `)), [
+    ['.page .card > img', 'raw-child'],
+    ['.page .card:hover', 'raw-hover'],
+    ['.page .card__title', 'inner-sibling'],
+    ['.page__after', 'outer-sibling'],
+    ['.other', 'independent-root'],
+  ]);
 });

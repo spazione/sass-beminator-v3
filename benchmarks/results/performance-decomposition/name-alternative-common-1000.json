@@ -1,0 +1,231 @@
+{
+  "startedAt": "2026-09-22T20:06:19.693Z",
+  "group": "name-alternative",
+  "scenario": "common",
+  "scale": 1000,
+  "node": "v22.19.0",
+  "sass": "dart-sass\t1.104.1\t(Sass Compiler)\t[Dart]\ndart2js\t3.13.3\t(Dart Compiler)\t[Dart]",
+  "coreSha256": "805b444631498f9f5ba634605b289ab10fc6fee8a6083af1588a0338070346e7",
+  "harnessSha256": "ec07e21d8e046a5187e11668ff2d70d1dc18592a9ad4eedadad942f621479ce6",
+  "scriptSha256": "dace1f07c0044df209e2c93dd9980ce897953ff550152c1d7c05872b114f714a",
+  "cpu": "Intel(R) Core(TM) Ultra 5 238V",
+  "loadAverageStart": [
+    1.06,
+    0.71,
+    0.46
+  ],
+  "methodology": {
+    "warmups": 2,
+    "iterations": 6,
+    "order": "rotate starting lane, reverse alternate rounds; order stored explicitly",
+    "v3Loading": "identical in-memory importer per variant; fresh compilation every call",
+    "v2Loading": "original file entrypoint; fresh compilation",
+    "timing": "compileString only; fixture generation, transforms, checks, I/O untimed",
+    "logger": "silent for all timing lanes",
+    "gc": "not forced"
+  },
+  "cssBytes": 134677,
+  "orders": [
+    {
+      "round": 0,
+      "warmup": true,
+      "names": [
+        "stock",
+        "name-split",
+        "name-slices-only",
+        "name-loop-only",
+        "name-bypass"
+      ]
+    },
+    {
+      "round": 1,
+      "warmup": true,
+      "names": [
+        "stock",
+        "name-bypass",
+        "name-loop-only",
+        "name-slices-only",
+        "name-split"
+      ]
+    },
+    {
+      "round": 2,
+      "warmup": false,
+      "names": [
+        "name-slices-only",
+        "name-loop-only",
+        "name-bypass",
+        "stock",
+        "name-split"
+      ]
+    },
+    {
+      "round": 3,
+      "warmup": false,
+      "names": [
+        "name-slices-only",
+        "name-split",
+        "stock",
+        "name-bypass",
+        "name-loop-only"
+      ]
+    },
+    {
+      "round": 4,
+      "warmup": false,
+      "names": [
+        "name-bypass",
+        "stock",
+        "name-split",
+        "name-slices-only",
+        "name-loop-only"
+      ]
+    },
+    {
+      "round": 5,
+      "warmup": false,
+      "names": [
+        "name-bypass",
+        "name-loop-only",
+        "name-slices-only",
+        "name-split",
+        "stock"
+      ]
+    },
+    {
+      "round": 6,
+      "warmup": false,
+      "names": [
+        "name-split",
+        "name-slices-only",
+        "name-loop-only",
+        "name-bypass",
+        "stock"
+      ]
+    },
+    {
+      "round": 7,
+      "warmup": false,
+      "names": [
+        "name-split",
+        "stock",
+        "name-bypass",
+        "name-loop-only",
+        "name-slices-only"
+      ]
+    }
+  ],
+  "results": [
+    {
+      "name": "stock",
+      "label": "production control",
+      "samplesMs": [
+        1067.3970289999997,
+        1510.0245610000056,
+        1341.091763000004,
+        1286.057007000003,
+        1065.7348270000002,
+        1409.9566420000046
+      ],
+      "sourceSha256": "805b444631498f9f5ba634605b289ab10fc6fee8a6083af1588a0338070346e7",
+      "statsMs": {
+        "median": 1313.5743850000035,
+        "mean": 1280.0436381666696,
+        "min": 1065.7348270000002,
+        "max": 1510.0245610000056,
+        "p95": 1510.0245610000056,
+        "stddev": 165.66959815468994
+      }
+    },
+    {
+      "name": "name-split",
+      "label": "equivalent validation; iterate string.split characters with literal alphabet",
+      "samplesMs": [
+        1104.2299280000007,
+        1209.5849159999998,
+        1127.0716489999977,
+        1356.0083779999986,
+        1051.7320640000034,
+        1151.5965600000054
+      ],
+      "sourceSha256": "ea2dd7da32c5d4de4c78a66fc30c8b9576b40a761a18f9389f697fe4446fde40",
+      "statsMs": {
+        "median": 1139.3341045000016,
+        "mean": 1166.7039158333343,
+        "min": 1051.7320640000034,
+        "max": 1356.0083779999986,
+        "p95": 1356.0083779999986,
+        "stddev": 97.12143105061152
+      }
+    },
+    {
+      "name": "name-slices-only",
+      "label": "diagnostic lower bound only; retain loop and slices, remove per-character membership and concatenation",
+      "samplesMs": [
+        1460.4936279999965,
+        1346.3656240000018,
+        1555.6156090000004,
+        1067.0516830000051,
+        1152.7978569999977,
+        2594.271531999999
+      ],
+      "sourceSha256": "c4d230fdb60feaac3d7b6c5ca35652ea4ca03393b3fc7f7f857c7a40977a6f18",
+      "statsMs": {
+        "median": 1403.4296259999992,
+        "mean": 1529.4326555,
+        "min": 1067.0516830000051,
+        "max": 2594.271531999999,
+        "p95": 2594.271531999999,
+        "stddev": 504.7249156167164
+      }
+    },
+    {
+      "name": "name-loop-only",
+      "label": "diagnostic lower bound only; retain numeric loop with local assignment",
+      "samplesMs": [
+        1010.2140840000029,
+        1186.8409949999987,
+        1088.0046890000012,
+        1043.9710580000028,
+        1027.3084489999965,
+        1563.9468790000028
+      ],
+      "sourceSha256": "47372c3cdf2e75eb1e52eaddc05cfee9db8a40c06e55d32c2970ae66c2df3d69",
+      "statsMs": {
+        "median": 1065.987873500002,
+        "mean": 1153.3810256666675,
+        "min": 1010.2140840000029,
+        "max": 1563.9468790000028,
+        "p95": 1563.9468790000028,
+        "stddev": 192.49223519640603
+      }
+    },
+    {
+      "name": "name-bypass",
+      "label": "diagnostic lower bound only",
+      "samplesMs": [
+        911.4903129999984,
+        931.1608130000022,
+        1174.271225000004,
+        1061.4158590000006,
+        856.7717910000065,
+        1336.5917210000043
+      ],
+      "sourceSha256": "c1aedf698aa30343e5042e6e788a13fcfad17a23ea7af25a5c52ee32090ab417",
+      "statsMs": {
+        "median": 996.2883360000014,
+        "mean": 1045.283620333336,
+        "min": 856.7717910000065,
+        "max": 1336.5917210000043,
+        "p95": 1336.5917210000043,
+        "stddev": 167.44144988398043
+      }
+    }
+  ],
+  "completedAt": "2026-09-22T20:07:14.472Z",
+  "loadAverageEnd": [
+    1.07,
+    0.77,
+    0.5
+  ]
+}

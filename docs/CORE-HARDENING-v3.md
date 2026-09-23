@@ -1,4 +1,19 @@
-# Core API hardening: decisions for maintainer review
+# Core API hardening: adopted decisions and historical record
+
+**Current status: core API stable; package not published.**
+[CORE-STABILITY-v3.md](CORE-STABILITY-v3.md) is the adopted contract. D03, D05,
+D08, D09, D10, and D11 are closed for core release: evaluated ASCII names,
+semantic diagnostic categories, bounded at-rule support, terminal raw styling,
+one public entrypoint, and the existing supported nesting subset. Deferred
+feature semantics remain unpromised and are not core release blockers.
+
+The production diagnostic cleanup, raw-leaf regression, finalized `sass-beminator`
+package metadata, and packed-artifact verification complete the review follow-up.
+The records below preserve the earlier audit and stabilization history. Their
+open-decision counts and temporary wording describe those earlier stages and are
+superseded by the adopted contract, not current release requirements.
+
+## Historical hardening state before adoption
 
 The approved selector subset is implemented, but the whole API is **not yet
 stable**. Of the original 11 hardening decision groups, **6 remain unresolved**:
@@ -398,7 +413,7 @@ experiment's conclusion as if it were current implementation status. No spike
 was changed or deleted. Retention is a maintenance recommendation, not an extra
 core API decision counted in D01–D11.
 
-## 11. Explicit decisions before calling the API stable
+## 11. Historical decision status before stable-core adoption
 
 There are **6 unresolved groups** from the original 11. Five are resolved as
 recorded below; separator configuration is implemented with the explicit Sass
@@ -527,3 +542,20 @@ D03 (BEM name domain), D05 (diagnostics), D08 (broader at-rule envelope),
 D09 (raw nesting/re-entry), D10 (imports/publication), and D11 (deferred relationships,
 functional selectors, Q07 and release scope). Flat layers and their tested
 conditional integrations are implemented, not pending decisions.
+
+
+## Stable-core adoption completed
+
+D03/D05/D08/D09/D10/D11 are formally adopted in
+[CORE-STABILITY-v3.md](CORE-STABILITY-v3.md). Earlier open-group counts above are
+historical. The core API is stable and the package is not published. The follow-up
+changes only diagnostic wording in production, adds the supported raw-leaf sibling
+regression, and verifies the finalized `sass-beminator` package entrypoint from an
+actual offline packed artifact. No deferred feature or relationship is added.
+
+Final validation: 204 production, 206 normal project, 58 characterization,
+60 legacy (including characterization), 1 package-entrypoint, and 267 combined
+project tests pass. Spikes pass separately: 27 selector-engine, 15 context-stack,
+16 structural-selector, 57 CSS Layers. Architecture stays one evolving mutable
+global and one BEM emission boundary. See the adopted contract for distribution
+prerequisites and the non-blocking future feature list.

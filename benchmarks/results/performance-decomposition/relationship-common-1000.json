@@ -1,0 +1,173 @@
+{
+  "startedAt": "2026-09-22T20:02:04.095Z",
+  "group": "relationship",
+  "scenario": "common",
+  "scale": 1000,
+  "node": "v22.19.0",
+  "sass": "dart-sass\t1.104.1\t(Sass Compiler)\t[Dart]\ndart2js\t3.13.3\t(Dart Compiler)\t[Dart]",
+  "coreSha256": "805b444631498f9f5ba634605b289ab10fc6fee8a6083af1588a0338070346e7",
+  "harnessSha256": "ec07e21d8e046a5187e11668ff2d70d1dc18592a9ad4eedadad942f621479ce6",
+  "scriptSha256": "197e27501d4587b61a34db40e8aa74ba98946ed9ccea1f16a9e1fc7abf6c29be",
+  "cpu": "Intel(R) Core(TM) Ultra 5 238V",
+  "loadAverageStart": [
+    0.09,
+    0.17,
+    0.25
+  ],
+  "methodology": {
+    "warmups": 2,
+    "iterations": 6,
+    "order": "rotate starting lane, reverse alternate rounds; order stored explicitly",
+    "v3Loading": "identical in-memory importer per variant; fresh compilation every call",
+    "v2Loading": "original file entrypoint; fresh compilation",
+    "timing": "compileString only; fixture generation, transforms, checks, I/O untimed",
+    "logger": "silent for all timing lanes",
+    "gc": "not forced"
+  },
+  "cssBytes": 134677,
+  "orders": [
+    {
+      "round": 0,
+      "warmup": true,
+      "names": [
+        "stock",
+        "static-map",
+        "no-relationship"
+      ]
+    },
+    {
+      "round": 1,
+      "warmup": true,
+      "names": [
+        "stock",
+        "no-relationship",
+        "static-map"
+      ]
+    },
+    {
+      "round": 2,
+      "warmup": false,
+      "names": [
+        "no-relationship",
+        "stock",
+        "static-map"
+      ]
+    },
+    {
+      "round": 3,
+      "warmup": false,
+      "names": [
+        "no-relationship",
+        "static-map",
+        "stock"
+      ]
+    },
+    {
+      "round": 4,
+      "warmup": false,
+      "names": [
+        "static-map",
+        "no-relationship",
+        "stock"
+      ]
+    },
+    {
+      "round": 5,
+      "warmup": false,
+      "names": [
+        "static-map",
+        "stock",
+        "no-relationship"
+      ]
+    },
+    {
+      "round": 6,
+      "warmup": false,
+      "names": [
+        "stock",
+        "static-map",
+        "no-relationship"
+      ]
+    },
+    {
+      "round": 7,
+      "warmup": false,
+      "names": [
+        "stock",
+        "no-relationship",
+        "static-map"
+      ]
+    }
+  ],
+  "results": [
+    {
+      "name": "stock",
+      "label": "production control",
+      "samplesMs": [
+        1153.083912,
+        1101.3293689999991,
+        1141.1047560000006,
+        1300.6924910000016,
+        1263.9631649999974,
+        1232.9041940000025
+      ],
+      "sourceSha256": "805b444631498f9f5ba634605b289ab10fc6fee8a6083af1588a0338070346e7",
+      "statsMs": {
+        "median": 1192.9940530000013,
+        "mean": 1198.8463145000003,
+        "min": 1101.3293689999991,
+        "max": 1300.6924910000016,
+        "p95": 1300.6924910000016,
+        "stddev": 71.54325819970293
+      }
+    },
+    {
+      "name": "static-map",
+      "label": "equivalent validation",
+      "samplesMs": [
+        1247.483001999999,
+        1089.0013870000002,
+        1270.5378429999982,
+        1158.1773360000007,
+        1061.1750649999994,
+        1128.2043909999993
+      ],
+      "sourceSha256": "f82c9dbe80f740968bfe1202c21003e5b965332941d0f4d9a70e0cf821666c74",
+      "statsMs": {
+        "median": 1143.1908635,
+        "mean": 1159.0965039999994,
+        "min": 1061.1750649999994,
+        "max": 1270.5378429999982,
+        "p95": 1270.5378429999982,
+        "stddev": 77.12376009301316
+      }
+    },
+    {
+      "name": "no-relationship",
+      "label": "diagnostic lower bound only",
+      "samplesMs": [
+        933.812747,
+        1144.163192,
+        1362.1865530000032,
+        1049.6145149999975,
+        1149.7652649999982,
+        910.3590580000018
+      ],
+      "sourceSha256": "3071cdebb4fb4622a02c3ac9fd7752ecc2ae2c2c80e687de9c5bc3605a39e34c",
+      "statsMs": {
+        "median": 1096.8888534999987,
+        "mean": 1091.6502216666668,
+        "min": 910.3590580000018,
+        "max": 1362.1865530000032,
+        "p95": 1362.1865530000032,
+        "stddev": 152.13537390204803
+      }
+    }
+  ],
+  "completedAt": "2026-09-22T20:02:30.886Z",
+  "loadAverageEnd": [
+    0.45,
+    0.26,
+    0.28
+  ]
+}

@@ -1,0 +1,260 @@
+{
+  "startedAt": "2026-09-22T20:07:28.691Z",
+  "group": "selectors",
+  "scenario": "common",
+  "scale": 1000,
+  "node": "v22.19.0",
+  "sass": "dart-sass\t1.104.1\t(Sass Compiler)\t[Dart]\ndart2js\t3.13.3\t(Dart Compiler)\t[Dart]",
+  "coreSha256": "805b444631498f9f5ba634605b289ab10fc6fee8a6083af1588a0338070346e7",
+  "harnessSha256": "ec07e21d8e046a5187e11668ff2d70d1dc18592a9ad4eedadad942f621479ce6",
+  "scriptSha256": "dace1f07c0044df209e2c93dd9980ce897953ff550152c1d7c05872b114f714a",
+  "cpu": "Intel(R) Core(TM) Ultra 5 238V",
+  "loadAverageStart": [
+    1.54,
+    0.9,
+    0.55
+  ],
+  "methodology": {
+    "warmups": 2,
+    "iterations": 6,
+    "order": "rotate starting lane, reverse alternate rounds; order stored explicitly",
+    "v3Loading": "identical in-memory importer per variant; fresh compilation every call",
+    "v2Loading": "original file entrypoint; fresh compilation",
+    "timing": "compileString only; fixture generation, transforms, checks, I/O untimed",
+    "logger": "silent for all timing lanes",
+    "gc": "not forced"
+  },
+  "cssBytes": 134677,
+  "orders": [
+    {
+      "round": 0,
+      "warmup": true,
+      "names": [
+        "stock",
+        "append-strings",
+        "no-nest",
+        "all-selector-strings",
+        "literal-separators",
+        "leaf-emission"
+      ]
+    },
+    {
+      "round": 1,
+      "warmup": true,
+      "names": [
+        "stock",
+        "leaf-emission",
+        "literal-separators",
+        "all-selector-strings",
+        "no-nest",
+        "append-strings"
+      ]
+    },
+    {
+      "round": 2,
+      "warmup": false,
+      "names": [
+        "no-nest",
+        "all-selector-strings",
+        "literal-separators",
+        "leaf-emission",
+        "stock",
+        "append-strings"
+      ]
+    },
+    {
+      "round": 3,
+      "warmup": false,
+      "names": [
+        "no-nest",
+        "append-strings",
+        "stock",
+        "leaf-emission",
+        "literal-separators",
+        "all-selector-strings"
+      ]
+    },
+    {
+      "round": 4,
+      "warmup": false,
+      "names": [
+        "literal-separators",
+        "leaf-emission",
+        "stock",
+        "append-strings",
+        "no-nest",
+        "all-selector-strings"
+      ]
+    },
+    {
+      "round": 5,
+      "warmup": false,
+      "names": [
+        "literal-separators",
+        "all-selector-strings",
+        "no-nest",
+        "append-strings",
+        "stock",
+        "leaf-emission"
+      ]
+    },
+    {
+      "round": 6,
+      "warmup": false,
+      "names": [
+        "stock",
+        "append-strings",
+        "no-nest",
+        "all-selector-strings",
+        "literal-separators",
+        "leaf-emission"
+      ]
+    },
+    {
+      "round": 7,
+      "warmup": false,
+      "names": [
+        "stock",
+        "leaf-emission",
+        "literal-separators",
+        "all-selector-strings",
+        "no-nest",
+        "append-strings"
+      ]
+    }
+  ],
+  "results": [
+    {
+      "name": "stock",
+      "label": "production control",
+      "samplesMs": [
+        1101.1660569999985,
+        1179.5007430000041,
+        1104.166022999998,
+        1087.072475999994,
+        1392.4170529999974,
+        1434.9074600000022
+      ],
+      "sourceSha256": "805b444631498f9f5ba634605b289ab10fc6fee8a6083af1588a0338070346e7",
+      "statsMs": {
+        "median": 1141.833383000001,
+        "mean": 1216.538301999999,
+        "min": 1087.072475999994,
+        "max": 1434.9074600000022,
+        "p95": 1434.9074600000022,
+        "stddev": 142.99760435142827
+      }
+    },
+    {
+      "name": "append-strings",
+      "label": "diagnostic lower bound only; simple common selectors",
+      "samplesMs": [
+        1177.1496709999992,
+        1059.7893719999993,
+        1037.6949170000007,
+        1085.3600670000014,
+        1204.1163840000008,
+        2395.177807
+      ],
+      "sourceSha256": "db6d58fb66004719f1f2d2be429780d8cc58522ead8aebd973ddcd288147b31c",
+      "statsMs": {
+        "median": 1131.2548690000003,
+        "mean": 1326.5480363333336,
+        "min": 1037.6949170000007,
+        "max": 2395.177807,
+        "p95": 2395.177807,
+        "stddev": 481.67189972516076
+      }
+    },
+    {
+      "name": "no-nest",
+      "label": "diagnostic lower bound only; common empty scope",
+      "samplesMs": [
+        1142.2149129999998,
+        1111.815601000002,
+        979.8473739999972,
+        1001.7224809999971,
+        956.9269740000018,
+        2371.4616980000137
+      ],
+      "sourceSha256": "2910d46ceb603ee82ca2eedc7a011d9d215a243472fcf3fab9c33a6f723266ca",
+      "statsMs": {
+        "median": 1056.7690409999996,
+        "mean": 1260.6648401666687,
+        "min": 956.9269740000018,
+        "max": 2371.4616980000137,
+        "p95": 2371.4616980000137,
+        "stddev": 501.36853156091155
+      }
+    },
+    {
+      "name": "all-selector-strings",
+      "label": "diagnostic lower bound only; common simple classes, no selector APIs",
+      "samplesMs": [
+        946.7835970000015,
+        966.4170939999967,
+        911.1553749999948,
+        1040.6689470000056,
+        985.7598880000005,
+        1040.0535879999952
+      ],
+      "sourceSha256": "9b76d69ec252ed67342925597a3e11c79faa043674a5c3d2f87198be918e095f",
+      "statsMs": {
+        "median": 976.0884909999986,
+        "mean": 981.8064148333324,
+        "min": 911.1553749999948,
+        "max": 1040.6689470000056,
+        "p95": 1040.6689470000056,
+        "stddev": 47.1313045637562
+      }
+    },
+    {
+      "name": "literal-separators",
+      "label": "diagnostic lower bound only; default configuration",
+      "samplesMs": [
+        1150.5171980000014,
+        1082.035914,
+        1263.1460350000052,
+        1197.9041629999992,
+        1225.6779109999989,
+        1414.4458479999957
+      ],
+      "sourceSha256": "ef7c4a1758bc2af0a81f18cc30da4b181f5c376b994750bdc569839443c7e6fd",
+      "statsMs": {
+        "median": 1211.791036999999,
+        "mean": 1222.2878448333333,
+        "min": 1082.035914,
+        "max": 1414.4458479999957,
+        "p95": 1414.4458479999957,
+        "stddev": 103.29712501840791
+      }
+    },
+    {
+      "name": "leaf-emission",
+      "label": "diagnostic lower bound only; skip two empty rule/emission boundaries in common",
+      "samplesMs": [
+        1183.286634,
+        1258.4646990000037,
+        1067.011602999999,
+        1097.1001539999997,
+        1094.8329260000028,
+        1046.5708149999991
+      ],
+      "sourceSha256": "84451c544089866c1a6de7a81ac2f930690c1f88ebf31598c246f91819c058e1",
+      "statsMs": {
+        "median": 1095.9665400000013,
+        "mean": 1124.544471833334,
+        "min": 1046.5708149999991,
+        "max": 1258.4646990000037,
+        "p95": 1258.4646990000037,
+        "stddev": 73.49734411719348
+      }
+    }
+  ],
+  "completedAt": "2026-09-22T20:08:25.306Z",
+  "loadAverageEnd": [
+    1.72,
+    1.07,
+    0.63
+  ]
+}

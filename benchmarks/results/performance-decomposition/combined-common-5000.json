@@ -1,0 +1,202 @@
+{
+  "startedAt": "2026-09-22T20:10:32.600Z",
+  "group": "combined",
+  "scenario": "common",
+  "scale": 5000,
+  "node": "v22.19.0",
+  "sass": "dart-sass\t1.104.1\t(Sass Compiler)\t[Dart]\ndart2js\t3.13.3\t(Dart Compiler)\t[Dart]",
+  "coreSha256": "805b444631498f9f5ba634605b289ab10fc6fee8a6083af1588a0338070346e7",
+  "harnessSha256": "ec07e21d8e046a5187e11668ff2d70d1dc18592a9ad4eedadad942f621479ce6",
+  "scriptSha256": "1e6556f05b214a3a6b2de8e439880a2bb845e4cb40007e766a0bfc3e7c11814b",
+  "cpu": "Intel(R) Core(TM) Ultra 5 238V",
+  "loadAverageStart": [
+    1.11,
+    1.04,
+    0.68
+  ],
+  "methodology": {
+    "warmups": 2,
+    "iterations": 6,
+    "order": "rotate starting lane, reverse alternate rounds; order stored explicitly",
+    "v3Loading": "identical in-memory importer per variant; fresh compilation every call",
+    "v2Loading": "original file entrypoint; fresh compilation",
+    "timing": "compileString only; fixture generation, transforms, checks, I/O untimed",
+    "logger": "silent for all timing lanes",
+    "gc": "not forced"
+  },
+  "cssBytes": 686677,
+  "orders": [
+    {
+      "round": 0,
+      "warmup": true,
+      "names": [
+        "stock",
+        "static-map",
+        "combined",
+        "v2"
+      ]
+    },
+    {
+      "round": 1,
+      "warmup": true,
+      "names": [
+        "stock",
+        "v2",
+        "combined",
+        "static-map"
+      ]
+    },
+    {
+      "round": 2,
+      "warmup": false,
+      "names": [
+        "combined",
+        "v2",
+        "stock",
+        "static-map"
+      ]
+    },
+    {
+      "round": 3,
+      "warmup": false,
+      "names": [
+        "combined",
+        "static-map",
+        "stock",
+        "v2"
+      ]
+    },
+    {
+      "round": 4,
+      "warmup": false,
+      "names": [
+        "stock",
+        "static-map",
+        "combined",
+        "v2"
+      ]
+    },
+    {
+      "round": 5,
+      "warmup": false,
+      "names": [
+        "stock",
+        "v2",
+        "combined",
+        "static-map"
+      ]
+    },
+    {
+      "round": 6,
+      "warmup": false,
+      "names": [
+        "combined",
+        "v2",
+        "stock",
+        "static-map"
+      ]
+    },
+    {
+      "round": 7,
+      "warmup": false,
+      "names": [
+        "combined",
+        "static-map",
+        "stock",
+        "v2"
+      ]
+    }
+  ],
+  "results": [
+    {
+      "name": "stock",
+      "label": "production control",
+      "samplesMs": [
+        3852.0073139999877,
+        3822.445651000002,
+        3663.90391600001,
+        3799.46164899999,
+        4032.094068000006,
+        4155.771382000006
+      ],
+      "sourceSha256": "805b444631498f9f5ba634605b289ab10fc6fee8a6083af1588a0338070346e7",
+      "statsMs": {
+        "median": 3837.2264824999947,
+        "mean": 3887.613996666667,
+        "min": 3663.90391600001,
+        "max": 4155.771382000006,
+        "p95": 4155.771382000006,
+        "stddev": 161.304401696391
+      }
+    },
+    {
+      "name": "static-map",
+      "label": "equivalent validation",
+      "samplesMs": [
+        3713.989797999995,
+        3510.2017230000056,
+        3550.059857,
+        3787.8351609999954,
+        3667.2819590000145,
+        3894.8534050000017
+      ],
+      "sourceSha256": "f82c9dbe80f740968bfe1202c21003e5b965332941d0f4d9a70e0cf821666c74",
+      "statsMs": {
+        "median": 3690.6358785000048,
+        "mean": 3687.370317166669,
+        "min": 3510.2017230000056,
+        "max": 3894.8534050000017,
+        "p95": 3894.8534050000017,
+        "stddev": 131.97059565622368
+      }
+    },
+    {
+      "name": "combined",
+      "label": "equivalent static transition map plus string.split name validator",
+      "samplesMs": [
+        3447.6602300000086,
+        3271.43306499999,
+        3383.593055999998,
+        6535.253441000008,
+        3677.8658149999974,
+        3519.974343000009
+      ],
+      "sourceSha256": "149be42734c647ce43090a87acb99594dc61be86e03182e256fbf027b0cfdae8",
+      "statsMs": {
+        "median": 3483.817286500009,
+        "mean": 3972.6299916666685,
+        "min": 3271.43306499999,
+        "max": 6535.253441000008,
+        "p95": 6535.253441000008,
+        "stddev": 1152.7544470672296
+      }
+    },
+    {
+      "name": "v2",
+      "label": "legacy file-loaded reference",
+      "samplesMs": [
+        1494.295788000003,
+        1541.122829,
+        1462.0141050000093,
+        1748.962222000002,
+        1630.3083569999872,
+        1502.1566319999984
+      ],
+      "sourceSha256": null,
+      "statsMs": {
+        "median": 1521.6397304999991,
+        "mean": 1563.1433221666666,
+        "min": 1462.0141050000093,
+        "max": 1748.962222000002,
+        "p95": 1748.962222000002,
+        "stddev": 98.49804182638312
+      }
+    }
+  ],
+  "completedAt": "2026-09-22T20:12:35.800Z",
+  "loadAverageEnd": [
+    1.15,
+    1.08,
+    0.75
+  ]
+}

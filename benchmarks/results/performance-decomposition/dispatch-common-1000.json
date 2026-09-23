@@ -1,0 +1,144 @@
+{
+  "startedAt": "2026-09-22T20:09:41.191Z",
+  "group": "dispatch",
+  "scenario": "common",
+  "scale": 1000,
+  "node": "v22.19.0",
+  "sass": "dart-sass\t1.104.1\t(Sass Compiler)\t[Dart]\ndart2js\t3.13.3\t(Dart Compiler)\t[Dart]",
+  "coreSha256": "805b444631498f9f5ba634605b289ab10fc6fee8a6083af1588a0338070346e7",
+  "harnessSha256": "ec07e21d8e046a5187e11668ff2d70d1dc18592a9ad4eedadad942f621479ce6",
+  "scriptSha256": "1e6556f05b214a3a6b2de8e439880a2bb845e4cb40007e766a0bfc3e7c11814b",
+  "cpu": "Intel(R) Core(TM) Ultra 5 238V",
+  "loadAverageStart": [
+    1.16,
+    1.04,
+    0.66
+  ],
+  "methodology": {
+    "warmups": 2,
+    "iterations": 6,
+    "order": "rotate starting lane, reverse alternate rounds; order stored explicitly",
+    "v3Loading": "identical in-memory importer per variant; fresh compilation every call",
+    "v2Loading": "original file entrypoint; fresh compilation",
+    "timing": "compileString only; fixture generation, transforms, checks, I/O untimed",
+    "logger": "silent for all timing lanes",
+    "gc": "not forced"
+  },
+  "cssBytes": 134677,
+  "orders": [
+    {
+      "round": 0,
+      "warmup": true,
+      "names": [
+        "stock",
+        "public-direct"
+      ]
+    },
+    {
+      "round": 1,
+      "warmup": true,
+      "names": [
+        "stock",
+        "public-direct"
+      ]
+    },
+    {
+      "round": 2,
+      "warmup": false,
+      "names": [
+        "stock",
+        "public-direct"
+      ]
+    },
+    {
+      "round": 3,
+      "warmup": false,
+      "names": [
+        "stock",
+        "public-direct"
+      ]
+    },
+    {
+      "round": 4,
+      "warmup": false,
+      "names": [
+        "stock",
+        "public-direct"
+      ]
+    },
+    {
+      "round": 5,
+      "warmup": false,
+      "names": [
+        "stock",
+        "public-direct"
+      ]
+    },
+    {
+      "round": 6,
+      "warmup": false,
+      "names": [
+        "stock",
+        "public-direct"
+      ]
+    },
+    {
+      "round": 7,
+      "warmup": false,
+      "names": [
+        "stock",
+        "public-direct"
+      ]
+    }
+  ],
+  "results": [
+    {
+      "name": "stock",
+      "label": "production control",
+      "samplesMs": [
+        1121.564205999999,
+        1115.7123249999986,
+        1146.1067629999998,
+        2558.9421449999973,
+        1384.3455809999978,
+        1120.9600390000014
+      ],
+      "sourceSha256": "805b444631498f9f5ba634605b289ab10fc6fee8a6083af1588a0338070346e7",
+      "statsMs": {
+        "median": 1133.8354844999994,
+        "mean": 1407.9385098333323,
+        "min": 1115.7123249999986,
+        "max": 2558.9421449999973,
+        "p95": 2558.9421449999973,
+        "stddev": 523.399924504471
+      }
+    },
+    {
+      "name": "public-direct",
+      "label": "diagnostic lower bound only; common lifecycle copied into public mixins, remove enter dispatch/content forwarding",
+      "samplesMs": [
+        1389.7071720000004,
+        1623.3981640000002,
+        1236.8376979999994,
+        1048.275712999999,
+        1334.2435799999985,
+        1245.4080319999994
+      ],
+      "sourceSha256": "e7614be56694e47133fdf6d02a184ded796f4dcb67bf9b7b6904310a9f3744c1",
+      "statsMs": {
+        "median": 1289.825805999999,
+        "mean": 1312.9783931666661,
+        "min": 1048.275712999999,
+        "max": 1623.3981640000002,
+        "p95": 1623.3981640000002,
+        "stddev": 174.70480619824818
+      }
+    }
+  ],
+  "completedAt": "2026-09-22T20:10:02.280Z",
+  "loadAverageEnd": [
+    1.19,
+    1.05,
+    0.67
+  ]
+}

@@ -1,8 +1,8 @@
 {
-  "name": "sass-beminator-v3",
+  "name": "sass-beminator",
   "version": "0.0.0",
   "private": true,
-  "description": "Infrastructure for the Sass BEMinator rewrite",
+  "description": "Stable Sass BEM composition core with optional CSS Layers",
   "type": "module",
   "engines": {
     "node": "^22.19.0 || ^24.0.0"
@@ -12,9 +12,22 @@
     "test:watch": "node --test --watch \"tests/unit/**/*.test.js\" \"tests/production/**/*.test.js\"",
     "test:legacy": "node --test \"tests/legacy/**/*.test.js\" \"tests/characterization/**/*.test.js\"",
     "test:characterization": "node --test \"tests/characterization/**/*.test.js\"",
-    "test:production": "node --test \"tests/production/**/*.test.js\""
+    "test:production": "node --test \"tests/production/**/*.test.js\"",
+    "test:package": "node --test \"tests/package/**/*.test.js\"",
+    "benchmark:core": "node benchmarks/compile-performance.mjs"
   },
   "devDependencies": {
     "sass": "1.104.1"
-  }
+  },
+  "sass": "./src/_index.scss",
+  "exports": {
+    ".": {
+      "sass": "./src/_index.scss"
+    }
+  },
+  "files": [
+    "src/",
+    "docs/",
+    "README.md"
+  ]
 }

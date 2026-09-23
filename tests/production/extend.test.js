@@ -53,7 +53,7 @@ test('extend validates target and both modifiers with the existing literal-name 
     for (const args of [`${name}, 'm'`, `'icon', ${name}`, `'icon', 'm', ${name}`]) {
       if (args === "'icon', 'm', null") continue;
       assert.throws(() => compile(block(`@include bem.extend(${args}) {}`)),
-        /BEMinator: (expected a nonempty literal BEM name|a BEM name)/);
+        /BEMinator: (expected a nonempty BEM name string|a BEM name)/);
     }
   }
   assert.deepEqual(rules(compile(block("@include bem.extend(Icon_2, 'mod-1', 'active') { content: 'valid'; }"))),
@@ -91,12 +91,12 @@ for (const [label, source, parent] of [
   ['adjacent parent', block(`@include bem.element('label') { @include bem.selector('+') { ${extend('')} } }`), 'pending-relation'],
 ]) {
   test(`${label} remains deferred`, () => {
-    assert.throws(() => compile(source), new RegExp(`nesting ${parent} -> extend is deferred; not implemented in this slice`));
+    assert.throws(() => compile(source), new RegExp(`nesting ${parent} -> extend is unsupported in the current BEMinator API`));
   });
 }
 test('direct selector and modifier beneath extend remain deferred', () => {
   for (const call of ["@include bem.selector(':before') {}", "@include bem.selector('+') {}", "@include bem.modifier('active') {}"]) {
-    assert.throws(() => compile(block(extend(call))), /nesting extend -> (qualified|pending-relation|modifier) is deferred; not implemented in this slice/);
+    assert.throws(() => compile(block(extend(call))), /nesting extend -> (qualified|pending-relation|modifier) is unsupported in the current BEMinator API/);
   }
 });
 test('approved selector children of an extend element retain the target owner', () => {
@@ -159,12 +159,13 @@ test('extend constructs new rules without native Sass extension or rule merging'
     ['.icon--mod1', 'existing'], ['.standard-object .icon--mod1', 'constructed'],
   ]);
 });
-test('source architecture has three load-time settings, one evolving stack, and no native extension primitives', () => {
+test('source architecture has three settings, immutable transitions, one evolving stack, and no native extension primitives', () => {
   const source = readFileSync(new URL('../../src/core/_bem.scss', import.meta.url), 'utf8')
     .replace(/\/\/[^\n]*/g, '');
   // Guard this cohesive module's architectural constraint, not a general SCSS parser.
   assert.deepEqual([...source.matchAll(/^\$([\w-]+):/gm)].map((match) => match[1]),
-    ['element-separator', 'modifier-separator', 'css-layers', '-context-stack']);
+    ['element-separator', 'modifier-separator', 'css-layers', '-context-stack', '-allowed-transitions']);
+  assert.equal([...source.matchAll(/\$-allowed-transitions\s*:/g)].length, 1);
   assert.deepEqual([...source.matchAll(/^\$([\w-]+):[^;]*!default/gm)].map((match) => match[1]),
     ['element-separator', 'modifier-separator', 'css-layers']);
   const writes = [...source.matchAll(/\$([\w-]+):[^;]*!global/g)].map((match) => match[1]);

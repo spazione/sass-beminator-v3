@@ -1,0 +1,202 @@
+{
+  "startedAt": "2026-09-22T20:08:49.672Z",
+  "group": "combined",
+  "scenario": "common",
+  "scale": 1000,
+  "node": "v22.19.0",
+  "sass": "dart-sass\t1.104.1\t(Sass Compiler)\t[Dart]\ndart2js\t3.13.3\t(Dart Compiler)\t[Dart]",
+  "coreSha256": "805b444631498f9f5ba634605b289ab10fc6fee8a6083af1588a0338070346e7",
+  "harnessSha256": "ec07e21d8e046a5187e11668ff2d70d1dc18592a9ad4eedadad942f621479ce6",
+  "scriptSha256": "51e285ab5ba4065b518a7dcb4d90dfd404422dbda910ee4fba8a7ef5e077af1d",
+  "cpu": "Intel(R) Core(TM) Ultra 5 238V",
+  "loadAverageStart": [
+    1.41,
+    1.05,
+    0.63
+  ],
+  "methodology": {
+    "warmups": 2,
+    "iterations": 6,
+    "order": "rotate starting lane, reverse alternate rounds; order stored explicitly",
+    "v3Loading": "identical in-memory importer per variant; fresh compilation every call",
+    "v2Loading": "original file entrypoint; fresh compilation",
+    "timing": "compileString only; fixture generation, transforms, checks, I/O untimed",
+    "logger": "silent for all timing lanes",
+    "gc": "not forced"
+  },
+  "cssBytes": 134677,
+  "orders": [
+    {
+      "round": 0,
+      "warmup": true,
+      "names": [
+        "stock",
+        "static-map",
+        "combined",
+        "v2"
+      ]
+    },
+    {
+      "round": 1,
+      "warmup": true,
+      "names": [
+        "stock",
+        "v2",
+        "combined",
+        "static-map"
+      ]
+    },
+    {
+      "round": 2,
+      "warmup": false,
+      "names": [
+        "combined",
+        "v2",
+        "stock",
+        "static-map"
+      ]
+    },
+    {
+      "round": 3,
+      "warmup": false,
+      "names": [
+        "combined",
+        "static-map",
+        "stock",
+        "v2"
+      ]
+    },
+    {
+      "round": 4,
+      "warmup": false,
+      "names": [
+        "stock",
+        "static-map",
+        "combined",
+        "v2"
+      ]
+    },
+    {
+      "round": 5,
+      "warmup": false,
+      "names": [
+        "stock",
+        "v2",
+        "combined",
+        "static-map"
+      ]
+    },
+    {
+      "round": 6,
+      "warmup": false,
+      "names": [
+        "combined",
+        "v2",
+        "stock",
+        "static-map"
+      ]
+    },
+    {
+      "round": 7,
+      "warmup": false,
+      "names": [
+        "combined",
+        "static-map",
+        "stock",
+        "v2"
+      ]
+    }
+  ],
+  "results": [
+    {
+      "name": "stock",
+      "label": "production control",
+      "samplesMs": [
+        1526.7806529999998,
+        1094.9259920000004,
+        1305.7084639999994,
+        1275.7083530000018,
+        1393.593246000004,
+        2781.916158
+      ],
+      "sourceSha256": "805b444631498f9f5ba634605b289ab10fc6fee8a6083af1588a0338070346e7",
+      "statsMs": {
+        "median": 1349.6508550000017,
+        "mean": 1563.1054776666676,
+        "min": 1094.9259920000004,
+        "max": 2781.916158,
+        "p95": 2781.916158,
+        "stddev": 560.2969041464487
+      }
+    },
+    {
+      "name": "static-map",
+      "label": "equivalent validation",
+      "samplesMs": [
+        1252.5398799999966,
+        1160.5462509999998,
+        1228.7976119999985,
+        1161.1921679999978,
+        1064.2620010000028,
+        2442.071880999996
+      ],
+      "sourceSha256": "f82c9dbe80f740968bfe1202c21003e5b965332941d0f4d9a70e0cf821666c74",
+      "statsMs": {
+        "median": 1194.9948899999981,
+        "mean": 1384.9016321666652,
+        "min": 1064.2620010000028,
+        "max": 2442.071880999996,
+        "p95": 2442.071880999996,
+        "stddev": 476.5655023285577
+      }
+    },
+    {
+      "name": "combined",
+      "label": "equivalent static transition map plus string.split name validator",
+      "samplesMs": [
+        1150.3816260000003,
+        988.6630579999983,
+        979.3705439999976,
+        1064.9488279999969,
+        1368.2837389999986,
+        1997.9271339999977
+      ],
+      "sourceSha256": "149be42734c647ce43090a87acb99594dc61be86e03182e256fbf027b0cfdae8",
+      "statsMs": {
+        "median": 1107.6652269999986,
+        "mean": 1258.262488166665,
+        "min": 979.3705439999976,
+        "max": 1997.9271339999977,
+        "p95": 1997.9271339999977,
+        "stddev": 355.593748732734
+      }
+    },
+    {
+      "name": "v2",
+      "label": "legacy file-loaded reference",
+      "samplesMs": [
+        645.1582049999997,
+        573.8488219999999,
+        446.85711000000083,
+        585.2383659999978,
+        516.6063370000011,
+        426.38730000000214
+      ],
+      "sourceSha256": null,
+      "statsMs": {
+        "median": 545.2275795000005,
+        "mean": 532.349356666667,
+        "min": 426.38730000000214,
+        "max": 645.1582049999997,
+        "p95": 645.1582049999997,
+        "stddev": 77.49194964088757
+      }
+    }
+  ],
+  "completedAt": "2026-09-22T20:09:26.321Z",
+  "loadAverageEnd": [
+    1.21,
+    1.04,
+    0.65
+  ]
+}

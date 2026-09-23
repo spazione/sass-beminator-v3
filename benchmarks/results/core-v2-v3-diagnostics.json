@@ -1,0 +1,404 @@
+{
+  "startedAt": "2026-09-22T19:39:45.001Z",
+  "node": "v22.19.0",
+  "sass": "dart-sass\t1.104.1\t(Sass Compiler)\t[Dart]\ndart2js\t3.13.3\t(Dart Compiler)\t[Dart]",
+  "coreSha256": "805b444631498f9f5ba634605b289ab10fc6fee8a6083af1588a0338070346e7",
+  "harnessSha256": "ec07e21d8e046a5187e11668ff2d70d1dc18592a9ad4eedadad942f621479ce6",
+  "audit": [
+    {
+      "scenario": "block",
+      "version": "v2",
+      "scale": 2,
+      "calls": 2,
+      "cssBytes": 62,
+      "warnings": [
+        {
+          "message": "The Sass if() syntax is deprecated in favor of the modern CSS syntax.\n\nSuggestion: if(sass($isExtend == true): \"extend\"; else: \"block\")\n\nMore info: https://sass-lang.com/d/if-function",
+          "deprecation": true,
+          "id": "if-function"
+        },
+        {
+          "message": "The Sass if() syntax is deprecated in favor of the modern CSS syntax.\n\nSuggestion: if(sass($i != list.length($list) or $is-nested): $result #{$e}#{$glue}; else: $result #{$e})\n\nMore info: https://sass-lang.com/d/if-function",
+          "deprecation": true,
+          "id": "if-function"
+        }
+      ],
+      "debug": [],
+      "loadedUrls": [
+        "file:///home/spazione/workspace/sass-beminator/__benchmark__.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/mixins/tool.beminator.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/settings/settings.shared-beminator.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/settings/settings.beminator-init.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/settings/settings.shared-css-layers.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.capitalize.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.str-replace.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.list-to-string.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.str-split.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.value-replace.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.last.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.str-to-list.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/mixins/tool.inject-css3-vars.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.hex-to-rgb.scss"
+      ]
+    },
+    {
+      "scenario": "block",
+      "version": "v3",
+      "scale": 2,
+      "calls": 2,
+      "cssBytes": 62,
+      "warnings": [],
+      "debug": [],
+      "loadedUrls": [
+        "file:///home/spazione/workspace/sass-beminator-v3/__benchmark__.scss",
+        "file:///home/spazione/workspace/sass-beminator-v3/src/_index.scss",
+        "file:///home/spazione/workspace/sass-beminator-v3/src/core/_bem.scss"
+      ]
+    },
+    {
+      "scenario": "common",
+      "version": "v2",
+      "scale": 2,
+      "calls": 10,
+      "cssBytes": 256,
+      "warnings": [
+        {
+          "message": "The Sass if() syntax is deprecated in favor of the modern CSS syntax.\n\nSuggestion: if(sass($isExtend == true): \"extend\"; else: \"block\")\n\nMore info: https://sass-lang.com/d/if-function",
+          "deprecation": true,
+          "id": "if-function"
+        },
+        {
+          "message": "The Sass if() syntax is deprecated in favor of the modern CSS syntax.\n\nSuggestion: if(sass($i != list.length($list) or $is-nested): $result #{$e}#{$glue}; else: $result #{$e})\n\nMore info: https://sass-lang.com/d/if-function",
+          "deprecation": true,
+          "id": "if-function"
+        }
+      ],
+      "debug": [],
+      "loadedUrls": [
+        "file:///home/spazione/workspace/sass-beminator/__benchmark__.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/mixins/tool.beminator.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/settings/settings.shared-beminator.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/settings/settings.beminator-init.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/settings/settings.shared-css-layers.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.capitalize.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.str-replace.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.list-to-string.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.str-split.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.value-replace.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.last.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.str-to-list.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/mixins/tool.inject-css3-vars.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.hex-to-rgb.scss"
+      ]
+    },
+    {
+      "scenario": "common",
+      "version": "v3",
+      "scale": 2,
+      "calls": 10,
+      "cssBytes": 256,
+      "warnings": [],
+      "debug": [],
+      "loadedUrls": [
+        "file:///home/spazione/workspace/sass-beminator-v3/__benchmark__.scss",
+        "file:///home/spazione/workspace/sass-beminator-v3/src/_index.scss",
+        "file:///home/spazione/workspace/sass-beminator-v3/src/core/_bem.scss"
+      ]
+    },
+    {
+      "scenario": "nested",
+      "version": "v2",
+      "scale": 2,
+      "calls": 6,
+      "cssBytes": 88,
+      "warnings": [
+        {
+          "message": "The Sass if() syntax is deprecated in favor of the modern CSS syntax.\n\nSuggestion: if(sass($isExtend == true): \"extend\"; else: \"block\")\n\nMore info: https://sass-lang.com/d/if-function",
+          "deprecation": true,
+          "id": "if-function"
+        },
+        {
+          "message": "The Sass if() syntax is deprecated in favor of the modern CSS syntax.\n\nSuggestion: if(sass($i != list.length($list) or $is-nested): $result #{$e}#{$glue}; else: $result #{$e})\n\nMore info: https://sass-lang.com/d/if-function",
+          "deprecation": true,
+          "id": "if-function"
+        }
+      ],
+      "debug": [],
+      "loadedUrls": [
+        "file:///home/spazione/workspace/sass-beminator/__benchmark__.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/mixins/tool.beminator.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/settings/settings.shared-beminator.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/settings/settings.beminator-init.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/settings/settings.shared-css-layers.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.capitalize.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.str-replace.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.list-to-string.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.str-split.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.value-replace.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.last.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.str-to-list.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/mixins/tool.inject-css3-vars.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.hex-to-rgb.scss"
+      ]
+    },
+    {
+      "scenario": "nested",
+      "version": "v3",
+      "scale": 2,
+      "calls": 6,
+      "cssBytes": 88,
+      "warnings": [],
+      "debug": [],
+      "loadedUrls": [
+        "file:///home/spazione/workspace/sass-beminator-v3/__benchmark__.scss",
+        "file:///home/spazione/workspace/sass-beminator-v3/src/_index.scss",
+        "file:///home/spazione/workspace/sass-beminator-v3/src/core/_bem.scss"
+      ]
+    },
+    {
+      "scenario": "extend",
+      "version": "v2",
+      "scale": 2,
+      "calls": 6,
+      "cssBytes": 116,
+      "warnings": [
+        {
+          "message": "The Sass if() syntax is deprecated in favor of the modern CSS syntax.\n\nSuggestion: if(sass($isExtend == true): \"extend\"; else: \"block\")\n\nMore info: https://sass-lang.com/d/if-function",
+          "deprecation": true,
+          "id": "if-function"
+        },
+        {
+          "message": "The Sass if() syntax is deprecated in favor of the modern CSS syntax.\n\nSuggestion: if(sass($i != list.length($list) or $is-nested): $result #{$e}#{$glue}; else: $result #{$e})\n\nMore info: https://sass-lang.com/d/if-function",
+          "deprecation": true,
+          "id": "if-function"
+        }
+      ],
+      "debug": [],
+      "loadedUrls": [
+        "file:///home/spazione/workspace/sass-beminator/__benchmark__.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/mixins/tool.beminator.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/settings/settings.shared-beminator.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/settings/settings.beminator-init.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/settings/settings.shared-css-layers.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.capitalize.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.str-replace.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.list-to-string.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.str-split.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.value-replace.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.last.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.str-to-list.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/mixins/tool.inject-css3-vars.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.hex-to-rgb.scss"
+      ]
+    },
+    {
+      "scenario": "extend",
+      "version": "v3",
+      "scale": 2,
+      "calls": 6,
+      "cssBytes": 116,
+      "warnings": [],
+      "debug": [],
+      "loadedUrls": [
+        "file:///home/spazione/workspace/sass-beminator-v3/__benchmark__.scss",
+        "file:///home/spazione/workspace/sass-beminator-v3/src/_index.scss",
+        "file:///home/spazione/workspace/sass-beminator-v3/src/core/_bem.scss"
+      ]
+    },
+    {
+      "scenario": "mixed",
+      "version": "v2",
+      "scale": 2,
+      "calls": 22,
+      "cssBytes": 620,
+      "warnings": [
+        {
+          "message": "The Sass if() syntax is deprecated in favor of the modern CSS syntax.\n\nSuggestion: if(sass($isExtend == true): \"extend\"; else: \"block\")\n\nMore info: https://sass-lang.com/d/if-function",
+          "deprecation": true,
+          "id": "if-function"
+        },
+        {
+          "message": "The Sass if() syntax is deprecated in favor of the modern CSS syntax.\n\nSuggestion: if(sass($i != list.length($list) or $is-nested): $result #{$e}#{$glue}; else: $result #{$e})\n\nMore info: https://sass-lang.com/d/if-function",
+          "deprecation": true,
+          "id": "if-function"
+        }
+      ],
+      "debug": [],
+      "loadedUrls": [
+        "file:///home/spazione/workspace/sass-beminator/__benchmark__.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/mixins/tool.beminator.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/settings/settings.shared-beminator.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/settings/settings.beminator-init.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/settings/settings.shared-css-layers.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.capitalize.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.str-replace.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.list-to-string.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.str-split.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.value-replace.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.last.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.str-to-list.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/mixins/tool.inject-css3-vars.scss",
+        "file:///home/spazione/workspace/sass-beminator/src/scss/tools/functions/tool.hex-to-rgb.scss"
+      ]
+    },
+    {
+      "scenario": "mixed",
+      "version": "v3",
+      "scale": 2,
+      "calls": 22,
+      "cssBytes": 620,
+      "warnings": [],
+      "debug": [],
+      "loadedUrls": [
+        "file:///home/spazione/workspace/sass-beminator-v3/__benchmark__.scss",
+        "file:///home/spazione/workspace/sass-beminator-v3/src/_index.scss",
+        "file:///home/spazione/workspace/sass-beminator-v3/src/core/_bem.scss"
+      ]
+    }
+  ],
+  "diagnostics": [
+    {
+      "name": "stock",
+      "samplesMs": [
+        1055.24424,
+        1930.725531,
+        1131.410864000005,
+        1059.038864000002,
+        1053.144419999997,
+        1153.4238269999987
+      ],
+      "statsMs": {
+        "median": 1095.2248640000034,
+        "mean": 1230.4979576666672,
+        "min": 1053.144419999997,
+        "max": 1930.725531,
+        "p95": 1930.725531,
+        "stddev": 315.60621347006725
+      },
+      "sourceSha256": "805b444631498f9f5ba634605b289ab10fc6fee8a6083af1588a0338070346e7",
+      "cssBytes": 134677,
+      "correctness": "byte-identical to production v3 and independent expected rules"
+    },
+    {
+      "name": "without-name-validation",
+      "samplesMs": [
+        915.5335979999982,
+        1108.5727600000027,
+        1147.355488000001,
+        861.7568739999988,
+        883.4706719999958,
+        1056.3746640000027
+      ],
+      "statsMs": {
+        "median": 985.9541310000004,
+        "mean": 995.5106759999999,
+        "min": 861.7568739999988,
+        "max": 1147.355488000001,
+        "p95": 1147.355488000001,
+        "stddev": 112.8300210170138
+      },
+      "sourceSha256": "c1aedf698aa30343e5042e6e788a13fcfad17a23ea7af25a5c52ee32090ab417",
+      "cssBytes": 134677,
+      "correctness": "byte-identical to production v3 and independent expected rules"
+    },
+    {
+      "name": "without-nesting-validation",
+      "samplesMs": [
+        877.5364179999997,
+        897.5651870000002,
+        1036.6887070000012,
+        1053.421961,
+        889.9108850000048,
+        914.9343860000008
+      ],
+      "statsMs": {
+        "median": 906.2497865000005,
+        "mean": 945.0095906666678,
+        "min": 877.5364179999997,
+        "max": 1053.421961,
+        "p95": 1053.421961,
+        "stddev": 71.76615751154071
+      },
+      "sourceSha256": "3071cdebb4fb4622a02c3ac9fd7752ecc2ae2c2c80e687de9c5bc3605a39e34c",
+      "cssBytes": 134677,
+      "correctness": "byte-identical to production v3 and independent expected rules"
+    },
+    {
+      "name": "without-both-validations",
+      "samplesMs": [
+        684.7669810000007,
+        776.5904069999997,
+        715.6640740000003,
+        732.1115720000016,
+        681.979895000004,
+        747.8069449999966
+      ],
+      "statsMs": {
+        "median": 723.8878230000009,
+        "mean": 723.1533123333338,
+        "min": 681.979895000004,
+        "max": 776.5904069999997,
+        "p95": 776.5904069999997,
+        "stddev": 33.586764569005574
+      },
+      "sourceSha256": "fa5655a51356bb9eb4ef00e8686d3398b95a03938c726ef93d3492baa232d1bb",
+      "cssBytes": 134677,
+      "correctness": "byte-identical to production v3 and independent expected rules"
+    },
+    {
+      "name": "without-explicit-owner-parse",
+      "samplesMs": [
+        1043.7955909999982,
+        1175.9638590000031,
+        1530.440905000003,
+        1179.4949960000013,
+        1202.925651999998,
+        1172.5170020000005
+      ],
+      "statsMs": {
+        "median": 1177.7294275000022,
+        "mean": 1217.523000833334,
+        "min": 1043.7955909999982,
+        "max": 1530.440905000003,
+        "p95": 1530.440905000003,
+        "stddev": 149.1703397802523
+      },
+      "sourceSha256": "4ef4fcb51a83d31b34be8f32242caabbe1ff78c85e359b2cc484490bb3273c3f",
+      "cssBytes": 134677,
+      "correctness": "byte-identical to production v3 and independent expected rules"
+    },
+    {
+      "name": "without-complete-selector-nest",
+      "samplesMs": [
+        987.8859360000024,
+        2130.935940000003,
+        1060.0448969999998,
+        1007.091843999995,
+        1023.8323119999986,
+        1028.284391000001
+      ],
+      "statsMs": {
+        "median": 1026.0583514999998,
+        "mean": 1206.3458866666667,
+        "min": 987.8859360000024,
+        "max": 2130.935940000003,
+        "p95": 2130.935940000003,
+        "stddev": 414.06818501331725
+      },
+      "sourceSha256": "16fad8d7d087df6ebbb002b1c9c30128143d9be9e87ac949b85245c51dc05b06",
+      "cssBytes": 134677,
+      "correctness": "byte-identical to production v3 and independent expected rules"
+    }
+  ],
+  "methodology": {
+    "scale": 1000,
+    "warmups": 2,
+    "iterations": 6,
+    "order": "rotate first variant each round; reverse every other round",
+    "loading": "all diagnostic variants use the same in-memory importer",
+    "warningAudit": "verbose collecting logger outside timing; no silenced deprecations",
+    "timings": "compileString only, Logger.silent; generation and equality checks outside timing",
+    "scope": "ablations only valid for this common fixture; not proposed production changes"
+  },
+  "completedAt": "2026-09-22T19:40:41.902Z"
+}

@@ -34,7 +34,7 @@ test('obsolete v3-only modifier keywords have no compatibility aliases', () => {
   }
 });
 test('named empty second modifier remains invalid; null is the only absent-value sentinel', () => {
-  assert.throws(() => modifier("$mod1: 'active', $mod2: ''"), /expected a nonempty literal BEM name/);
+  assert.throws(() => modifier("$mod1: 'active', $mod2: ''"), /expected a nonempty BEM name string/);
 });
 test('extend retains name, mod1, and optional null mod2 keyword signature', () => {
   const compile = (args) => compileScss(`@use '../../src' as bem;

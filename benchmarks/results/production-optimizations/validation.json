@@ -1,0 +1,74 @@
+[
+  {
+    "name": "production",
+    "exitCode": 0,
+    "tests": 508,
+    "passed": 508,
+    "failed": 0,
+    "skipped": 0
+  },
+  {
+    "name": "normal",
+    "exitCode": 0,
+    "tests": 510,
+    "passed": 510,
+    "failed": 0,
+    "skipped": 0
+  },
+  {
+    "name": "characterization",
+    "exitCode": 0,
+    "tests": 58,
+    "passed": 58,
+    "failed": 0,
+    "skipped": 0
+  },
+  {
+    "name": "legacy",
+    "exitCode": 0,
+    "tests": 60,
+    "passed": 60,
+    "failed": 0,
+    "skipped": 0
+  },
+  {
+    "name": "package",
+    "exitCode": 0,
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0
+  },
+  {
+    "name": "selector-engine",
+    "exitCode": 0,
+    "tests": 27,
+    "passed": 27,
+    "failed": 0,
+    "skipped": 0
+  },
+  {
+    "name": "context-stack",
+    "exitCode": 0,
+    "tests": 15,
+    "passed": 15,
+    "failed": 0,
+    "skipped": 0
+  },
+  {
+    "name": "structural-selector",
+    "exitCode": 0,
+    "tests": 16,
+    "passed": 16,
+    "failed": 0,
+    "skipped": 0
+  },
+  {
+    "name": "css-layers",
+    "exitCode": 0,
+    "tests": 57,
+    "passed": 57,
+    "failed": 0,
+    "skipped": 0
+  }
+]
