@@ -1,3 +1,6 @@
+// Isolated selector-scope proposal; copied from the production core at
+// SHA-256 3a73cbdbb227f0f7a0d1d7a092eea4c47510694b3361378f234ddc2921cce6cd.
+// Only qualified transitions and element scope derivation differ.
 @use 'sass:list';
 @use 'sass:map';
 @use 'sass:meta';

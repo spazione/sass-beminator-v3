@@ -127,7 +127,7 @@ test('pending relations reject root, block, and modifier parents', () => {
     }
   }
 });
-test(':before has no approved core children; + permits only element children', () => {
+test('qualified and pending contexts reject only their still-deferred child relationships', () => {
   const children = [
     ['block', "'other'"], ['element', "'other'"], ['modifier', "'active'"],
     ['selector', "':before'"], ['selector', "'+'"], ['extend', "'icon', 'active'"],
@@ -135,6 +135,7 @@ test(':before has no approved core children; + permits only element children', (
   for (const form of [':before', '+']) {
     for (const [mixin, args] of children) {
       if (form === '+' && mixin === 'element') continue;
+      if (form === ':before' && (['block', 'element'].includes(mixin) || (mixin === 'selector' && args === "':before'"))) continue;
       assert.throws(() => compile(wrap(`@include bem.selector('${form}') {
         @include bem.${mixin}(${args}) {}
       }`)), /nesting (qualified|pending-relation) -> [\w-]+ is unsupported in the current BEMinator API/);

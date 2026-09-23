@@ -109,7 +109,7 @@ test('configuration does not weaken nesting and selector validation', () => {
     [block('@include bem.modifier("a") { @include bem.modifier("b") {} }'), /modifier -> modifier/],
     [block('@include bem.extend("icon", "a") { @include bem.element("item") { @include bem.modifier("b") { @include bem.block("bad") {} } } }'), /block is forbidden beneath extend/],
     [element('@include bem.selector(":has(.x)") {}'), /functional pseudo selectors are unsupported in the current BEMinator API/],
-    [element('@include bem.selector(":hover") { @include bem.selector(":focus") {} }'), /qualified -> qualified is unsupported in the current BEMinator API/],
+    [element('@include bem.selector(":hover") { @include bem.selector(">") {} }'), /qualified -> pending-relation is unsupported in the current BEMinator API/],
     [element('@include bem.selector(">") { color: red; }'), /Declarations may only be used within style rules/],
   ]) assert.throws(() => compile(custom, source), error);
 });

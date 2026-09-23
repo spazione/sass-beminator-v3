@@ -57,16 +57,22 @@ for (const [index, [value, error, setup = '']] of nameCases.entries()) {
 const transitions = {
   root: ['block'], block: ['block', 'element', 'modifier', 'extend', 'qualified'],
   element: ['modifier', 'qualified', 'pending-relation'], modifier: ['block', 'element', 'qualified'],
-  qualified: [], 'pending-relation': ['element'], extend: ['element'],
+  qualified: ['element', 'block', 'qualified'], 'pending-relation': ['element'], extend: ['element'],
 };
 const exposeValidate = '\n@function diagnostic-validate($parent, $child, $under) { @return -validate((kind: $parent, under-extend: $under), $child); }';
 for (const parent of Object.keys(transitions))
 for (const child of ['block', 'element', 'modifier', 'qualified', 'pending-relation', 'extend'])
 for (const under of [false, true]) {
-  test(`relationship equivalence ${parent}/${child}/under-extend=${under}`, () => {
+  test(`relationship contract and historical comparison ${parent}/${child}/under-extend=${under}`, () => {
     const body = `.x { result: meta.inspect(bem.diagnostic-validate(${parent}, ${child}, ${under})); }`;
     const actual = outcome(current, body, exposeValidate);
-    assert.deepEqual(actual, outcome(previous, body, exposeValidate));
+    const historical = outcome(previous, body, exposeValidate);
+    const promoted = parent === 'qualified' && ['element', 'block', 'qualified'].includes(child) && !(child === 'block' && under);
+    if (promoted) {
+      // Explicitly approved scope adoption; the historical fixture remains frozen.
+      assert.equal(historical.error, `"BEMinator: nesting qualified -> ${child} is unsupported in the current BEMinator API."`);
+      assert.ok(actual.css);
+    } else assert.deepEqual(actual, historical);
     const expectedError = child === 'block' && under
       ? 'BEMinator: invalid nesting: block is forbidden beneath extend.'
       : parent === child && ['element', 'modifier'].includes(child)
@@ -77,9 +83,10 @@ for (const under of [false, true]) {
     else assert.ok(actual.css);
   });
 }
-test('optimization preserves all source outside the two approved changes', () => {
+test('source differs from frozen reference only by optimizations and approved scope adoption', () => {
   const withoutName = text => text.replace(/@function -name\(\$name\) \{[\s\S]*?\n\}/, 'NAME_VALIDATOR');
   const restoreMap = current
+    .replace('$parent-kind == modifier or $parent-kind == extend or $parent-kind == qualified {', '$parent-kind == modifier or $parent-kind == extend {')
     .replace(/\/\/ Private immutable relationship data;[^\n]*\n\$-allowed-transitions:[\s\S]*?extend: \(element,\)\);\n\n/, '')
     .replace('  @if not list.index(map.get($-allowed-transitions, $parent-kind), $kind) {',
       previous.match(/  \$allowed:[\s\S]*?  @if not list.index\(map.get\(\$allowed, \$parent-kind\), \$kind\) \{/)[0]);

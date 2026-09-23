@@ -93,15 +93,15 @@ assume valid ancestors and the named arguments/forms specified below.
 | block | VALID | VALID | VALID | VALID¹ | VALID |
 | element | DEFERRED | INVALID | VALID | VALID¹ | DEFERRED |
 | modifier | VALID² | VALID | INVALID | VALID¹ | DEFERRED |
-| qualified selector | DEFERRED | DEFERRED | DEFERRED | DEFERRED | DEFERRED |
+| qualified selector | VALID³ | VALID | DEFERRED | VALID¹ | DEFERRED |
 | pending-relation selector | DEFERRED | VALID¹ | DEFERRED | DEFERRED | DEFERRED |
 | extend | INVALID³ | VALID | DEFERRED | DEFERRED | DEFERRED |
 
-1. Qualified compounds are valid under block, element, and modifier. Pending
-   relations `+`, `>`, `~` are valid only under element, with element children.
-   Qualified bodies support declarations, not public BEM children. Multiple
-   qualifier tokens in one call are not selector-context chaining; nested selector
-   calls remain DEFERRED. See the structural input contract below.
+1. Qualified compounds are valid under block, element, modifier, and qualified
+   selector. Qualified bodies support declarations, elements, nested qualifiers,
+   and blocks outside extend ancestry. Pending relations `+`, `>`, `~` remain
+   valid only under element, with element children. See the structural input
+   contract below.
 2. Includes the approved historical `block → element → modifier → block`
    composition. A later modifier inside that block targets the inner block.
 3. A block is INVALID **anywhere beneath an extend**, even with intervening
@@ -327,11 +327,28 @@ pseudo-element ordering. Unknown syntactically accepted non-functional pseudos
 such as `:made-up` are allowed. Preserve `:before` versus `::before`; Sass may
 normalize other equivalent serialization, including attribute quotes and escapes.
 
-Bodies support declarations. All public BEM children beneath qualified contexts
-remain **DEFERRED**, including selector → selector. A compound `:hover:focus`
-in **one call** is approved; nested `selector(':hover') → selector(':focus')`
-is selector-context chaining and remains deferred. An inherited block-beneath-extend
-prohibition still takes precedence over deferred relationships.
+Bodies support declarations, element children, nested qualified selectors, and
+blocks outside extend ancestry. Qualification retains the BEM owner and outer
+scope, appending to the current subject. Nested qualifiers qualify that same
+subject; each argument passes structural validation independently.
+
+An element child promotes the completed qualified parent into its scope and
+names its new subject from the retained owner. Thus block `card` → `:hover` →
+element `title` emits `.card:hover .card__title`; nested `:focus` before the
+element emits `.card:hover:focus .card__title`. A nested block starts a new
+owner and inherits the completed parent as scope: block `icon` → element
+`glyph` emits `.card:hover .icon__glyph`. The qualified frame itself keeps its
+previous scope; eagerly storing its completed subject there would duplicate it.
+
+Direct qualified → modifier, pending relation, and extend remain **DEFERRED**.
+After an element establishes its new subject, its existing relationships apply:
+`card` → `:hover` → element `item` → `>` → element `child` emits
+`.card:hover .card__item > .card__child`. Extend ancestry remains intact:
+`card` → extend `icon, active` → element `label` → `:hover` → element `glyph`
+emits `.card .icon--active .icon__label:hover .icon__glyph`. A block anywhere
+beneath extend remains INVALID. Every content completion restores the exact
+previous context, including owner, scope, and pending relation state; empty
+branches emit nothing.
 
 ### Pending relation
 
@@ -426,12 +443,13 @@ at-root queries are outside the BEM integration guarantee, not prohibited CSS.
 
 Raw leaf rules inside a complete BEM rule are supported as ordinary Sass styling.
 Raw selectors do not establish BEM context; BEM re-entry through them is
-unsupported and can silently lose lexical conditions. Qualified selector bodies
-still cannot contain BEM children, so they are not a conditional-descendant
-workaround.
+unsupported and can silently lose lexical conditions. Use
+`selector(':hover') { @include bem.element('title') { ... } }` inside a block
+for context-preserving qualification and BEM descendants. Raw `&:hover` cannot
+substitute for this context update.
 
 Root extend (Q01), nested extend (Q02), Q07's complete historical output, other
-DEFERRED entries, functional pseudos, and selector-context chaining remain outside
+DEFERRED entries and functional pseudos remain outside
 the stable subset with no future implementation promised. Addons, nested CSS
 Layers, broader identifiers, and additional at-rule integrations are non-blocking
 future topics. Publication is separate from this stable core declaration.

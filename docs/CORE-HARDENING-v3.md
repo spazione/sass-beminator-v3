@@ -13,6 +13,12 @@ The records below preserve the earlier audit and stabilization history. Their
 open-decision counts and temporary wording describe those earlier stages and are
 superseded by the adopted contract, not current release requirements.
 
+Subsequent qualified-scope adoption supports qualified → element, qualified →
+qualified, and qualified → block outside extend ancestry. Direct qualified →
+modifier, pending relation, and extend remain deferred. The triage matrix below
+annotates these adopted relationships; older audit conclusions remain historical.
+See [SPEC-v3.md](SPEC-v3.md) for the current scope/restoration contract.
+
 ## Historical hardening state before adoption
 
 The approved selector subset is implemented, but the whole API is **not yet
@@ -347,7 +353,7 @@ Every DEFERRED cell in the current matrix is covered below. Categories express
 likely investigation priority, not an implementation decision. The extend-ancestor
 block prohibition continues to override local deferral.
 
-| Deferred relationship/form | Triage | Reason / evidence needed |
+| Relationship/form (including subsequent adoption) | Triage | Reason / evidence needed |
 | --- | --- | --- |
 | root → element | Likely unnecessary | No owner exists; require a concrete use before introducing owner inference |
 | root → modifier | Likely unnecessary | No subject exists |
@@ -358,14 +364,16 @@ block prohibition continues to override local deferral.
 | element → extend | Requires real use case | Need an explicit descendant-target contract |
 | modifier → pending relation | Requires real use case | Modified-subject qualification is now approved; relation scope is not |
 | modifier → extend | Requires real use case | No approved contextual extend contract |
-| selector → block | Requires real use case | Pending versus complete selector semantics differ |
+| qualified → block | SUPPORTED outside extend ancestry | New owner inherits completed qualified scope |
+| pending → block | Requires real use case | Pending RHS remains element-only |
 | selector → modifier | Tied to future conditional selector work | Which subject is qualified depends on selector form |
-| selector → selector | Tied to future conditional selector work | Chaining/composition cannot be inferred from string concatenation |
+| qualified → qualified | SUPPORTED | Independently validated qualifiers append to the same subject |
+| qualified → pending; pending → selector | DEFERRED | No broader relation or unresolved RHS semantics adopted |
 | selector → extend | Requires real use case | Pending relation and extend scope require explicit meaning |
 | extend → modifier | Likely unnecessary | Existing one/two modifiers already qualify target; element modifiers remain valid |
 | extend → selector | Tied to future conditional selector work | Need target-condition scope contract |
 | extend → extend (Q02) | Requires real use case | No approved nested retargeting semantics |
-| qualified → element | Requires real use case | Qualified bodies support declarations only, regardless of their tokens |
+| qualified → element | SUPPORTED | Preserve owner; promote completed parent into descendant scope |
 | Functional pseudos and compounds containing them | Tied to future conditional selector work | Structural compound approval does not interpret functional arguments |
 | Q07 complete composite outcome | Requires real use case | Constituent valid relationships do not approve this full historical branch |
 

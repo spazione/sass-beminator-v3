@@ -225,7 +225,9 @@ relationships do not need semantics merely to make the matrix complete.
 The classifications below retain future triage, not delivery commitments.
 `UNSUPPORTED FOR v3 CORE` does not relabel historical DEFER records or permanently
 forbid a future proposal.
-Qualified and pending forms are separated to cover every deferred matrix cell.
+Qualified and pending forms are separated below. The subsequently approved
+qualified-scope relationships are marked SUPPORTED; remaining entries retain
+their deferred status. See the historical [design spike](SELECTOR-SCOPE-DESIGN-v3.md).
 
 | Relationship/form | Classification | Rationale |
 | --- | --- | --- |
@@ -238,10 +240,11 @@ Qualified and pending forms are separated to cover every deferred matrix cell.
 | element → extend | KEEP DEFERRED | No approved target-scoping use case |
 | modifier → pending relation | KEEP DEFERRED | Needs an explicit modified-LHS contract |
 | modifier → extend | KEEP DEFERRED | No demonstrated retargeting contract |
-| qualified → block | NO KNOWN USE CASE | No raw-condition ancestry inference |
-| qualified → element | LIKELY FUTURE FEATURE | Conditional descendant semantics need a dedicated design |
-| qualified → modifier | LIKELY FUTURE FEATURE | Subject qualification order must be deliberate |
-| qualified → selector (either form) | LIKELY FUTURE FEATURE | Selector-context chaining, not string concatenation |
+| qualified → block | SUPPORTED outside extend ancestry | New owner under completed qualified scope |
+| qualified → element | SUPPORTED | Retain owner; promote completed qualified parent into element scope |
+| qualified → modifier | KEEP DEFERRED | No subject provenance reconstruction |
+| qualified → qualified | SUPPORTED | Qualify the same subject; independently validate each argument |
+| qualified → pending relation | KEEP DEFERRED | Qualified frame does not preserve original parent-kind provenance |
 | qualified → extend | NO KNOWN USE CASE | No conditional retargeting requirement |
 | pending → block | UNSUPPORTED FOR v3 CORE | RHS is an element in the current contract |
 | pending → modifier | UNSUPPORTED FOR v3 CORE | Resolve RHS element first, then modify it |
@@ -254,8 +257,10 @@ Qualified and pending forms are separated to cover every deferred matrix cell.
 | Q07 complete historical composite | KEEP DEFERRED | Archival evidence, no approved whole-output requirement |
 
 Direct element/element, modifier/modifier, and block beneath extend remain INVALID,
-not candidates to broaden. Qualified bodies have no public BEM children; pending
-bodies resolve element children and reject direct declarations.
+not candidates to broaden. Qualified bodies admit only the newly supported
+element, qualified, and block relationships above. Pending bodies resolve element
+children and reject direct declarations. Scope and owner restore on content
+completion; no qualified scope leaks to siblings or later roots.
 
 Root extend and nested extend do not block release. Q07 needs no exact-output
 approval for release either. It is not a runtime-detectable forbidden sequence:
@@ -312,11 +317,12 @@ under raw `.theme`. Existing output can drop the raw condition without an error;
 unsupported does **not** promise automatic detection/rejection. Raw wrappers also
 do not legitimize otherwise invalid BEM parent relationships.
 
-Use `selector(':hover')` for supported qualification of the current subject, with
-declarations in its body. **Do not** suggest `selector(':hover') { element(...) }`
-as a workaround: qualified → element is itself unsupported. Conditional descendants
-need a separately designed future capability; raw `&:has(...)` plus BEM re-entry is
-not a supported substitute.
+Use `selector(':hover')` for context-preserving qualification of the current
+subject, with declarations or approved BEM children in its body. In block `card`,
+`selector(':hover')` → element `title` emits `.card:hover .card__title`. The
+owner remains `card`; the element promotes the completed parent into scope.
+Raw `&` does not update this context. Functional pseudos and raw `&:has(...)`
+plus BEM re-entry remain outside the contract.
 
 Do not promise incidental successful raw behaviors: `&__manual` does not acquire
 BEM provenance; raw `.manual` or `&` inside pending relations does not resolve the
@@ -336,9 +342,9 @@ loss is not frozen as production acceptance behavior. D09 is closed.
 | D03 | Evaluated ASCII token domain | Existing validator retained; evaluated-string semantics documented | No | Broader names only on demand |
 | D05 | Stable semantic categories, no exact-text/code API | Three diagnostic messages and private comment updated; focused assertions retained | No | Codes only for a demonstrated tooling need |
 | D08 | Tested conditional wrappers and flat layers only | Explicit exclusions documented | No | Targeted integrations only on demand |
-| D09 | Terminal raw styling; no raw-wrapper BEM re-entry | Focused leaf/sibling isolation regression | No | Conditional descendants only through a separately designed API |
+| D09 | Terminal raw styling; no raw-wrapper BEM re-entry | Focused leaf/sibling isolation regression | No | Use qualified selector scope for approved BEM descendants |
 | D10 | One public entrypoint, unrestricted Sass namespace choice | Final name, root metadata, file allowlist, packed-artifact test | No | Separate publication operation |
-| D11 | Stable approved subset; unsupported future semantics unpromised | Runtime rejection retained; no matrix expansion | No | Use-case-driven extensions |
+| D11 | Stable approved subset; unsupported future semantics unpromised | Qualified element/qualified/block adoption; other rejections retained | No | Use-case-driven extensions |
 
 There are no remaining core stability blockers. The package has **not** been
 published. A publication still needs an authorized release version, deliberate
@@ -352,7 +358,7 @@ to implement deferred features or redesign the core.
 
 - BEM-aware functional selectors: `:has(...)`, `:not(...)`, `:is(...)`, `:where(...)`.
   This is distinct from the retired legacy `:where()` specificity machinery.
-- Possible selector-context chaining and conditional descendants.
+- Remaining qualified modifier, relation, and extend relationships only on demand.
 - Possible nested CSS Layers, with explicit ordering/selection semantics.
 - Broader identifier support only for concrete use cases.
 - Deferred relationships, including root/nested extend, only on demonstrated need.

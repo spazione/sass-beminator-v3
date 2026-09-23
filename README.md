@@ -65,8 +65,10 @@ BEM integration in keyframes, font-face, property, page, scope, unknown/custom
 at-rules, or caller-authored at-root queries is not guaranteed; unrelated CSS
 using them is permitted. Raw leaf rules inside complete BEM rules are supported,
 but BEM re-entry through raw `&:hover`, `.wrapper`, or similar selectors is
-unsupported and can lose conditions. Qualified-selector BEM children are also
-unsupported, so `selector(':hover') { element(...) }` is not a workaround.
+unsupported and can lose conditions. Use `selector(':hover')` with an
+`element()` child for context-preserving scoped descendants. Qualified bodies
+also support nested qualifiers and blocks outside extend ancestry; direct
+modifier, pending-relation, and extend children remain deferred.
 Deferred relationships and functional pseudos remain outside the stable API
 with no future implementation promised.
 

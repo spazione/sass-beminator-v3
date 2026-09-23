@@ -229,7 +229,7 @@ theme/path machinery.
 
 | Family | Input | Valid parent | Body |
 | --- | --- | --- | --- |
-| Qualified | One compound of one or more non-functional pseudos/attributes | block, element, modifier | Declarations; public BEM children deferred |
+| Qualified | One compound of one or more non-functional pseudos/attributes | block, element, modifier, qualified | Declarations, elements, qualified selectors, blocks outside extend ancestry |
 | Pending relation | Exact `+`, `>`, or `~` | element | Element children resolve the right target |
 
 ```scss
@@ -266,9 +266,32 @@ combinations, or pseudo-element ordering across CSS specifications. Unknown
 non-functional pseudos such as `:made-up` may pass. `:before` and `::before` remain
 distinct; arbitrary source-text fidelity is not promised (e.g. attribute quotes).
 
-Multiple tokens in **one call** are approved. Nested selector calls remain
-**DEFERRED**, as do every other public BEM child of a qualified context. The
-stronger prohibition against blocks anywhere under extend still applies.
+Multiple tokens in **one call** and nested qualified calls are approved. Nested
+qualifiers append to the same subject, with independent structural validation.
+An element child retains the owner and promotes the completed qualified parent
+to its scope. A block child starts a new owner under that completed scope.
+
+```scss
+@include bem.block('card') {
+  @include bem.selector(':hover') {
+    @include bem.element('title') { color: red; }
+  }
+  @include bem.element('body') { color: blue; }
+}
+```
+
+This emits `.card:hover .card__title` and independent `.card__body` rules.
+Nested `:focus` yields `.card:hover:focus .card__title`; a nested block `icon`
+with element `glyph` yields `.card:hover .icon__glyph`. Element and modifier
+parents promote their complete qualified subjects in the same way. Extend
+element descendants preserve their target owner and extend ancestry. All frames
+restore on content completion, including empty branches.
+
+Direct qualified → modifier, pending relation, and extend remain **DEFERRED**.
+Relations can follow a scoped element: `.card:hover .card__item > .card__child`.
+Blocks anywhere under extend remain INVALID. No context fields, parser rules,
+or mutable state were added. The [design spike](SELECTOR-SCOPE-DESIGN-v3.md)
+is preserved as historical evidence; this section describes production adoption.
 
 A pending relation retains the complete left selector until an element child
 supplies the right subject from the same owner. Nested-block/extend ownership,
@@ -368,8 +391,9 @@ Successful compilation alone does not grant BEM integration support.
 Ordinary raw leaf styling such as `> img { ... }` inside a complete BEM rule can
 be delegated to Sass. Raw selectors do not establish BEM context: re-entering BEM
 mixins through `&:hover` or `.wrapper` is unsupported and may silently lose that
-condition. `selector()` supports qualification of the current subject only;
-its qualified body cannot contain `element()` or other public BEM children.
+condition. Use `selector(':hover')` to update the BEM subject while preserving
+its owner, then use an element child to establish a descendant under that scope.
+Raw `&:hover` does not perform this context update.
 Raw rules inside pending relations do not supply a supported RHS.
 
 Unsupported/deferred matrix calls remain rejected;
@@ -542,3 +566,38 @@ project tests pass. Spikes pass separately: 27 selector-engine, 15 context-stack
 16 structural-selector, 57 CSS Layers. Architecture stays one evolving mutable
 global and one BEM emission boundary. See the adopted contract for distribution
 prerequisites and the non-blocking future feature list.
+
+## Qualified-selector scope adoption completed
+
+Following the isolated [design spike](SELECTOR-SCOPE-DESIGN-v3.md), production
+adopts exactly two semantic changes: the immutable qualified transition entry
+allows `(element, block, qualified)`, and element derivation promotes a qualified
+parent's completed selector into scope, as it already does for modifier/extend.
+No other transition entry, parser rule, context field, public signature, stack
+operation, or emission behavior changed. Qualified frames retain their original
+outer scope until a descendant establishes a new subject.
+
+Validation on Node 22.19.0 / Dart Sass 1.104.1 passes:
+
+| Suite | Individual tests passed |
+| --- | ---: |
+| Production | 555 |
+| Normal project (`npm test`, includes production) | 557 |
+| Characterization | 58 |
+| Legacy (includes characterization) | 60 |
+| Packed package | 1 |
+| Selector-engine spike | 27 |
+| Context-stack spike | 15 |
+| Structural-selector spike | 16 |
+| CSS Layers spike | 57 |
+| Selector-scope spike | 112 |
+
+The required npm commands and separate no-isolation detail runs passed. The
+package detail run uses its concrete test filename because Sass's package
+importer cannot resolve a literal test glob as the process entrypoint.
+`git diff --check` passes. Architecture assertions confirm six public mixins,
+three configuration variables, zero public functions, one evolving mutable
+global, and one BEM emission boundary. The private transition map remains
+immutable data. Restoration, empty branches, custom separators, double modifiers,
+layers, conditional wrappers, and extend ancestry have production coverage.
+Functional pseudos remain unimplemented; no performance work accompanies adoption.

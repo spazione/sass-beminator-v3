@@ -1,0 +1,81 @@
+{
+  "completedAt": "2026-09-23T13:08:16.031Z",
+  "node": "v22.19.0",
+  "sass": "dart-sass\t1.104.1\t(Sass Compiler)\t[Dart]\ndart2js\t3.13.3\t(Dart Compiler)\t[Dart]",
+  "cpu": "Intel(R) Core(TM) Ultra 5 238V",
+  "productionHash": "3a73cbdbb227f0f7a0d1d7a092eea4c47510694b3361378f234ddc2921cce6cd",
+  "spikeHash": "8d0ae195579aa9f9a94206b2012354eff7d85d4a166985cbe1d713898b997ac9",
+  "count": 1000,
+  "warmups": 2,
+  "rounds": 5,
+  "methodology": "compile only; fixture/checks outside timer; alternating order; no discarded samples; same spike core for both paths",
+  "orders": [
+    [
+      0,
+      1
+    ],
+    [
+      1,
+      0
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      1,
+      0
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      1,
+      0
+    ],
+    [
+      0,
+      1
+    ]
+  ],
+  "results": [
+    {
+      "name": "block-element",
+      "calls": 2000,
+      "cssBytes": 35888,
+      "samplesMs": [
+        257.29716499999995,
+        259.943174,
+        242.78797599999962,
+        252.72242499999993,
+        245.4057560000001
+      ],
+      "statsMs": {
+        "median": 252.72242499999993,
+        "mean": 251.63129919999992,
+        "min": 242.78797599999962,
+        "max": 259.943174
+      }
+    },
+    {
+      "name": "block-selector-element",
+      "calls": 3000,
+      "cssBytes": 51778,
+      "samplesMs": [
+        428.86803299999974,
+        408.1442649999999,
+        409.10733400000026,
+        407.1203799999994,
+        397.5826450000004
+      ],
+      "statsMs": {
+        "median": 408.1442649999999,
+        "mean": 410.16453139999993,
+        "min": 397.5826450000004,
+        "max": 428.86803299999974
+      }
+    }
+  ],
+  "medianRatio": 1.6149903001286887
+}

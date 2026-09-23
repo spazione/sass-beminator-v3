@@ -76,13 +76,13 @@ test('functional pseudos are deferred even when escaped or mixed with attributes
     assert.throws(() => compile(block(`@include bem.selector(${quote(input)}) {}`)), /functional pseudo selectors are unsupported in the current BEMinator API/);
   }
 });
-test('one compound call is allowed but qualified selector-context chaining remains deferred', () => {
+test('one compound call and nested qualifiers qualify the same subject', () => {
   assert.deepEqual(rules(compile(block("@include bem.selector(':hover:focus') { content: 'compound'; }"))), [['.card:hover:focus', 'compound']]);
-  assert.throws(() => compile(block("@include bem.selector(':hover') { @include bem.selector(':focus') {} }")), /nesting qualified -> qualified is unsupported in the current BEMinator API/);
+  assert.deepEqual(rules(compile(block("@include bem.selector(':hover') { @include bem.selector(':focus') { content: 'nested'; } }"))), [['.card:hover:focus', 'nested']]);
 });
-test('all public BEM children of qualified compounds remain deferred', () => {
-  for (const child of ["@include bem.block('inner') {}", "@include bem.element('inner') {}", "@include bem.modifier('active') {}",
-    "@include bem.extend('icon', 'active') {}", "@include bem.selector('[disabled]:hover') {}", "@include bem.selector('>') {}"]) {
+test('modifier, extend and pending children of qualified compounds remain deferred', () => {
+  for (const child of ["@include bem.modifier('active') {}",
+    "@include bem.extend('icon', 'active') {}", "@include bem.selector('>') {}"]) {
     assert.throws(() => compile(block(`@include bem.selector('[disabled]:hover') { ${child} }`)), /nesting qualified -> [\w-]+ is unsupported in the current BEMinator API/);
   }
 });
