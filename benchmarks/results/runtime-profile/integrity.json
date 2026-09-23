@@ -1,0 +1,22 @@
+{
+  "productionSha256": "3a73cbdbb227f0f7a0d1d7a092eea4c47510694b3361378f234ddc2921cce6cd",
+  "entrySha256": "e15f73fe8d86a34cf5fcf75c545a2c35e2f4435e753a21673fa9e6186a115c14",
+  "npmTestExitCode": 0,
+  "projectDetails": {
+    "tests": 510,
+    "passed": 510,
+    "failed": 0,
+    "skipped": 0
+  },
+  "reusedProductionDetails": {
+    "tests": 508,
+    "passed": 508,
+    "failed": 0
+  },
+  "profilingGroupsReused": 10,
+  "measuredCompiles": 352,
+  "warmupCompiles": 102,
+  "preflights": 26,
+  "profilingMeasurementsRerun": 0,
+  "analysisCorrection": "Exclude compileString compiler entry from string-name heuristic; raw profiles unchanged."
+}

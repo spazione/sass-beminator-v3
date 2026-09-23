@@ -14,3 +14,5 @@ Thumbs.db
 *.swp
 *.swo
 *~
+benchmarks/results/runtime-profile/*.heapprofile
+benchmarks/results/runtime-profile/*.cpuprofile
