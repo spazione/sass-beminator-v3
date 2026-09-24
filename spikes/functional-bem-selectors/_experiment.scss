@@ -1,0 +1,85 @@
+// TEST-ONLY fragment appended to the unchanged core in an in-memory module.
+// No entrypoint exports, mutable globals, context fields or parser changes.
+// Broader target/list options are feasibility experiments, not proposed v1 scope.
+@function -spike-target($parent, $type, $name, $modifier: null) {
+  $name: -name($name);
+  $target: null;
+  @if $type == element {
+    @if map.get($parent, owner) == null { @error 'Spike: owner unavailable'; }
+    $target: selector.append(map.get($parent, owner), '#{$element-separator}#{$name}');
+  } @else if $type == block {
+    $target: selector.parse('.#{$name}');
+  } @else if $type == modifier {
+    @if not list.index((block, element), map.get($parent, kind)) {
+      @error 'Spike: own modifier requires a direct block or element';
+    }
+    $target: selector.append(map.get($parent, subject), '#{$modifier-separator}#{$name}');
+  } @else { @error 'Spike: unsupported target kind'; }
+  @if $modifier != null {
+    @if $type == modifier { @error 'Spike: modifier of modifier is undefined'; }
+    $modifier: -name($modifier);
+    $target: selector.append($target, '#{$modifier-separator}#{$modifier}');
+  }
+  @return $target;
+}
+
+@function -spike-qualifier($parent, $pseudo, $type, $names, $relation: null, $modifier: null) {
+  @if not list.index((has, 'not', is, where), $pseudo) { @error 'Spike: unsupported pseudo'; }
+  @if $pseudo == has and $type == modifier { @error 'Spike: relational modifier target is ambiguous'; }
+  @if $pseudo != has and ($type != modifier or $modifier != null) {
+    @error 'Spike: filtering experiment supports own modifiers only';
+  }
+  @if $relation != null and ($pseudo != has or not list.index(('>', '+', '~'), $relation)) {
+    @error 'Spike: unsupported relation';
+  }
+  @if list.length($names) == 0 { @error 'Spike: target list must not be empty'; }
+  @if $pseudo == has and list.length($names) != 1 { @error 'Spike: has takes one target'; }
+  // Native token inspection for a known CSS restriction, never ownership recovery.
+  // No ambient &, no modification to production selector input parsing.
+  @each $complex in map.get($parent, subject) {
+    @each $compound in $complex {
+      @each $simple in selector.simple-selectors($compound) {
+        @if string.slice($simple, 1, 2) == '::' or list.index((':before', ':after', ':first-line', ':first-letter'), string.to-lower-case($simple)) {
+          @error 'Spike: functional qualification of a pseudo-element is unsupported';
+        }
+      }
+    }
+  }
+  $targets: ();
+  @each $name in $names {
+    $target: -spike-target($parent, $type, $name, $modifier);
+    @if $relation != null { $target: selector.nest($relation, $target); }
+    // Each target here is exactly one complex selector.
+    $targets: list.append($targets, list.nth($target, 1), comma);
+  }
+  // Serialize known targets into a new pseudo; no provenance is inferred.
+  @return selector.parse(':#{$pseudo}(#{$targets})');
+}
+
+@mixin condition($pseudo, $type, $name, $relation: null, $modifier: null) {
+  $parent: -validate(-current-context(), qualified);
+  $qualifier: -spike-qualifier($parent, $pseudo, $type, $name, $relation, $modifier);
+  @include -enter(qualified, $qualifier) { @content; }
+}
+@mixin has($type, $name, $relation: null, $modifier: null) {
+  @include condition(has, $type, $name, $relation, $modifier) { @content; }
+}
+@mixin not($type, $name) {
+  @include condition('not', $type, $name) { @content; }
+}
+@mixin is($type, $name) {
+  @include condition(is, $type, $name) { @content; }
+}
+@mixin where($type, $name) {
+  @include condition(where, $type, $name) { @content; }
+}
+
+@mixin spike-restoration {
+  $before: $-context-stack;
+  @content;
+  @if $before != $-context-stack { @error 'Spike: stack restoration failed'; }
+}
+@mixin spike-qualified-frame($owner, $subject, $scope: (), $under: false) {
+  $expected: (owner: selector.parse($owner), subject: selector.parse($subject), scope: $scope, kind: qualified, under-extend: $under);
+  @if -current-context() != $expected { @error 'Spike: unexpected qualified frame'; }
+}

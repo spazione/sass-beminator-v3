@@ -23,7 +23,7 @@ acceptance criteria. Future v3 tests must express the decisions below separately
 
 ## Scope and notation
 
-The stable public core is `block`, `element`, `modifier`, `selector`, `extend`,
+The stable public core is `block`, `element`, `modifier`, `selector`, `has`, `extend`,
 and the ordering mixin `css-layers`. Examples use conceptual calls such as `block('a') → element('item')`;
 the exact public signatures and exports are fixed in the adopted stability contract. `→` means lexical nesting, not consecutive
 sibling invocations. Separate consecutive calls are siblings unless nested.
@@ -87,15 +87,15 @@ exact signatures, validation domain, examples, and integration responsibilities.
 control-flow construct does not establish a new public parent. VALID entries
 assume valid ancestors and the named arguments/forms specified below.
 
-| Parent ↓ / child → | block | element | modifier | selector | extend |
-| --- | --- | --- | --- | --- | --- |
-| Top level | VALID | DEFERRED | DEFERRED | DEFERRED | DEFERRED |
-| block | VALID | VALID | VALID | VALID¹ | VALID |
-| element | DEFERRED | INVALID | VALID | VALID¹ | DEFERRED |
-| modifier | VALID² | VALID | INVALID | VALID¹ | DEFERRED |
-| qualified selector | VALID³ | VALID | DEFERRED | VALID¹ | DEFERRED |
-| pending-relation selector | DEFERRED | VALID¹ | DEFERRED | DEFERRED | DEFERRED |
-| extend | INVALID³ | VALID | DEFERRED | DEFERRED | DEFERRED |
+| Parent ↓ / child → | block | element | modifier | selector | extend | has |
+| --- | --- | --- | --- | --- | --- | --- |
+| Top level | VALID | DEFERRED | DEFERRED | DEFERRED | DEFERRED | INVALID |
+| block | VALID | VALID | VALID | VALID¹ | VALID | VALID⁴ |
+| element | DEFERRED | INVALID | VALID | VALID¹ | DEFERRED | VALID⁴ |
+| modifier | VALID² | VALID | INVALID | VALID¹ | DEFERRED | VALID⁴ |
+| qualified selector / has | VALID³ | VALID | DEFERRED | VALID¹ | DEFERRED | VALID⁴ |
+| pending-relation selector | DEFERRED | VALID¹ | DEFERRED | DEFERRED | DEFERRED | DEFERRED |
+| extend | INVALID³ | VALID | DEFERRED | DEFERRED | DEFERRED | DEFERRED |
 
 1. Qualified compounds are valid under block, element, modifier, and qualified
    selector. Qualified bodies support declarations, elements, nested qualifiers,
@@ -109,6 +109,9 @@ assume valid ancestors and the named arguments/forms specified below.
    Thus `block → extend → block`, `extend → block`,
    `extend → extend → block`, and `extend → block → block` are all INVALID.
    A deferred ancestor does not weaken an explicit prohibition.
+4. `has(element, name, relation)` constructs one same-owner element target.
+   Pseudo-element anchors are rejected. It enters a qualified frame; no new
+   relationship kind or origin inference is introduced. See [has](#has).
 
 Direct `element → element` and direct `modifier → modifier` are INVALID.
 An intervening approved element, block, or selector relationship is meaningful:
@@ -379,16 +382,92 @@ selector inputs are outside this subset, including `.foo`, `#foo`, `button`, `*`
 `:hover, :focus`, `.theme &`, and `&:hover`. Other relation strings such as `||`
 are unsupported. Malformed selectors may report Sass parser diagnostics.
 
-All functional pseudos remain **DEFERRED**, including `:has(...)`, `:not(...)`,
-`:is(...)`, `:where(...)`, `:nth-child(...)`, and compounds containing them such
-as `:hover:has(.foo)` or `[disabled]:not(.foo)`. No argument interpretation or
-BEM-aware functional API is approved.
+All functional pseudo **strings passed to `selector()`** remain unsupported,
+including `:has(...)`, `:not(...)`, `:is(...)`, `:where(...)`, `:nth-child(...)`,
+and compounds such as `:hover:has(.foo)` or `[disabled]:not(.foo)`.
+The separate `has()` mixin constructs a trusted BEM target internally; it does
+not broaden this parser or accept arbitrary functional arguments.
 
 Completing either structural family restores the exact parent context; later
 siblings acquire no qualifier, relation, owner, scope, or ancestry from it.
 Existing `:before` and `+` expectations remain unchanged. Historical evidence:
 S01–S02 and the derived `state-isolation/after-selector--*` comparisons. Expanded
 approval and production coverage are recorded in [SELECTOR-DESIGN-v3.md](SELECTOR-DESIGN-v3.md).
+
+## has
+
+Approved signature: `has($type, $name, $relation: null)`.
+
+```scss
+@include bem.block('card') {
+  @include bem.element('item') {
+    @include bem.has(element, 'details', $relation: '+') { color: red; }
+  }
+}
+```
+
+```css
+.card__item:has(+ .card__details) { color: red; }
+```
+
+Only `$type: element` is supported. `$name` is one evaluated BEM name validated
+by the shared `[A-Za-z_][A-Za-z0-9_-]*` policy; lists and raw selectors fail.
+The target is built from the existing context owner plus the configured element
+separator and name. Outer scope and the current modified/qualified subject never
+become part of that target. No provenance comes from ambient `&` or class text.
+
+| Relation | Meaning | Argument for owner card, target details |
+| --- | --- | --- |
+| `null` (default) | descendant | `.card__details` |
+| `'>'` | direct child | `> .card__details` |
+| `'+'` | adjacent following sibling | `+ .card__details` |
+| `'~'` | later following sibling | `~ .card__details` |
+
+All other relations fail, including empty/whitespace strings, `||`, commas and
+non-string values. The semantic category is stable; exact error text is not API.
+Unusual DOM/BEM layouts are permitted: a block subject may request a sibling
+same-owner element. BEMinator is not a BEM linter.
+
+Block, element, modifier and qualified parents are valid. Root is INVALID (no
+subject); direct extend and pending relation remain UNSUPPORTED/DEFERRED.
+`extend('icon', 'active') → element('label') → has(element, 'details')` under card
+emits `.card .icon--active .icon__label:has(.icon__details)`.
+
+A narrow native-simple-token guard rejects pseudo-element subjects: any `::`
+pseudo-element and legacy `:before`, `:after`, `:first-line`, `:first-letter`,
+including case and Sass-normalized escape spellings. Attribute values containing
+such text do not count. This does not introduce general CSS semantic validation.
+
+The resulting frame is `qualified`: owner, scope and under-extend are retained,
+and the pseudo is appended to the local subject. Call order is preserved:
+
+| Composition inside card | Output selector |
+| --- | --- |
+| element(item) → has(element, details, +) → selector(:hover) | `.card__item:has(+ .card__details):hover` |
+| element(item) → selector(:hover) → has(element, details, +) | `.card__item:hover:has(+ .card__details)` |
+| has(element, details) → element(title) | `.card:has(.card__details) .card__title` |
+| has(element, details) → block(icon) | `.card:has(.card__details) .icon` |
+
+Inside page → card, the element re-entry output is
+`.page .card:has(.card__details) .card__title`, never a page-scoped argument.
+Approved qualified children apply; modifier, pending relation and extend children
+remain deferred. Blocks anywhere under extend remain invalid. `has → ::before`
+selects a pseudo-element after qualifying its element; `::before → has` fails.
+
+Layers propagate lexically, including the game-card molecules fixture; explicit
+layer selection remains root-only. Custom `-` element and `_` modifier separators
+yield `.game-card-thumbnail:has(+ .game-card-details)` for the anchor. Empty
+branches emit no rule. Completed branches restore the exact stack, including
+owner, scope and ancestry, for siblings, later roots and repeated block names.
+
+Deferred: `has(block, ...)`, `has(modifier, ...)`, modified-element targets,
+`$modifier`, multi-target or heterogeneous lists, `not()`, `is()`, `where()`,
+nested functional arguments, arbitrary raw targets, direct extend/pending → has,
+new provenance fields and general CSS validation. Consecutive qualifications
+append to the subject; they never construct nested functional arguments.
+
+The [design spike](FUNCTIONAL-BEM-SELECTORS-DESIGN-v3.md) remains historical
+proposal/evidence. Only this narrow element-target contract is adopted.
 
 ## extend
 
@@ -449,7 +528,7 @@ for context-preserving qualification and BEM descendants. Raw `&:hover` cannot
 substitute for this context update.
 
 Root extend (Q01), nested extend (Q02), Q07's complete historical output, other
-DEFERRED entries and functional pseudos remain outside
+DEFERRED entries and functional features beyond element-target `has()` remain outside
 the stable subset with no future implementation promised. Addons, nested CSS
 Layers, broader identifiers, and additional at-rule integrations are non-blocking
 future topics. Publication is separate from this stable core declaration.

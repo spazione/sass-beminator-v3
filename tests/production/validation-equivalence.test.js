@@ -83,9 +83,19 @@ for (const under of [false, true]) {
     else assert.ok(actual.css);
   });
 }
-test('source differs from frozen reference only by optimizations and approved scope adoption', () => {
+test('source differs from frozen reference only by optimizations, approved scope adoption and has additions', () => {
   const withoutName = text => text.replace(/@function -name\(\$name\) \{[\s\S]*?\n\}/, 'NAME_VALIDATOR');
-  const restoreMap = current
+  // Remove only the three approved additions, preserving the entire previous
+  // parser, context schema, relationship table, derivation and emission code.
+  let withoutHas = current;
+  for (const signature of ['@function -bem-target(', '@function -has-qualifier(', '@mixin has(']) {
+    assert.equal(current.split(signature).length - 1, 1);
+    const start = withoutHas.indexOf(signature);
+    const end = withoutHas.indexOf('\n}', start) + 2;
+    withoutHas = withoutHas.slice(0, start) + withoutHas.slice(end);
+  }
+  withoutHas = withoutHas.replace('\n// Same-owner target construction; no context mutation or ambient selector input.\n\n\n// Inspect native simple tokens only to reject pseudo-element anchors.\n// This is a narrow CSS restriction, never BEM provenance recovery.\n\n\n\n', '');
+  const restoreMap = withoutHas
     .replace('$parent-kind == modifier or $parent-kind == extend or $parent-kind == qualified {', '$parent-kind == modifier or $parent-kind == extend {')
     .replace(/\/\/ Private immutable relationship data;[^\n]*\n\$-allowed-transitions:[\s\S]*?extend: \(element,\)\);\n\n/, '')
     .replace('  @if not list.index(map.get($-allowed-transitions, $parent-kind), $kind) {',

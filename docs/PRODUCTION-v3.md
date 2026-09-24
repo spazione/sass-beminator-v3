@@ -3,7 +3,7 @@
 The [adopted stability contract](CORE-STABILITY-v3.md) closes all six remaining
 hardening groups. **The core API is stable; package publication has not occurred.**
 
-The public entrypoint is `src/_index.scss`. It explicitly exports six mixins:
+The public entrypoint is `src/_index.scss`. It explicitly exports seven mixins:
 
 ```scss
 block($name, $layer: null)
@@ -12,6 +12,7 @@ modifier($mod1, $mod2: null)
 selector($name)
 extend($name, $mod1, $mod2: null)
 css-layers()
+has($type, $name, $relation: null)
 ```
 
 The only public variables are `$element-separator`, `$modifier-separator`, and
@@ -33,7 +34,7 @@ element/modifier and element/block are unsupported and report “unsupported in
 the current BEMinator API”; no future semantics or implementation is promised. Q07 remains
 unapproved as a complete combination; no special history tracking is introduced.
 
-Block, element, modifier, and extend target/modifier names are nonempty quoted or unquoted
+Block, element, has target, modifier, and extend target/modifier names are nonempty quoted or unquoted
 strings starting with an ASCII letter or underscore, followed by ASCII letters,
 digits, underscores or hyphens. Examples include `card`, `standard-object`, and `fatherdMod`. Whitespace,
 selector lists, arbitrary selectors, numbers, leading hyphens, and Unicode names
@@ -215,7 +216,7 @@ The approved conditional integrations preserve lexical wrapper order:
 Following siblings retain the layer but leave the completed conditional wrapper.
 This is not blanket support for all at-rules. Raw selector re-entry such as
 `&:hover` → BEM element remains outside the supported contract (D09); layers do
-not change its behavior. Functional selectors remain deferred.
+not change its behavior. Element-target `has()` uses the same layer inheritance.
 
 Layers add no BEM context field. Existing root provenance enforces explicit-selection
 placement; Sass's lexical wrapper propagates the layer across the existing single
@@ -315,14 +316,52 @@ compounds containing those targets, selector lists/complex selectors, parent
 references, and unsupported relations such as `||` are outside this subset.
 Sass owns malformed-syntax diagnostics; BEMinator checks parsed shape/families.
 
-**All functional pseudos remain deferred**, including static `:has(...)`,
-`:not(...)`, `:is(...)`, `:where(...)`, `:nth-child(...)` and compounds containing
-them. BEM-aware functional/conditional selectors remain a separate future API-design
-phase. There is no reference helper, BEM-target argument, or public AST API.
+**All functional pseudo strings remain unsupported by `selector()`**, including
+`:has(...)`, `:not(...)`, `:is(...)`, `:where(...)`, `:nth-child(...)` and compounds
+containing them. The separate `has()` mixin builds a controlled same-owner element
+target. No arbitrary functional-string parser or public AST API is exposed.
 
 After either family completes, siblings receive the exact saved parent context.
 Tests cover compounds, repeated calls, alternate sibling orders, independent roots,
 nested-block and extend ownership, and all existing `:before`/`+` regressions.
+
+## BEM-aware has
+
+```scss
+@include bem.block('game-card', $layer: 'molecules') {
+  @include bem.element('thumbnail') {
+    @include bem.has(element, 'details', $relation: '+') {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+}
+// @layer molecules { .game-card__thumbnail:has(+ .game-card__details) { ... } }
+```
+
+`has($type, $name, $relation: null)` accepts only `element` and one valid BEM name.
+Relations are `null` for descendant, `>` for direct child, `+` for adjacent following
+sibling and `~` for later following sibling. All other values fail. The private
+pure target builder uses the naming owner and configured element separator;
+custom `-` produces `.game-card-thumbnail:has(+ .game-card-details)`.
+Unusual DOM/BEM layouts are not rejected merely on style grounds.
+
+Block, element, modifier and qualified parents work. Root has no subject and is
+invalid; direct extend and pending parents remain deferred. Extend → element →
+has retains the extend owner and ancestry. Pseudo-element anchors are rejected,
+including legacy `:before`, `:after`, `:first-line`, `:first-letter`.
+The check uses native simple tokens, not ownership reconstruction.
+
+Both has → selector and selector → has preserve call order. Has reuses qualified
+frames and their approved element/block/qualifier descendants, exact restoration
+and empty-branch behavior. Outer scope stays outside the functional argument.
+Layers inherit normally; explicit layer selection is still root-only. Modifier,
+pending relation and extend children remain deferred; blocks under extend fail.
+
+`selector(':has(.card__details)')` still fails. Block/modifier/modified-element
+targets are future possibilities, not accepted input. Lists, `$modifier`, raw
+targets, nested functional arguments, `not`, `is`, `where`, new provenance fields
+and general CSS validation remain deferred. See [SPEC has](SPEC-v3.md#has).
 
 ## Extend: scoped target construction
 
@@ -397,7 +436,7 @@ Raw `&:hover` does not perform this context update.
 Raw rules inside pending relations do not supply a supported RHS.
 
 Unsupported/deferred matrix calls remain rejected;
-future meanings, root/nested extend, functional pseudos, and the historical Q07
+future meanings, root/nested extend, functional features beyond element-target has, and the historical Q07
 whole-output question need not be solved to release the approved subset.
 
 ## Private architecture and verification
@@ -567,7 +606,7 @@ project tests pass. Spikes pass separately: 27 selector-engine, 15 context-stack
 global and one BEM emission boundary. See the adopted contract for distribution
 prerequisites and the non-blocking future feature list.
 
-## Qualified-selector scope adoption completed
+## Historical qualified-selector scope adoption completed
 
 Following the isolated [design spike](SELECTOR-SCOPE-DESIGN-v3.md), production
 adopts exactly two semantic changes: the immutable qualified transition entry
@@ -600,4 +639,45 @@ three configuration variables, zero public functions, one evolving mutable
 global, and one BEM emission boundary. The private transition map remains
 immutable data. Restoration, empty branches, custom separators, double modifiers,
 layers, conditional wrappers, and extend ancestry have production coverage.
-Functional pseudos remain unimplemented; no performance work accompanies adoption.
+At that stage functional pseudos remained unimplemented; no performance work
+accompanied qualified-scope adoption.
+
+## Element-target has adoption
+
+Production now exports `has($type, $name, $relation: null)` for one same-owner
+element target. This adopts the narrow first feature from the
+[historical functional design](FUNCTIONAL-BEM-SELECTORS-DESIGN-v3.md), which keeps
+its original spike status. No other functional mixin or target kind is adopted.
+
+The implementation adds two pure private helpers and the public mixin. All
+existing parser, context, transition, derivation, stack and emission code is
+unchanged. Root calls receive a no-subject diagnostic; direct extend/pending
+calls retain the existing qualified relationship rejection. A native-token guard
+rejects pseudo-element anchors without inferring ownership.
+
+The focused `tests/production/has.test.js` promotes the game-card fixture,
+relations, supported parents, custom separators, layer behavior, both qualifier
+orders, BEM re-entry, scoped ownership, invalid inputs and empty/restored branches.
+Test-only in-memory probes assert exact context maps and stack restoration,
+including extend ancestry; nothing is exported for testing. The packed consumer
+now exercises has and verifies seven mixins, three variables and zero functions.
+The frozen validation reference is unchanged; comparison excludes only the three
+approved additions while full-source architecture assertions remain active.
+
+Validation on Node 22.19.0 / Dart Sass 1.104.1:
+
+- `npm test`: passes.
+- `npm run test:production`: passes.
+- `npm run test:legacy`: passes, including characterization; warnings retained.
+- `npm run test:characterization`: passes independently.
+- `npm run test:package`: passes against the offline packed artifact. The sandbox
+  returned empty npm subprocess output; the authorized outside-sandbox rerun passed.
+- `git diff --check`: passes; the new production test also passes a whitespace check.
+
+The public surface is **7 mixins, 3 configuration variables, 0 functions**.
+There remains **1 evolving mutable global and 1 BEM emission boundary**. No
+context fields, parser mode, second stack, capture mode, raw `&` inspection,
+selector provenance recovery or performance optimization was added. Dependencies,
+package privacy, frozen historical references and the design spike are unchanged.
+Historical spike suites with source-identity guards are not refreshed or treated
+as current production suites; maintained npm suites provide the adoption checks.

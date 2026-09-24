@@ -19,6 +19,38 @@ modifier, pending relation, and extend remain deferred. The triage matrix below
 annotates these adopted relationships; older audit conclusions remain historical.
 See [SPEC-v3.md](SPEC-v3.md) for the current scope/restoration contract.
 
+The approved first functional feature is now `has($type, $name, $relation: null)`:
+
+```scss
+@include bem.has(element, 'details', $relation: '+') { color: red; }
+```
+
+Inside game-card → thumbnail this emits
+`.game-card__thumbnail:has(+ .game-card__details)`. Only one valid element name
+is supported, using the same naming owner and configured separator. Relations
+are `null` (descendant), `>` (child), `+` (adjacent following sibling) and `~`
+(later following sibling). Unusual DOM/BEM layouts are not style errors.
+
+Block/element/modifier/qualified parents are supported. Root is invalid; direct
+extend/pending parents remain deferred. Pseudo-element anchors, including legacy
+spellings, are rejected by a narrow native-token guard. Existing qualified
+re-entry, layer inheritance, root-only layer selection and extend ancestry stay
+intact. Public `selector()` still rejects raw functional pseudo strings.
+
+Current exports are seven mixins, three settings and zero functions. There is
+still one evolving mutable global and one BEM emission boundary, with no new
+context fields, parser/capture mode, stack, provenance recovery or ambient `&`
+inspection. The frozen validation-equivalence guard excludes only the three
+approved has additions before comparing existing behavior/code; architecture
+guards still examine the full production source.
+
+Block/modifier/modified-element targets, `$modifier`, lists, `not`, `is`, `where`,
+heterogeneous descriptors, nested functional arguments, raw targets, direct
+extend/pending → has, new provenance fields and general CSS validation remain
+deferred. The original [functional design](FUNCTIONAL-BEM-SELECTORS-DESIGN-v3.md)
+retains its historical spike status. Current behavior is specified in
+[SPEC has](SPEC-v3.md#has); the older audit below is not a competing contract.
+
 ## Historical hardening state before adoption
 
 The approved selector subset is implemented, but the whole API is **not yet

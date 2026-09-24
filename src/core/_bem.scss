@@ -263,3 +263,43 @@ $-allowed-transitions: (root: (block,), block: (block, element, modifier, extend
   $shape: -selector-shape($name);
   @include -enter(map.get($shape, kind), map.get($shape, value)) { @content; }
 }
+
+// Same-owner target construction; no context mutation or ambient selector input.
+@function -bem-target($context, $type, $name) {
+  @if $type != element {
+    @error 'BEMinator: has supports only element targets.';
+  }
+  $name: -name($name);
+  @return selector.append(map.get($context, owner), '#{$element-separator}#{$name}');
+}
+
+// Inspect native simple tokens only to reject pseudo-element anchors.
+// This is a narrow CSS restriction, never BEM provenance recovery.
+@function -has-qualifier($context, $target, $relation) {
+  @if $relation != null and not list.index(('>', '+', '~'), $relation) {
+    @error 'BEMinator: has relation must be null, ">", "+", or "~".';
+  }
+  @each $complex in map.get($context, subject) {
+    @each $compound in $complex {
+      @each $simple in selector.simple-selectors($compound) {
+        @if string.slice($simple, 1, 2) == '::' or
+            list.index((':before', ':after', ':first-line', ':first-letter'), string.to-lower-case($simple)) {
+          @error 'BEMinator: has cannot qualify a pseudo-element subject.';
+        }
+      }
+    }
+  }
+  @if $relation != null { $target: selector.nest($relation, $target); }
+  @return selector.parse(':has(#{$target})');
+}
+
+@mixin has($type, $name, $relation: null) {
+  $parent: -current-context();
+  @if map.get($parent, kind) == root {
+    @error 'BEMinator: invalid nesting: has requires a BEM subject.';
+  }
+  $parent: -validate($parent, qualified);
+  $target: -bem-target($parent, $type, $name);
+  $qualifier: -has-qualifier($parent, $target, $relation);
+  @include -enter(qualified, $qualifier) { @content; }
+}

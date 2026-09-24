@@ -1,7 +1,7 @@
 # Sass BEMinator v3
 
 A from-scratch rewrite. The stable v3 core implements `block`, `element`,
-`modifier`, `selector`, `extend`, and optional `css-layers` through `src/_index.scss`.
+`modifier`, `selector`, `has`, `extend`, and optional `css-layers` through `src/_index.scss`.
 The core API is stable; the package remains private and has not been published.
 
 ```scss
@@ -69,8 +69,34 @@ unsupported and can lose conditions. Use `selector(':hover')` with an
 `element()` child for context-preserving scoped descendants. Qualified bodies
 also support nested qualifiers and blocks outside extend ancestry; direct
 modifier, pending-relation, and extend children remain deferred.
-Deferred relationships and functional pseudos remain outside the stable API
-with no future implementation promised.
+BEM-aware `has()` constructs one same-owner element target:
+
+```scss
+@include bem.block('game-card', $layer: 'molecules') {
+  @include bem.element('thumbnail') {
+    @include bem.has(element, 'details', $relation: '+') {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+}
+// Inside @layer molecules:
+// .game-card__thumbnail:has(+ .game-card__details) { ... }
+```
+
+`has($type, $name, $relation: null)` accepts only `element`, one valid BEM name,
+and `null` (descendant), `>` (child), `+` (adjacent following sibling), or `~`
+(later following sibling). Targets use the current naming owner and configured
+element separator. Unusual DOM/BEM layouts are not rejected on style grounds.
+Block, element, modifier and qualified parents work; root, direct extend and
+pending-relation parents are unavailable. Pseudo-element anchors are rejected.
+Both `has → selector(':hover')` and `selector(':hover') → has` preserve call order;
+qualified element/block re-entry preserves scope and extend ancestry.
+
+Public `selector()` still rejects raw functional strings such as
+`selector(':has(.card__details)')`. Block/modifier/modified-element targets,
+lists, `not()`, `is()`, `where()`, and nested functional arguments remain deferred.
+See [the has contract](docs/SPEC-v3.md#has) for the precise supported subset.
 
 Use Node.js 22.19+ on the 22 LTS line or Node.js 24 LTS, then run `npm ci`.
 The `.nvmrc` selects Node 22; supported release schedules are documented by

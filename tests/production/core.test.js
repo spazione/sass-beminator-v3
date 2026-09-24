@@ -203,14 +203,15 @@ test('unsupported names cannot introduce selectors through interpolation', () =>
     }
   }
 });
-test('public module exposes exactly six mixins, three configuration settings, and no functions/debug hooks', () => {
+test('public module exposes exactly seven mixins, three configuration settings, and no functions/debug hooks', () => {
   assert.equal(compileScss(`@use '../../src' as bem;
     @use 'sass:meta'; @use 'sass:map'; @use 'sass:list';
     $mixins: meta.module-mixins('bem');
-    @if list.length(map.keys($mixins)) != 6 or
+    @if list.length(map.keys($mixins)) != 7 or
         not map.has-key($mixins, 'block') or not map.has-key($mixins, 'element') or
         not map.has-key($mixins, 'modifier') or
         not map.has-key($mixins, 'selector') or
+        not map.has-key($mixins, 'has') or
         not map.has-key($mixins, 'css-layers') or
         not map.has-key($mixins, 'extend') { @error 'Unexpected mixin exports'; }
     @if list.length(map.keys(meta.module-functions('bem'))) != 0 or

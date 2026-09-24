@@ -5,15 +5,15 @@ D03, D05, D08, D09, D10, and D11 are formally adopted. Future optional features
 are outside core stability; no matrix completion or future implementation is
 promised. The package remains private at version `0.0.0` until a separate release.
 
-This adoption preserves selector semantics and architecture. Production changes
-are limited to version-neutral diagnostic wording and a private comment. Focused
+The original stability adoption preserved selector semantics and architecture. Its production changes
+were limited to version-neutral diagnostic wording and a private comment. Focused
 raw-leaf and packed-package regressions complete the pre-release follow-up.
 Historical characterization and disposable spikes retain their original meaning.
 
 ## 1. Stable public API
 
 One supported public module: `src/_index.scss`, imported as `./src` from the
-repository root. It exports exactly six mixins and no public functions:
+repository root. It exports exactly seven mixins and no public functions:
 
 ```scss
 block($name, $layer: null)
@@ -22,6 +22,7 @@ modifier($mod1, $mod2: null)
 selector($name)
 extend($name, $mod1, $mod2: null)
 css-layers()
+has($type, $name, $relation: null)
 ```
 
 Exactly three public load-time configuration variables:
@@ -49,7 +50,8 @@ Stable contract:
 > string tokens. Modifiers accept one or two names; extend constructs a scoped
 > target directly beneath a block and requires at least one modifier. Selectors
 > accept one compound of non-functional pseudos/attributes, or an element-owned
-> pending `+`, `>`, or `~` resolved by element children. Configurable separators
+> pending `+`, `>`, or `~` resolved by element children. `has()` constructs one
+> same-owner element target using its own trusted path and qualified semantics. Configurable separators
 > and optional flat CSS Layers retain their documented validation and ordering
 > contracts. Unsupported matrix entries fail compilation without promising future
 > semantics. BEMinator semantic failure categories are stable, exact diagnostic
@@ -82,10 +84,12 @@ an architectural redesign merely to call the existing subset stable.
 
 ## 2. D03: lock the evaluated token domain
 
+The adopted element-target `has()` feature also uses this domain unchanged.
+
 The adopted domain is **ASCII letter or underscore first, then ASCII letters, digits,
 underscores, or hyphens**: `[A-Za-z_][A-Za-z0-9_-]*` on the evaluated Sass string.
 The shared `-name()` validator applies to block/element names and every supplied
-modifier/extend target/modifier argument. Required names cannot be null;
+modifier/extend target/modifier argument, including the has element target. Required names cannot be null;
 optional `$mod2: null` means absent. No string coercion is promised.
 
 | Input family | Stable policy and reason |
@@ -127,6 +131,7 @@ Complete inventory of BEMinator-owned `@error` branches in `src/core/_bem.scss`:
 | Forbidden nesting | Direct element/element; direct modifier/modifier; block anywhere beneath extend |
 | Unsupported relationship | Every call absent from the allowed context map, unless the stronger ancestry prohibition applies |
 | Invalid/unsupported selector input | Non-string; not one compound; no qualifier; token other than non-functional pseudo/attribute; functional pseudo deferral |
+| Invalid has target/relation/anchor | Only element targets, null/>/+/~ relations, and non-pseudo-element subjects; root has no subject |
 | Invalid separator configuration | Non-string/empty or characters other than `-`/`_`, naming the affected setting |
 | Invalid layer registry/name | Not a nonempty map; non-string/empty name; invalid initial/remaining character; reserved name; duplicate normalized key |
 | Unknown layer | Valid name absent from configured top-level keys |
@@ -208,7 +213,7 @@ impossible. `private: true` and version `0.0.0` deliberately remain unchanged.
 
 `npm run test:package` performs an offline `npm pack` with lifecycle scripts
 disabled, extracts that actual artifact into an isolated consumer's `node_modules`,
-and compiles via NodePackageImporter. It exercises all six mixins and all three
+and compiles via NodePackageImporter. It exercises all seven mixins and all three
 configuration variables, verifies zero public functions, checks exact CSS, and
 asserts loaded library URLs belong only to the unpacked artifact. It requires npm
 and tar, installs no dependencies, and cleans its temporary consumer/cache.
@@ -253,7 +258,7 @@ their deferred status. See the historical [design spike](SELECTOR-SCOPE-DESIGN-v
 | extend → modifier | NO KNOWN USE CASE | Extend already accepts one/two target modifiers |
 | extend → selector (either form) | LIKELY FUTURE FEATURE | Target-condition requirements need review |
 | extend → extend (Q02) | KEEP DEFERRED | Nested retargeting lacks a demonstrated use case |
-| Functional pseudos, including compounds containing them | LIKELY FUTURE FEATURE | Separate BEM-aware capability; no implementation here |
+| Functional strings in selector() | KEEP DEFERRED | Element-target has is a separate trusted construction path |
 | Q07 complete historical composite | KEEP DEFERRED | Archival evidence, no approved whole-output requirement |
 
 Direct element/element, modifier/modifier, and block beneath extend remain INVALID,
@@ -268,9 +273,8 @@ a composition of individually valid calls may compile without making its histori
 whole output a separately supported requirement. Do not add a Q07 history detector
 or infer that all valid primitive relationships must be revoked.
 
-Functional pseudos are a future feature topic, not a delivery commitment. Existing
-pure owner/subject/scope derivation presents no demonstrated release blocker for
-such future work. This contract does not promise their syntax, delivery, or matching semantics.
+Element-target `has()` is now adopted as specified below. Other functional
+features remain future topics without promised syntax, delivery or matching semantics.
 
 ## 6. D08: bounded at-rule support
 
@@ -321,8 +325,8 @@ Use `selector(':hover')` for context-preserving qualification of the current
 subject, with declarations or approved BEM children in its body. In block `card`,
 `selector(':hover')` → element `title` emits `.card:hover .card__title`. The
 owner remains `card`; the element promotes the completed parent into scope.
-Raw `&` does not update this context. Functional pseudos and raw `&:has(...)`
-plus BEM re-entry remain outside the contract.
+Raw `&` does not update this context. Use `has(element, name)` for BEM-aware
+relational qualification; raw `&:has(...)` plus BEM re-entry remains unsupported.
 
 Do not promise incidental successful raw behaviors: `&__manual` does not acquire
 BEM provenance; raw `.manual` or `&` inside pending relations does not resolve the
@@ -356,7 +360,7 @@ to implement deferred features or redesign the core.
 
 ## 9. Post-core future features (non-blocking)
 
-- BEM-aware functional selectors: `:has(...)`, `:not(...)`, `:is(...)`, `:where(...)`.
+- Additional has targets/lists and filtering mixins `not()`, `is()`, `where()`.
   This is distinct from the retired legacy `:where()` specificity machinery.
 - Remaining qualified modifier, relation, and extend relationships only on demand.
 - Possible nested CSS Layers, with explicit ordering/selection semantics.
@@ -368,7 +372,7 @@ to implement deferred features or redesign the core.
 No feature on this list is begun by this adoption. Legacy theme/path/debug machinery
 remains retired, not an implicit future backlog.
 
-## 10. Verification
+## 10. Historical stable-core adoption verification
 
 The pre-adoption review passed 203 production, 265 combined project, and 115 spike
 tests. Adoption adds one production raw-leaf regression and one separate packed
@@ -401,3 +405,42 @@ public functions. No prohibited state or retired machinery was added.
 
 The package remains private and unpublished. Production selector semantics,
 legacy captures, and disposable spike source/tests are unchanged.
+
+## 11. Adopted element-target has
+
+The first functional feature is `has($type, $name, $relation: null)`:
+
+```scss
+@include bem.block('game-card') {
+  @include bem.element('thumbnail') {
+    @include bem.has(element, 'details', $relation: '+') { color: red; }
+  }
+}
+// .game-card__thumbnail:has(+ .game-card__details) { color: red; }
+```
+
+Only `element` and one valid BEM name are accepted. Relations are `null`
+(descendant), `>` (direct child), `+` (adjacent following sibling), and `~`
+(later following sibling). The target uses the naming owner and configured
+element separator, independent of outer scope or current subject qualifiers.
+Unusual DOM/BEM layouts are not rejected on style grounds.
+
+Supported parents are block, element, modifier and qualified. Root is invalid;
+direct extend and pending relation remain deferred. Extend → element → has is
+supported and retains ancestry. Pseudo-element anchors are rejected, including
+legacy spellings. Both qualification orders with selector preserve call order.
+Qualified re-entry, empty branches, stack restoration and layer inheritance
+remain unchanged. Explicit layer selection remains root-only.
+
+The public `selector()` parser still rejects raw functional strings. Additional
+block/modifier/modified-element targets, `$modifier`, lists, `not()`, `is()`,
+`where()`, nested functional arguments, arbitrary raw targets, direct
+extend/pending → has, new provenance fields and general CSS validation remain
+deferred. Their feasibility in the historical design spike is not API approval.
+
+Current invariants: **seven public mixins, three configuration variables, zero
+public functions; one evolving mutable global and one BEM emission boundary**.
+No context field, parser mode, capture mode, second stack, raw `&` inspection or
+selector provenance recovery is added. Pure private construction and the existing
+qualified frame are sufficient. See [SPEC has](SPEC-v3.md#has) and the
+[production verification](PRODUCTION-v3.md#element-target-has-adoption).

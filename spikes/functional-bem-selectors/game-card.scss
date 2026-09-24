@@ -1,0 +1,19 @@
+// Loaded only through the test runner's in-memory experiment importer.
+@use 'spike:core' as bem;
+
+@include bem.block('game-card', $layer: 'molecules') {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  @include bem.element('thumbnail') {
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+
+    @include bem.has(element, 'details', $relation: '+') {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+}

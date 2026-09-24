@@ -36,8 +36,8 @@ test('packed package resolves its root and exposes only the stable Sass API', ()
       );
       @use 'sass:meta'; @use 'sass:map'; @use 'sass:list';
       $mixins: meta.module-mixins('bem');
-      @if list.length($mixins) != 6 { @error 'Unexpected mixin count'; }
-      @each $name in (block, element, modifier, selector, extend, css-layers) {
+      @if list.length($mixins) != 7 { @error 'Unexpected mixin count'; }
+      @each $name in (block, element, modifier, selector, extend, css-layers, has) {
         @if not map.has-key($mixins, $name) { @error 'Missing mixin: #{$name}'; }
       }
       $variables: meta.module-variables('bem');
@@ -53,6 +53,7 @@ test('packed package resolves its root and exposes only the stable Sass API', ()
           @include bem.modifier('active') { color: blue; }
         }
         @include bem.selector(':hover') { color: green; }
+        @include bem.has(element, 'details', $relation: '+') { color: orange; }
         @include bem.extend('icon', 'small') { color: black; }
       }
     `, {
@@ -70,6 +71,9 @@ test('packed package resolves its root and exposes only the stable Sass API', ()
   }
   .card:hover {
     color: green;
+  }
+  .card:has(+ .card-details) {
+    color: orange;
   }
   .card .icon_small {
     color: black;
