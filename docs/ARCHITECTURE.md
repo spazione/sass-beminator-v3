@@ -1,9 +1,11 @@
 # Architecture boundaries
 
-**Core** will provide BEM selector behavior, initially considering only `block`,
-`element`, `modifier`, `selector`, and `extend`. There is no core implementation
-in this bootstrap. Prefer modern Dart Sass modules and evaluate `sass:selector`
-before designing custom selector operations.
+**Core** provides BEM selector behavior through `block`, `element`, `modifier`,
+`selector`, `extend`, `has`, and `css-layers`. The implemented contract is in
+[SPEC-v3.md](SPEC-v3.md) and [PRODUCTION-v3.md](PRODUCTION-v3.md). It uses modern
+Dart Sass selector primitives, one evolving private context stack, and one BEM
+emission boundary. The original bootstrap boundary described below remains the
+basis for optional work; it does not imply that production is still unimplemented.
 
 **Addons** may provide optional related capabilities after core behavior and
 extension needs are stable. They must not force unrelated CSS utilities or
