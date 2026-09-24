@@ -1,0 +1,73 @@
+$btnSkins: (
+	prefix: "btn",
+	vars: (
+		primary: (
+			shared: (
+				default: (
+					color: #000,
+					background-color:white,
+					// icon-color: pink,
+				),
+			),
+			enabled:(
+				// default: (
+				// 	color: #000,
+				// 	background-color:white,
+				// 	// border: pink,
+				// ),
+				hover: (
+					background-color:white,
+					// border: pink,
+				),
+				active: (
+					background-color:white,
+					// border: pink,
+				),
+			),
+			disabled:(
+				hover: (
+					color: #000,
+					background-color:blue,
+				),
+				active: (
+					background-color:white,
+				),
+			),
+		),
+	),
+);
+
+$btnSizes: (
+	prefix: "btn",
+	vars: (
+		size: (
+			xs: (
+				height: 30px,
+				font-size: 1em,
+				padding: 8px 12px,
+				gap: 8px,
+				line-height: 1.1875em,
+			),
+			small: (
+				height: 40px,
+				font-size: 1.125em,
+				padding: 8px 16px,
+				gap: 8px,
+			),
+			medium: (
+				height: 44px,
+				font-size: 1.25em,
+				padding: 10px 16px,
+				gap: 10px,
+			),
+			large: (
+				height: 48px,
+				font-size: 1.5em,
+				padding: 12px 16px,
+				gap: 12px,
+			),
+		),
+	),
+);
+
+// $block-type: null;

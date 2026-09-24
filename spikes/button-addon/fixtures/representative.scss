@@ -1,0 +1,10 @@
+@use '../../../src/index' as bem;
+@use '../button';
+@use 'maps';
+
+@include bem.block('card') {
+  @include button.btn('play', maps.$btnSkins, maps.$btnSizes,
+    $size: 'medium', $category: 'primary', $icon: 'false') {
+    margin-bottom: 10px;
+  }
+}

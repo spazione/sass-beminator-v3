@@ -1,0 +1,26 @@
+.card__btn-play {
+  height: var(--btn-size-medium-height) !important;
+  font-size: var(--btn-size-medium-font-size) !important;
+  padding: var(--btn-size-medium-padding) !important;
+  gap: var(--btn-size-medium-gap) !important;
+  color: var(--btn-primary-shared-default-color) !important;
+  background-color: var(--btn-primary-shared-default-background-color) !important;
+  margin-bottom: 10px;
+}
+
+.card__btn-play:enabled:hover {
+  background-color: var(--btn-primary-enabled-hover-background-color) !important;
+}
+
+.card__btn-play:enabled:active {
+  background-color: var(--btn-primary-enabled-active-background-color) !important;
+}
+
+.card__btn-play:disabled:hover {
+  color: var(--btn-primary-disabled-hover-color) !important;
+  background-color: var(--btn-primary-disabled-hover-background-color) !important;
+}
+
+.card__btn-play:disabled:active {
+  background-color: var(--btn-primary-disabled-active-background-color) !important;
+}

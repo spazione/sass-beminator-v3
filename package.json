@@ -8,13 +8,14 @@
     "node": "^22.19.0 || ^24.0.0"
   },
   "scripts": {
-    "test": "node --test \"tests/unit/**/*.test.js\" \"tests/production/**/*.test.js\"",
-    "test:watch": "node --test --watch \"tests/unit/**/*.test.js\" \"tests/production/**/*.test.js\"",
+    "test": "node --test \"tests/unit/**/*.test.js\" \"tests/production/**/*.test.js\" \"tests/components/**/*.test.js\"",
+    "test:watch": "node --test --watch \"tests/unit/**/*.test.js\" \"tests/production/**/*.test.js\" \"tests/components/**/*.test.js\"",
     "test:legacy": "node --test \"tests/legacy/**/*.test.js\" \"tests/characterization/**/*.test.js\"",
     "test:characterization": "node --test \"tests/characterization/**/*.test.js\"",
     "test:production": "node --test \"tests/production/**/*.test.js\"",
     "test:package": "node --test \"tests/package/**/*.test.js\"",
-    "benchmark:core": "node benchmarks/compile-performance.mjs"
+    "benchmark:core": "node benchmarks/compile-performance.mjs",
+    "test:button": "node --test \"tests/components/**/*.test.js\""
   },
   "devDependencies": {
     "sass": "1.104.1"

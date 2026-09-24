@@ -1,0 +1,83 @@
+@use 'sass:map';
+@use 'sass:string';
+@use '../src/index' as bem;
+
+// UI-only helpers. All pseudo rules compose the public selector API.
+@mixin -icon($value, $kind, $icon, $icon-align) {
+  @if $icon == 'true' and ($icon-align == 'left' or $icon-align == 'right') {
+    $selected: ':before';
+    $opposite: ':after';
+    $margin: margin-right;
+    @if $icon-align == 'right' {
+      $selected: ':after';
+      $opposite: ':before';
+      $margin: margin-left;
+    }
+    @include bem.selector($selected) {
+      content: '' !important;
+      @if $kind == size {
+        height: $value !important;
+        width: $value !important;
+        #{$margin}: .5em !important;
+      } @else {
+        background-color: $value !important;
+      }
+    }
+    @include bem.selector($opposite) { content: none !important; }
+  } @else if $kind == size and $icon == 'false' {
+    @include bem.selector(':before') { content: none !important; }
+    @include bem.selector(':after') { content: none !important; }
+  }
+}
+
+@mixin -properties($properties, $prefix, $icon, $icon-align) {
+  @each $property, $ignored in $properties {
+    $value: string.unquote('var(--btn-#{$prefix}-#{$property})');
+    @if $property == 'icon-color' {
+      @include -icon($value, color, $icon, $icon-align);
+    } @else {
+      #{$property}: $value !important;
+    }
+  }
+}
+
+@mixin -styles($styles, $category, $state, $icon, $icon-align) {
+  @each $style, $properties in $styles {
+    $prefix: '#{$category}-#{$state}-#{$style}';
+    @if $style == 'default' {
+      @include -properties($properties, $prefix, $icon, $icon-align);
+    } @else {
+      @include bem.selector(':#{$style}') {
+        @include -properties($properties, $prefix, $icon, $icon-align);
+      }
+    }
+  }
+}
+
+// Keep map order and shared-only content emission for legacy compatibility.
+@mixin btn($name, $theme-settings, $shared-settings, $size: 'medium', $category: 'primary', $icon: 'true', $icon-align: 'left') {
+  @include bem.element('btn-' + $name) {
+    $states: map.get($theme-settings, vars, $category);
+    @if $states == null { @error 'Button: missing category'; }
+    @each $state, $styles in $states {
+      @if $state == 'shared' {
+        $sizes: map.get($shared-settings, vars, size, $size);
+        @if $sizes == null { @error 'Button: missing size'; }
+        @each $property, $ignored in $sizes {
+          $value: string.unquote('var(--btn-size-#{$size}-#{$property})');
+          @if $property == 'icon-size' {
+            @include -icon($value, size, $icon, $icon-align);
+          } @else {
+            #{$property}: $value !important;
+          }
+        }
+        @include -styles($styles, $category, $state, $icon, $icon-align);
+        @content;
+      } @else {
+        @include bem.selector(':#{$state}') {
+          @include -styles($styles, $category, $state, $icon, $icon-align);
+        }
+      }
+    }
+  }
+}

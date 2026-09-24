@@ -46,7 +46,7 @@ Evaluated BEM names match `[A-Za-z_][A-Za-z0-9_-]*`; variables/interpolation use
 same rule. Semantic failure categories are stable; exact diagnostic wording and
 Sass-owned diagnostics are not API.
 
-The sole supported entrypoint is `src/_index.scss`, exported as the package root
+The sole supported core package entrypoint is `src/_index.scss`, exported as the package root
 of `sass-beminator`. The bare imports above assume a configured package resolver.
 With Dart Sass's NodePackageImporter enabled, use:
 
@@ -98,15 +98,21 @@ Public `selector()` still rejects raw functional strings such as
 lists, `not()`, `is()`, `where()`, and nested functional arguments remain deferred.
 See [the has contract](docs/SPEC-v3.md#has) for the precise supported subset.
 
+See [extending BEMinator through composition](docs/EXTENDING-BY-COMPOSITION.md)
+for higher-level mixins built from public primitives. The optional
+[Button component](components/README.md) is independently importable from this
+checkout and is not part of the core package API.
+
 Use Node.js 22.19+ on the 22 LTS line or Node.js 24 LTS, then run `npm ci`.
 The `.nvmrc` selects Node 22; supported release schedules are documented by
 [Node.js](https://github.com/nodejs/Release#release-schedule).
 
-- `npm test`: standalone Sass infrastructure and production tests; no legacy checkout needed.
+- `npm test`: standalone Sass infrastructure, production and optional component tests; no legacy checkout needed.
 - `npm run test:watch`: watch those standalone tests.
+- `npm run test:button`: maintained optional Button tests; no legacy checkout needed.
 - `npm run test:production`: run only the production entrypoint tests.
 - `npm run test:package`: pack offline and verify the public Sass API in an isolated consumer (requires npm and tar).
-- `npm run test:legacy`: explicitly run the sibling v2 reference smoke tests.
+- `npm run test:legacy`: run the sibling v2 smoke, characterization and Button comparison tests.
 - `npm run test:characterization`: run the historical v2 cases and state-isolation comparisons.
 
 `test:legacy` now includes the characterization suite as well as the smoke tests.
